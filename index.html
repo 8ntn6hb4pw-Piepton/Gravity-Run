@@ -194,6 +194,12 @@
     }
 
     .touch-pad {
+      grid-template-columns: 70px 70px;
+      grid-template-rows: 70px;
+      grid-template-areas: "left right";
+    }
+
+    .touch-controls.jetpack-mode .touch-pad {
       grid-template-columns: 70px 70px 70px;
       grid-template-rows: 70px 70px;
       grid-template-areas:
@@ -218,6 +224,10 @@
       user-select: none;
       -webkit-user-select: none;
       min-height: 70px;
+    }
+
+    .touch-btn.hidden-control {
+      display: none;
     }
 
     .start-btn {
@@ -336,6 +346,11 @@
       }
 
       .touch-pad {
+        grid-template-columns: 58px 58px;
+        grid-template-rows: 58px;
+      }
+
+      .touch-controls.jetpack-mode .touch-pad {
         grid-template-columns: 58px 58px 58px;
         grid-template-rows: 58px 58px;
       }
@@ -350,7 +365,6 @@
         font-size: 0.85rem;
       }
 
-      #touchAction,
       #touchJump {
         min-height: 68px;
       }
@@ -425,15 +439,15 @@
         <div class="badge" id="statusBadge">Tasse verriegelt</div>
       </div>
       <button class="start-btn" id="startButton" type="button">Spiel Starten</button>
-      <div class="touch-controls">
+      <div class="touch-controls" id="touchControls">
         <div class="touch-pad">
-          <button class="touch-btn" id="touchUp" type="button">Hoch</button>
-          <button class="touch-btn" id="touchLeft" type="button">Links</button>
-          <button class="touch-btn" id="touchDown" type="button">Runter</button>
-          <button class="touch-btn" id="touchRight" type="button">Rechts</button>
+          <button class="touch-btn hidden-control" id="touchUp" type="button">Hoch</button>
+          <button class="touch-btn" id="touchLeft" type="button">L</button>
+          <button class="touch-btn hidden-control" id="touchDown" type="button">Runter</button>
+          <button class="touch-btn" id="touchRight" type="button">R</button>
         </div>
         <div class="touch-actions">
-          <button class="touch-btn" id="touchAction" type="button">Aktion</button>
+          <button class="touch-btn hidden-control" id="touchAction" type="button">Aktion</button>
           <button class="touch-btn" id="touchJump" type="button">Sprung</button>
         </div>
       </div>
@@ -457,6 +471,7 @@
       factTextMobile: document.getElementById("factTextMobile"),
       messageBox: document.getElementById("messageBox"),
       statusBadge: document.getElementById("statusBadge"),
+      touchControls: document.getElementById("touchControls"),
       touchLeft: document.getElementById("touchLeft"),
       touchRight: document.getElementById("touchRight"),
       touchUp: document.getElementById("touchUp"),
@@ -466,7 +481,7 @@
       startButton: document.getElementById("startButton")
     };
 
-    const WORLD_WIDTH = 2200;
+    const WORLD_WIDTH = 3200;
     const GROUND_Y = 450;
     const PLAYER_WIDTH = 42;
     const PLAYER_HEIGHT = 58;
@@ -832,6 +847,7 @@
       rescue: null,
       elapsed: 0,
       totalRunTime: 0,
+      levelElapsed: 0,
       levelIntroTimer: 0,
       cameraX: 0,
       jumpTraces: [],
@@ -879,6 +895,7 @@
         shoveCooldown: 0,
         shipHintCooldown: 0,
         currentPlatform: 0,
+        hearts: 0,
         respawnPoint: { x: 40, y: 0 }
       };
     }
@@ -994,6 +1011,7 @@
     }
 
     function normalizeLevelGeometry(level) {
+      extendLevelLayout(level);
       level.jumpMetrics = getJumpMetrics(level);
       const gapTuning = getGapTuning(level);
 
@@ -1025,12 +1043,30 @@
       level.ladders = buildLadders(level);
       nudgeBeansAwayFromBlocks(level);
       level.enemySeeds = buildEnemySeeds(level);
+      level.hearts = buildHearts(level);
       level.safeGap = Math.round(clamp(
         getReachableGap(level.jumpMetrics, level.platforms[0], level.platforms[1]) * gapTuning.gapRatio,
         gapTuning.minGap,
         gapTuning.maxGap
       ));
       level.gapTuning = gapTuning;
+    }
+
+    function extendLevelLayout(level) {
+      const extraCount = 3 + level.variantIndex;
+      let previous = level.platforms[level.platforms.length - 1];
+      for (let i = 0; i < extraCount; i++) {
+        const width = 150 + ((i + level.variantIndex) % 2) * 24;
+        const gap = 98 + i * 18;
+        const rise = ((i % 2 === 0 ? -1 : 1) * (26 + level.variantIndex * 8));
+        const y = clamp(previous.y + rise, 220, 440);
+        const x = previous.x + previous.w + gap;
+        level.platforms.push({ x, y, w: width, h: 18 });
+        previous = level.platforms[level.platforms.length - 1];
+      }
+
+      level.platforms.push({ x: WORLD_WIDTH - 360, y: 470, w: 320, h: 60 });
+      level.rocket.x = WORLD_WIDTH - 150;
     }
 
     function getGapTuning(level) {
@@ -1066,22 +1102,25 @@
       const shapes = [0, 3, 4, 5, 6, 8];
       return level.platforms
         .slice(1, -1)
-        .filter((platform, index) => platform.w >= 145 && index % 3 === 0)
-        .map((platform, index) => ({
-          platformIndex: level.platforms.indexOf(platform),
-          radius: 13 + ((index + level.name.length) % 3) * 3,
-          x: platform.x + Math.min(platform.w - 40, 28 + index * 16),
-          range: Math.max(22, Math.min(56, platform.w - 62)),
-          speed: 36 + index * 7,
-          type: level.enemyType,
-          sides: shapes[(index + level.name.length) % shapes.length]
-        }));
+        .filter(platform => platform.w >= 145)
+        .flatMap((platform, index) => {
+          const amount = index % 2 === 0 ? 2 : 1;
+          return Array.from({ length: amount }, (_, variant) => ({
+            platformIndex: level.platforms.indexOf(platform),
+            radius: 13 + ((index + variant + level.name.length) % 3) * 3,
+            x: platform.x + Math.min(platform.w - 40, 28 + variant * 52 + (index % 3) * 12),
+            range: Math.max(28, Math.min(82, platform.w - 54)),
+            speed: 42 + index * 6 + variant * 7,
+            type: level.enemyType,
+            sides: shapes[(index + variant + level.name.length) % shapes.length]
+          }));
+        });
     }
 
     function buildBonusBlocks(level) {
       const prizes = ["jetpack", "shield", "skin"];
       return level.platforms
-        .slice(2, -1)
+        .slice(1, -1)
         .filter((platform, index) => platform.w >= 145 && index % 2 === 0)
         .map((platform, index) => ({
           x: platform.x + Math.min(platform.w - 44, 34 + index * (18 + level.variantIndex * 8)),
@@ -1092,6 +1131,19 @@
           bump: 0,
           prize: prizes[(index + level.name.length) % prizes.length]
         }));
+    }
+
+    function buildHearts(level) {
+      return level.platforms
+        .slice(1, -1)
+        .flatMap((platform, index) => {
+          const amount = platform.w >= 170 ? 2 : 1;
+          return Array.from({ length: amount }, (_, variant) => ({
+            x: platform.x + Math.min(platform.w - 28, 34 + variant * 56 + (index % 3) * 22),
+            y: platform.y - (variant % 2 === 0 ? 28 : 72 + level.variantIndex * 10),
+            collected: false
+          }));
+        });
     }
 
     function buildLadders(level) {
@@ -1194,6 +1246,7 @@
       state.levelIntroTimer = 4.2;
       state.introDismissed = false;
       state.lives = MAX_LIVES;
+      state.levelElapsed = 0;
       state.player = createPlayer();
 
       const level = getLevel(index);
@@ -1205,6 +1258,7 @@
       state.looseItems = [];
       state.itemPopup = null;
       level.beans = level.beans.map(bean => ({ x: bean.x, y: bean.y, collected: false }));
+      level.hearts = (level.hearts || []).map(heart => ({ x: heart.x, y: heart.y, collected: false }));
       level.bonusBlocks = level.bonusBlocks.map(block => ({ ...block, used: false, bump: 0 }));
       level.enemies = level.enemySeeds.map(seed => {
         const platform = level.platforms[seed.platformIndex];
@@ -1306,6 +1360,20 @@
 
       if (ui.startButton) {
         ui.startButton.classList.toggle("hidden", state.started);
+      }
+
+      if (ui.touchControls) {
+        const jetpackActive = state.player && state.player.rocketPackTimer > 0;
+        ui.touchControls.classList.toggle("jetpack-mode", jetpackActive);
+        if (ui.touchUp) {
+          ui.touchUp.classList.toggle("hidden-control", !jetpackActive);
+        }
+        if (ui.touchDown) {
+          ui.touchDown.classList.toggle("hidden-control", !jetpackActive);
+        }
+        if (ui.touchAction) {
+          ui.touchAction.classList.add("hidden-control");
+        }
       }
     }
 
@@ -1411,6 +1479,7 @@
       const configs = {
         jump: { type: "triangle", freq1: 320, freq2: 520, dur: 0.08, gain: 0.03 },
         bean: { type: "sine", freq1: 540, freq2: 760, dur: 0.07, gain: 0.035 },
+        heart: { type: "sine", freq1: 880, freq2: 1240, dur: 0.06, gain: 0.032 },
         bonus: { type: "square", freq1: 420, freq2: 820, dur: 0.16, gain: 0.04 },
         boost: { type: "triangle", freq1: 240, freq2: 280, dur: 0.08, gain: 0.028 },
         stomp: { type: "square", freq1: 180, freq2: 110, dur: 0.09, gain: 0.04 },
@@ -1464,6 +1533,7 @@
       const player = state.player;
       state.elapsed += dt;
       state.totalRunTime += dt;
+      state.levelElapsed += dt;
       state.levelIntroTimer = Math.max(0, state.levelIntroTimer - dt);
       if (state.itemPopup) {
         state.itemPopup.timer -= dt;
@@ -1494,13 +1564,6 @@
         updateTransition(dt);
         updateParticles(dt);
         syncUi();
-        return;
-      }
-
-      state.timeLeft -= dt;
-      if (state.timeLeft <= 0) {
-        state.message = `<strong>Zeit abgelaufen!</strong> ${level.display} startet wieder von vorn.`;
-        resetLevel(state.levelIndex, true);
         return;
       }
 
@@ -1623,6 +1686,16 @@
         }
       }
 
+      for (const heart of level.hearts || []) {
+        if (!heart.collected && overlaps(player, { x: heart.x - 10, y: heart.y - 10, w: 20, h: 20 })) {
+          heart.collected = true;
+          player.hearts += 1;
+          state.message = `<strong>Herzchen!</strong> Smoeppi hat jetzt ${player.hearts} kleine Herzchen gesammelt.`;
+          emitTrailBurst(heart.x, heart.y, "#ff7aa8", 8);
+          playSound("heart");
+        }
+      }
+
       if (overlaps(player, level.rocket)) {
         if (level.beans.every(bean => bean.collected)) {
           const planetTravel = isPlanetTravel(state.levelIndex);
@@ -1659,7 +1732,7 @@
           enemy.attachTimer += dt;
           enemy.x = player.x + player.w / 2 - enemy.radius;
           enemy.y = player.y - enemy.radius * 0.35;
-          if (player.vy < -150 || (player.onGround && Math.abs(player.vx) > 80)) {
+          if (player.vy < -150) {
             enemy.dead = true;
             state.message = "<strong>Abgeschuettelt!</strong> Smoeppi hat eine Gehirnzecke vom Kopf geworfen.";
             emitTrailBurst(enemy.x + enemy.radius, enemy.y + enemy.radius, "#ffd166", 10);
@@ -2281,6 +2354,7 @@
       drawEnemies(level);
       drawLooseItems();
       drawBeans(level);
+      drawHearts(level);
       drawRocket(level);
       drawParticles();
       drawRescue();
@@ -2675,6 +2749,23 @@
       }
     }
 
+    function drawHearts(level) {
+      for (const heart of level.hearts || []) {
+        if (heart.collected) {
+          continue;
+        }
+        ctx.save();
+        ctx.translate(heart.x, heart.y);
+        ctx.fillStyle = "#ff7aa8";
+        ctx.beginPath();
+        ctx.moveTo(0, 8);
+        ctx.bezierCurveTo(14, -8, 18, 6, 0, 18);
+        ctx.bezierCurveTo(-18, 6, -14, -8, 0, 8);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
     function drawLooseItems() {
       const colors = { jetpack: "#ff9b54", shield: "#7fd7ff", skin: "#d7a6ff" };
       const labels = { jetpack: "J", shield: "D", skin: "K" };
@@ -3016,7 +3107,7 @@
       ctx.fillStyle = "#fff4e2";
       ctx.textAlign = "left";
       ctx.font = "bold 16px Trebuchet MS";
-      ctx.fillText(formatTime(state.timeLeft), 18, 27);
+      ctx.fillText(formatTime(state.levelElapsed), 18, 27);
 
       const collected = level.beans.filter(bean => bean.collected).length;
       const total = level.beans.length;
@@ -3037,6 +3128,13 @@
         ctx.stroke();
         ctx.restore();
       }
+
+      ctx.fillStyle = "rgba(8, 12, 20, 0.32)";
+      roundRect(canvas.width - 76, 34, 62, 22, 10);
+      ctx.fill();
+      ctx.fillStyle = "#ff8fb1";
+      ctx.font = "bold 13px Trebuchet MS";
+      ctx.fillText(`Herz ${state.player.hearts}`, canvas.width - 68, 49);
 
       ctx.fillStyle = "rgba(8, 12, 20, 0.3)";
       roundRect(10, canvas.height - 34, 118, 22, 10);
