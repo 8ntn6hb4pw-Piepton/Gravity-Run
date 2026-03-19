@@ -61,12 +61,7 @@
     }
 
     .hud {
-      position: absolute;
-      inset: 12px 12px auto 12px;
-      z-index: 3;
-      display: grid;
-      gap: 10px;
-      pointer-events: none;
+      display: none;
     }
 
     .hud-top {
@@ -155,13 +150,7 @@
     }
 
     .overlay {
-      position: absolute;
-      inset: 12px;
-      pointer-events: none;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
-      padding: 18px;
+      display: none;
     }
 
     .badge {
@@ -189,7 +178,7 @@
 
     .touch-controls {
       position: absolute;
-      inset: auto 12px 12px 12px;
+      inset: auto 12px 88px 12px;
       z-index: 4;
       display: none;
       justify-content: space-between;
@@ -231,6 +220,28 @@
       min-height: 70px;
     }
 
+    .start-btn {
+      position: absolute;
+      left: 50%;
+      bottom: 110px;
+      transform: translateX(-50%);
+      z-index: 5;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font: inherit;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #28150a;
+      background: linear-gradient(180deg, #ffd166, #ffb347);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+      cursor: pointer;
+    }
+
+    .start-btn.hidden {
+      display: none;
+    }
+
     .touch-btn:active {
       transform: scale(0.96);
       background: rgba(38, 51, 88, 0.92);
@@ -266,7 +277,7 @@
       }
 
       .hud {
-        inset: 8px 8px auto 8px;
+        inset: auto 8px 8px 8px;
         gap: 6px;
       }
 
@@ -345,12 +356,18 @@
       }
 
       .touch-controls {
-        inset: auto 8px 8px 8px;
+        inset: auto 8px 82px 8px;
       }
 
       .message,
       .mini-panel p:last-child {
         display: none;
+      }
+
+      .start-btn {
+        bottom: 136px;
+        padding: 14px 24px;
+        font-size: 0.95rem;
       }
     }
   </style>
@@ -398,15 +415,16 @@
               <div class="battery">
                 <div class="battery-fill" id="batteryFill"></div>
               </div>
-              <p>4 / 4 Ladungen</p>
+              <p id="lifeText">4 / 4 Ladungen</p>
             </div>
-            <p>Flugbahnen, Items und Weltereignisse werden hier erklaert.</p>
+            <p id="factText">Flugbahnen, Items und Weltereignisse werden hier erklaert.</p>
           </div>
         </div>
       </div>
       <div class="overlay">
         <div class="badge" id="statusBadge">Tasse verriegelt</div>
       </div>
+      <button class="start-btn" id="startButton" type="button">Spiel Starten</button>
       <div class="touch-controls">
         <div class="touch-pad">
           <button class="touch-btn" id="touchUp" type="button">Hoch</button>
@@ -444,7 +462,8 @@
       touchUp: document.getElementById("touchUp"),
       touchDown: document.getElementById("touchDown"),
       touchJump: document.getElementById("touchJump"),
-      touchAction: document.getElementById("touchAction")
+      touchAction: document.getElementById("touchAction"),
+      startButton: document.getElementById("startButton")
     };
 
     const WORLD_WIDTH = 2200;
@@ -821,7 +840,8 @@
       stars: [],
       itemPopup: null,
       message: "",
-      player: null
+      player: null,
+      introDismissed: false
     };
 
     const keys = { left: false, right: false, down: false, jumpHeld: false };
@@ -855,6 +875,7 @@
         melt: 0,
         onLadder: false,
         skin: "classic",
+        sadTimer: 0,
         shoveCooldown: 0,
         shipHintCooldown: 0,
         currentPlatform: 0,
@@ -1171,6 +1192,7 @@
       state.rescue = null;
       state.elapsed = 0;
       state.levelIntroTimer = 4.2;
+      state.introDismissed = false;
       state.lives = MAX_LIVES;
       state.player = createPlayer();
 
@@ -1213,7 +1235,7 @@
       state.player.respawnPoint = { x: state.player.x, y: spawnY };
 
       if (!keepMessage) {
-        state.message = `<strong>"Hallo aus ${level.display}!"</strong> Hier gilt ${getDisplayGravity(level)}. Ich selbst habe weiter 100 g Masse, aber mein Gewicht fuehlt sich anders an.<br>${getLevelIntro(level)}<br>${level.flavor}`;
+        state.message = `${level.display} · ${getDisplayGravity(level)} · ${getLevelIntro(level)}`;
       }
       syncUi();
     }
@@ -1243,7 +1265,9 @@
         ui.batteryFillMobile.style.width = batteryWidth;
       }
       const lifeLabel = `${state.lives} / ${MAX_LIVES} Ladungen`;
-      ui.lifeText.textContent = lifeLabel;
+      if (ui.lifeText) {
+        ui.lifeText.textContent = lifeLabel;
+      }
       if (ui.lifeTextMobile) {
         ui.lifeTextMobile.textContent = lifeLabel;
       }
@@ -1256,23 +1280,43 @@
           : ` Hitze aktiv. Schmelze: ${Math.round(state.player.melt * 100)}%.`
         : "";
       const factLabel = `${level.description} Anlauf: ${runPercent}%. Treibstoff: ${collected}/6 Bohnen.${rocketText}${shieldText}${eventText}`;
-      ui.factText.textContent = factLabel;
+      if (ui.factText) {
+        ui.factText.textContent = factLabel;
+      }
       if (ui.factTextMobile) {
         ui.factTextMobile.textContent = shieldText ? `${rocketText}${shieldText}`.trim() || factLabel : factLabel;
       }
-      ui.messageBox.innerHTML = state.message;
-
-      if (state.rescue) {
-        ui.statusBadge.textContent = "Kraftmesser-Rettung";
-      } else if (state.player.shieldHits > 0) {
-        ui.statusBadge.textContent = "Schild aktiv";
-      } else if (state.player.rocketPackTimer > 0) {
-        ui.statusBadge.textContent = "Jetpack aktiv";
-      } else if (state.transition) {
-        ui.statusBadge.textContent = "Kaffeetasse startet";
-      } else {
-        ui.statusBadge.textContent = collected === level.beans.length ? "Tasse startklar" : "Tasse wartet auf Bohnen";
+      if (ui.messageBox) {
+        ui.messageBox.innerHTML = state.message;
       }
+
+      if (ui.statusBadge) {
+        if (state.rescue) {
+          ui.statusBadge.textContent = "Kraftmesser-Rettung";
+        } else if (state.player.shieldHits > 0) {
+          ui.statusBadge.textContent = "Schild aktiv";
+        } else if (state.player.rocketPackTimer > 0) {
+          ui.statusBadge.textContent = "Jetpack aktiv";
+        } else if (state.transition) {
+          ui.statusBadge.textContent = "Kaffeetasse startet";
+        } else {
+          ui.statusBadge.textContent = collected === level.beans.length ? "Tasse startklar" : "Tasse wartet auf Bohnen";
+        }
+      }
+
+      if (ui.startButton) {
+        ui.startButton.classList.toggle("hidden", state.started);
+      }
+    }
+
+    function startGame() {
+      ensureAudio();
+      state.started = true;
+      state.totalRunTime = 0;
+      state.introDismissed = false;
+      state.message = `${getLevel().display} · ${getDisplayGravity(getLevel())} · ${getLevelIntro(getLevel())}`;
+      playSound("start");
+      syncUi();
     }
 
     function emitTrailBurst(x, y, color, amount = 8) {
@@ -1428,6 +1472,7 @@
         }
       }
       player.hitFlash = Math.max(0, player.hitFlash - dt);
+      player.sadTimer = Math.max(0, player.sadTimer - dt);
       player.invulnerable = Math.max(0, player.invulnerable - dt);
       player.jumpBoostTimer = Math.max(0, player.jumpBoostTimer - dt);
       player.jumpBuffer = Math.max(0, player.jumpBuffer - dt);
@@ -1621,8 +1666,12 @@
             playSound("stomp");
             continue;
           }
-          if (enemy.attachTimer >= 0.85) {
-            enemy.dead = true;
+          if (enemy.attachTimer >= 1) {
+            enemy.attached = false;
+            enemy.attachTimer = 0;
+            enemy.direction = player.facing || 1;
+            enemy.jumpVy = -160;
+            enemy.x += enemy.direction * 18;
             hitPlayer("Eine Gehirnzecke wollte sich an Smoeppis Kopf festsaugen!");
             continue;
           }
@@ -1682,6 +1731,9 @@
         if (enemy.dead) {
           continue;
         }
+        if (enemy.attached) {
+          continue;
+        }
 
         const enemyBox = { x: enemy.x, y: enemy.y, w: enemy.radius * 2, h: enemy.radius * 2 };
         if (!overlaps(playerBox, enemyBox)) {
@@ -1702,7 +1754,7 @@
         } else {
           enemy.attached = true;
           enemy.attachTimer = 0;
-          state.message = "<strong>Alarm!</strong> Eine Gehirnzecke springt Smoeppi an und will sich am Kopf festsaugen.";
+          state.message = "Alarm! Eine Gehirnzecke haengt am Kopf. Nach 1 Sekunde Saugen kostet sie 1 Leben.";
         }
         return;
       }
@@ -2002,6 +2054,7 @@
       }
 
       player.hitFlash = HIT_INVULNERABILITY;
+      player.sadTimer = 0.9;
       player.invulnerable = HIT_INVULNERABILITY;
       state.lives -= 1;
       finishJumpTrace(player);
@@ -2232,7 +2285,6 @@
       drawParticles();
       drawRescue();
       drawPlayer(state.player);
-      drawSpeechBubble(level);
       ctx.restore();
 
       if (!state.started) {
@@ -2245,9 +2297,9 @@
         drawPlanetTravelOverlay(state.transition);
       }
 
+      drawMinimalHud(level);
       drawLevelIntroCard(level);
       drawItemPopup();
-      drawCollectedBeanHud(level);
       drawOffscreenHint();
     }
 
@@ -2767,47 +2819,6 @@
       }
     }
 
-    function drawSpeechBubble(level) {
-      if (!state.started || state.gameWon || state.levelIntroTimer <= 0 || state.player.hidden) {
-        return;
-      }
-
-      const bubbleWidth = 230;
-      const bubbleHeight = 68;
-      const bubbleX = clamp(state.player.x + state.player.w / 2 - bubbleWidth / 2, state.cameraX + 12, state.cameraX + canvas.width - bubbleWidth - 12);
-      const bubbleY = Math.max(18, state.player.y - 90);
-      const introText = `${level.display}: ${getDisplayGravity(level)}`;
-      const tipText = getPlanetName(level) === "Sonne"
-        ? "Kurze Hops!"
-        : toGravityFactor(level) < 0.25
-          ? "Hohe Boehnen anspringen!"
-          : "Tempo sauber mitnehmen!";
-
-      ctx.save();
-      ctx.fillStyle = "rgba(255, 246, 233, 0.95)";
-      ctx.strokeStyle = "rgba(70, 42, 24, 0.35)";
-      ctx.lineWidth = 2;
-      roundRect(bubbleX, bubbleY, bubbleWidth, bubbleHeight, 14);
-      ctx.fill();
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(state.player.x + state.player.w / 2, bubbleY + bubbleHeight);
-      ctx.lineTo(state.player.x + state.player.w / 2 - 10, bubbleY + bubbleHeight + 16);
-      ctx.lineTo(state.player.x + state.player.w / 2 + 8, bubbleY + bubbleHeight - 2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = "#53301e";
-      ctx.textAlign = "left";
-      ctx.font = "bold 15px Trebuchet MS";
-      ctx.fillText(introText, bubbleX + 12, bubbleY + 24);
-      ctx.font = "14px Trebuchet MS";
-      ctx.fillText("Ich bleibe 100 g schwer.", bubbleX + 12, bubbleY + 44);
-      ctx.fillText(tipText, bubbleX + 12, bubbleY + 61);
-      ctx.restore();
-    }
-
     function drawPlayer(player) {
       if (player.hidden) {
         return;
@@ -2873,7 +2884,11 @@
       ctx.strokeStyle = "#f7d9c0";
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(player.w / 2, player.crouching ? 22 : 30, player.crouching ? 5 : 7, 0.2, Math.PI - 0.2);
+      if (player.sadTimer > 0) {
+        ctx.arc(player.w / 2, player.crouching ? 28 : 34, player.crouching ? 4 : 6, Math.PI + 0.2, Math.PI * 2 - 0.2);
+      } else {
+        ctx.arc(player.w / 2, player.crouching ? 22 : 30, player.crouching ? 5 : 7, 0.2, Math.PI - 0.2);
+      }
       ctx.stroke();
 
       if (player.rocketPackTimer > 0) {
@@ -2967,50 +2982,78 @@
     }
 
     function drawLevelIntroCard(level) {
-      if (!state.started || state.gameWon || state.levelIntroTimer <= 0) {
+      if (!state.started || state.gameWon || state.introDismissed) {
         return;
       }
 
-      const alpha = Math.min(1, state.levelIntroTimer / 0.6, 1);
       ctx.save();
-      ctx.globalAlpha = Math.min(0.96, alpha);
-      ctx.fillStyle = "rgba(9, 14, 25, 0.78)";
-      roundRect(18, 18, canvas.width - 36, 96, 18);
+      ctx.fillStyle = "rgba(9, 14, 25, 0.84)";
+      roundRect(18, 18, canvas.width - 36, 110, 18);
       ctx.fill();
       ctx.strokeStyle = "rgba(255,255,255,0.08)";
       ctx.lineWidth = 1.5;
-      roundRect(18, 18, canvas.width - 36, 96, 18);
+      roundRect(18, 18, canvas.width - 36, 110, 18);
       ctx.stroke();
       ctx.fillStyle = "#fff0d7";
-      ctx.font = "bold 22px Trebuchet MS";
+      ctx.font = "bold 20px Trebuchet MS";
       ctx.textAlign = "left";
-      ctx.fillText(level.display, 34, 48);
-      ctx.font = "15px Trebuchet MS";
-      ctx.fillText(`Ortsfaktor: ${getDisplayGravity(level)}`, 34, 72);
-      drawWrappedText(getLevelIntro(level), 220, 57, canvas.width - 260, 18, 2);
+      ctx.fillText(level.display, 34, 46);
+      ctx.font = "14px Trebuchet MS";
+      ctx.fillText(`${getDisplayGravity(level)} · Tippen/Klicken zum Schliessen`, 34, 68);
+      drawWrappedText(getLevelIntro(level), 34, 92, canvas.width - 68, 18, 2);
       ctx.restore();
     }
 
-    function drawCollectedBeanHud(level) {
+    function drawMinimalHud(level) {
+      if (!state.started || state.gameWon) {
+        return;
+      }
+
+      ctx.save();
+      ctx.fillStyle = "rgba(8, 12, 20, 0.34)";
+      roundRect(10, 8, 84, 28, 10);
+      ctx.fill();
+      ctx.fillStyle = "#fff4e2";
+      ctx.textAlign = "left";
+      ctx.font = "bold 16px Trebuchet MS";
+      ctx.fillText(formatTime(state.timeLeft), 18, 27);
+
       const collected = level.beans.filter(bean => bean.collected).length;
       const total = level.beans.length;
-      const startX = canvas.width - 34 - total * 24;
+      const startX = canvas.width - 18 - total * 16;
       const y = 22;
       for (let i = 0; i < total; i++) {
         ctx.save();
-        ctx.translate(startX + i * 24, y);
-        ctx.fillStyle = i < collected ? "#6f4322" : "rgba(255,255,255,0.14)";
+        ctx.translate(startX + i * 16, y);
+        ctx.fillStyle = i < collected ? "#6f4322" : "rgba(255,255,255,0.16)";
         ctx.beginPath();
-        ctx.ellipse(0, 0, 8, 11, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, 5.5, 7.5, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = i < collected ? "#efd0a3" : "rgba(255,255,255,0.22)";
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(0, -7);
-        ctx.quadraticCurveTo(-2, 0, 1, 7);
+        ctx.moveTo(0, -5);
+        ctx.quadraticCurveTo(-1, 0, 1, 5);
         ctx.stroke();
         ctx.restore();
       }
+
+      ctx.fillStyle = "rgba(8, 12, 20, 0.3)";
+      roundRect(10, canvas.height - 34, 118, 22, 10);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,243,223,0.82)";
+      ctx.font = "12px Trebuchet MS";
+      ctx.fillText(getDisplayGravity(level), 18, canvas.height - 19);
+
+      const dotStartX = canvas.width - 18 - MAX_LIVES * 12;
+      const dotY = canvas.height - 22;
+      for (let i = 0; i < MAX_LIVES; i++) {
+        ctx.beginPath();
+        ctx.fillStyle = i < state.lives ? "#6df4a6" : "rgba(160, 170, 170, 0.5)";
+        ctx.arc(dotStartX + i * 12, dotY, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
     }
 
     function drawItemPopup() {
@@ -3071,10 +3114,10 @@
       ctx.fillText("Dafuer braucht die Duesen-Tasse in jeder Welt 6 Kaffeebohnen als Treibstoff.", canvas.width / 2, 188);
       ctx.fillText("Doch boese Gehirnzecken lauern im Sonnensystem und wollen sich an Smoeppis Kopf festsaugen.", canvas.width / 2, 220);
       ctx.fillText("Springe, sammle Bohnen, nutze Jetpack und Schild und schuettle die Zecken wieder ab.", canvas.width / 2, 252);
-      ctx.fillText("Links steuerst du Bewegung und Ducken, rechts springst du oder loest Aktionen aus.", canvas.width / 2, 284);
-      ctx.fillText("Auf Handy und Tablet helfen dir die Touch-Buttons am unteren Bildschirmrand.", canvas.width / 2, 316);
+      ctx.fillText("Unten links steuerst du Bewegung und Ducken, unten rechts springst du oder loest Aktionen aus.", canvas.width / 2, 284);
+      ctx.fillText("Auf Handy und Tablet helfen dir die Touch-Buttons direkt am unteren Bildschirmrand.", canvas.width / 2, 316);
       ctx.font = "bold 24px Trebuchet MS";
-      ctx.fillText("Tippe Sprung oder druecke Leertaste/Enter zum Start", canvas.width / 2, 376);
+      ctx.fillText("Tippe auf 'Spiel Starten' oder druecke Leertaste/Enter", canvas.width / 2, 376);
       ctx.textAlign = "left";
     }
 
@@ -3194,12 +3237,7 @@
     document.addEventListener("keydown", event => {
       if (!state.started && (event.code === "Space" || event.code === "Enter")) {
         event.preventDefault();
-        ensureAudio();
-        state.started = true;
-        state.totalRunTime = 0;
-        state.message = `<strong>"Hallo aus ${getLevel().display}!"</strong> Hier gilt ${getDisplayGravity(getLevel())}. Ich habe immer noch 100 g Masse.<br>${getLevelIntro(getLevel())}`;
-        playSound("start");
-        syncUi();
+        startGame();
         return;
       }
 
@@ -3299,7 +3337,23 @@
           shoveEnemies();
         }
       }, () => {});
+      if (ui.startButton) {
+        ui.startButton.addEventListener("click", () => {
+          if (!state.started) {
+            startGame();
+          }
+        });
+      }
     }
+
+    function dismissIntroCard() {
+      if (state.started && !state.gameWon) {
+        state.introDismissed = true;
+      }
+    }
+
+    canvas.addEventListener("click", dismissIntroCard);
+    canvas.addEventListener("touchstart", dismissIntroCard, { passive: true });
 
     let lastTime = performance.now();
     function loop(now) {
