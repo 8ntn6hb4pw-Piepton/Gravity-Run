@@ -177,6 +177,10 @@
       justify-content: space-between;
     }
 
+    .mobile-meta {
+      display: none;
+    }
+
     .mini-panel {
       font-size: 0.88rem;
       color: rgba(255, 243, 223, 0.88);
@@ -239,7 +243,17 @@
 
     @media (max-width: 940px), (hover: none) and (pointer: coarse) {
       body {
-        padding: 8px;
+        padding: 0;
+      }
+
+      .canvas-wrap {
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+      }
+
+      canvas {
+        border-radius: 0;
       }
 
       .touch-controls {
@@ -247,16 +261,96 @@
       }
 
       .hud-top {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .hud {
+        inset: 8px 8px auto 8px;
+        gap: 6px;
+      }
+
+      .stat,
+      .badge {
+        padding: 7px 9px;
+        border-radius: 12px;
+        background: rgba(10, 14, 28, 0.52);
+      }
+
+      .stat span {
+        font-size: 0.58rem;
+        margin-bottom: 2px;
+      }
+
+      .stat strong {
+        font-size: 0.82rem;
+      }
+
+      .hud-bottom {
+        display: none;
+      }
+
+      .mobile-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
       }
 
       .mini-panel {
-        max-width: 240px;
-        font-size: 0.8rem;
+        max-width: none;
+        font-size: 0.72rem;
+        padding: 7px 9px;
+        border-radius: 12px;
+        background: rgba(10, 14, 28, 0.5);
       }
 
-      .message {
-        max-width: 100%;
+      .battery {
+        height: 16px;
+      }
+
+      .battery::after {
+        top: 3px;
+        height: 8px;
+      }
+
+      .overlay {
+        inset: 8px;
+        padding: 8px;
+        align-items: flex-start;
+        justify-content: flex-end;
+      }
+
+      .badge {
+        font-size: 0.72rem;
+      }
+
+      .touch-pad {
+        grid-template-columns: 58px 58px 58px;
+        grid-template-rows: 58px 58px;
+      }
+
+      .touch-actions {
+        grid-template-columns: 68px 68px;
+      }
+
+      .touch-btn {
+        min-height: 58px;
+        border-radius: 18px;
+        font-size: 0.85rem;
+      }
+
+      #touchAction,
+      #touchJump {
+        min-height: 68px;
+      }
+
+      .touch-controls {
+        inset: auto 8px 8px 8px;
+      }
+
+      .message,
+      .mini-panel p:last-child {
+        display: none;
       }
     }
   </style>
@@ -284,6 +378,19 @@
             <strong id="beanCount">-</strong>
           </div>
         </div>
+        <div class="mobile-meta">
+          <div class="mini-panel">
+            <div class="battery-wrap">
+              <div class="battery">
+                <div class="battery-fill" id="batteryFillMobile"></div>
+              </div>
+              <p id="lifeTextMobile">4 / 4 Ladungen</p>
+            </div>
+          </div>
+          <div class="mini-panel">
+            <p id="factTextMobile">Lade Flugbahnen...</p>
+          </div>
+        </div>
         <div class="hud-bottom">
           <div class="message" id="messageBox"></div>
           <div class="mini-panel">
@@ -291,9 +398,9 @@
               <div class="battery">
                 <div class="battery-fill" id="batteryFill"></div>
               </div>
-              <p id="lifeText">4 / 4 Ladungen</p>
+              <p>4 / 4 Ladungen</p>
             </div>
-            <p id="factText">Lade Flugbahnen...</p>
+            <p>Flugbahnen, Items und Weltereignisse werden hier erklaert.</p>
           </div>
         </div>
       </div>
@@ -325,8 +432,11 @@
       beanCount: document.getElementById("beanCount"),
       gravityFactor: document.getElementById("gravityFactor"),
       batteryFill: document.getElementById("batteryFill"),
+      batteryFillMobile: document.getElementById("batteryFillMobile"),
       lifeText: document.getElementById("lifeText"),
+      lifeTextMobile: document.getElementById("lifeTextMobile"),
       factText: document.getElementById("factText"),
+      factTextMobile: document.getElementById("factTextMobile"),
       messageBox: document.getElementById("messageBox"),
       statusBadge: document.getElementById("statusBadge"),
       touchLeft: document.getElementById("touchLeft"),
@@ -1127,8 +1237,16 @@
       ui.timeLeft.textContent = `${Math.max(0, state.timeLeft).toFixed(1)} s`;
       ui.beanCount.textContent = `${collected} / ${level.beans.length}`;
       ui.gravityFactor.textContent = getDisplayGravity(level);
-      ui.batteryFill.style.width = `${Math.max(0, state.lives / MAX_LIVES) * 100}%`;
-      ui.lifeText.textContent = `${state.lives} / ${MAX_LIVES} Ladungen`;
+      const batteryWidth = `${Math.max(0, state.lives / MAX_LIVES) * 100}%`;
+      ui.batteryFill.style.width = batteryWidth;
+      if (ui.batteryFillMobile) {
+        ui.batteryFillMobile.style.width = batteryWidth;
+      }
+      const lifeLabel = `${state.lives} / ${MAX_LIVES} Ladungen`;
+      ui.lifeText.textContent = lifeLabel;
+      if (ui.lifeTextMobile) {
+        ui.lifeTextMobile.textContent = lifeLabel;
+      }
       const runPercent = Math.round((state.player.runCharge / MAX_RUN_CHARGE) * 100);
       const rocketText = state.player.rocketPackTimer > 0 ? ` Jetpack: ${Math.ceil(state.player.rocketPackTimer)}s.` : "";
       const shieldText = state.player.shieldHits > 0 ? ` Schild: ${state.player.shieldHits} Treffer.` : "";
@@ -1137,7 +1255,11 @@
           ? " Sturm aktiv."
           : ` Hitze aktiv. Schmelze: ${Math.round(state.player.melt * 100)}%.`
         : "";
-      ui.factText.textContent = `${level.description} Anlauf: ${runPercent}%. Treibstoff: ${collected}/6 Bohnen.${rocketText}${shieldText}${eventText}`;
+      const factLabel = `${level.description} Anlauf: ${runPercent}%. Treibstoff: ${collected}/6 Bohnen.${rocketText}${shieldText}${eventText}`;
+      ui.factText.textContent = factLabel;
+      if (ui.factTextMobile) {
+        ui.factTextMobile.textContent = shieldText ? `${rocketText}${shieldText}`.trim() || factLabel : factLabel;
+      }
       ui.messageBox.innerHTML = state.message;
 
       if (state.rescue) {
