@@ -443,7 +443,7 @@
         <div class="touch-pad">
           <button class="touch-btn hidden-control" id="touchUp" type="button">Hoch</button>
           <button class="touch-btn" id="touchLeft" type="button">L</button>
-          <button class="touch-btn hidden-control" id="touchDown" type="button">Runter</button>
+          <button class="touch-btn" id="touchDown" type="button">U</button>
           <button class="touch-btn" id="touchRight" type="button">R</button>
         </div>
         <div class="touch-actions">
@@ -1369,7 +1369,7 @@
           ui.touchUp.classList.toggle("hidden-control", !jetpackActive);
         }
         if (ui.touchDown) {
-          ui.touchDown.classList.toggle("hidden-control", !jetpackActive);
+          ui.touchDown.classList.remove("hidden-control");
         }
         if (ui.touchAction) {
           ui.touchAction.classList.add("hidden-control");
