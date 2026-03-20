@@ -1,1 +1,490 @@
-<h1>Spiel 1</h1>
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Berichtigung Klassenarbeit 3</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <p class="eyebrow">Mathe 8 · Berichtigung · Klassenarbeit 3</p>
+        <h1>Pruefen statt vorsagen.</h1>
+        <p class="hero-copy">
+          Dieser Assistent gibt keine fertigen Loesungen aus. Er hilft mit Regeln, Denkanstoessen
+          und Schrittfolgen. Wenn du ein Ergebnis eingibst, bekommst du direkt Rueckmeldung.
+        </p>
+        <div class="hero-pills">
+          <span>Smartphone first</span>
+          <span>Keine Loesungen auf Klick</span>
+          <span>Winkelsaetze statt Ablesen</span>
+        </div>
+      </header>
+
+      <nav class="quick-nav">
+        <a href="#winkel">Winkel</a>
+        <a href="#dreieck">Dreieck</a>
+        <a href="#prozent">Prozent</a>
+        <a href="#zinsen">Zinsen</a>
+        <a href="#konstruieren">Konstruieren</a>
+      </nav>
+
+      <main class="content">
+        <section id="winkel" class="panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Aufgabe 1</p>
+            <h2>Winkel mit Begruendung pruefen</h2>
+            <p>
+              Erst den passenden Winkelsatz waehlen, dann die Winkelgroesse eingeben. So trainierst
+              du die Begruendung und nicht das Ablesen.
+            </p>
+          </div>
+
+          <div class="task-grid">
+            <article class="task-card angle-task" data-task="a1a">
+              <img src="./assets/winkel-a.png" alt="Winkelbild a" class="task-image" />
+              <div class="task-body">
+                <h3>a)</h3>
+                <p class="task-note">Gesucht: alpha, beta, gamma</p>
+
+                <div class="answer-row">
+                  <label>
+                    <span>alpha Regel</span>
+                    <select data-role="rule" data-field="alpha">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>alpha in Grad</span>
+                    <input data-role="value" data-field="alpha" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="answer-row">
+                  <label>
+                    <span>beta Regel</span>
+                    <select data-role="rule" data-field="beta">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>beta in Grad</span>
+                    <input data-role="value" data-field="beta" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="answer-row">
+                  <label>
+                    <span>gamma Regel</span>
+                    <select data-role="rule" data-field="gamma">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>gamma in Grad</span>
+                    <input data-role="value" data-field="gamma" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="task-actions">
+                  <button type="button" class="ghost" data-action="hint">Hinweis</button>
+                  <button type="button" data-action="check-angle">Pruefen</button>
+                </div>
+                <p class="feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card angle-task" data-task="a1b">
+              <img src="./assets/winkel-b.png" alt="Winkelbild b" class="task-image" />
+              <div class="task-body">
+                <h3>b)</h3>
+                <p class="task-note">Gesucht: alpha, beta, gamma</p>
+
+                <div class="answer-row">
+                  <label>
+                    <span>alpha Regel</span>
+                    <select data-role="rule" data-field="alpha">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>alpha in Grad</span>
+                    <input data-role="value" data-field="alpha" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="answer-row">
+                  <label>
+                    <span>beta Regel</span>
+                    <select data-role="rule" data-field="beta">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>beta in Grad</span>
+                    <input data-role="value" data-field="beta" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="answer-row">
+                  <label>
+                    <span>gamma Regel</span>
+                    <select data-role="rule" data-field="gamma">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>gamma in Grad</span>
+                    <input data-role="value" data-field="gamma" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="task-actions">
+                  <button type="button" class="ghost" data-action="hint">Hinweis</button>
+                  <button type="button" data-action="check-angle">Pruefen</button>
+                </div>
+                <p class="feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card angle-task" data-task="a1c">
+              <img src="./assets/winkel-c.png" alt="Winkelbild c" class="task-image" />
+              <div class="task-body">
+                <h3>c)</h3>
+                <p class="task-note">Gesucht: alpha, beta, gamma</p>
+
+                <div class="answer-row">
+                  <label>
+                    <span>alpha Regel</span>
+                    <select data-role="rule" data-field="alpha">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>alpha in Grad</span>
+                    <input data-role="value" data-field="alpha" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="answer-row">
+                  <label>
+                    <span>beta Regel</span>
+                    <select data-role="rule" data-field="beta">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>beta in Grad</span>
+                    <input data-role="value" data-field="beta" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="answer-row">
+                  <label>
+                    <span>gamma Regel</span>
+                    <select data-role="rule" data-field="gamma">
+                      <option value="">waehlen</option>
+                      <option value="Nebenwinkel">Nebenwinkel</option>
+                      <option value="Scheitelwinkel">Scheitelwinkel</option>
+                      <option value="Stufenwinkel">Stufenwinkel</option>
+                      <option value="Wechselwinkel">Wechselwinkel</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>gamma in Grad</span>
+                    <input data-role="value" data-field="gamma" inputmode="decimal" placeholder="?" />
+                  </label>
+                </div>
+
+                <div class="task-actions">
+                  <button type="button" class="ghost" data-action="hint">Hinweis</button>
+                  <button type="button" data-action="check-angle">Pruefen</button>
+                </div>
+                <p class="feedback" aria-live="polite"></p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="dreieck" class="panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Aufgabe 2</p>
+            <h2>Dreieckswinkel pruefen</h2>
+            <p>
+              Trage die zwei gegebenen Winkel aus deinem Blatt ein und dann dein berechnetes
+              Ergebnis. Der Assistent sagt dir nur, ob deine Rechnung stimmt.
+            </p>
+          </div>
+
+          <article class="task-card">
+            <div class="task-body">
+              <div class="answer-row triple">
+                <label>
+                  <span>Winkel 1</span>
+                  <input id="triangle-a" inputmode="decimal" placeholder="z. B. 47" />
+                </label>
+                <label>
+                  <span>Winkel 2</span>
+                  <input id="triangle-b" inputmode="decimal" placeholder="z. B. 81" />
+                </label>
+                <label>
+                  <span>Dein Winkel 3</span>
+                  <input id="triangle-c" inputmode="decimal" placeholder="?" />
+                </label>
+              </div>
+              <div class="task-actions">
+                <button type="button" class="ghost" id="triangle-hint">Hinweis</button>
+                <button type="button" id="triangle-check">Pruefen</button>
+              </div>
+              <p class="feedback" id="triangle-feedback" aria-live="polite"></p>
+            </div>
+          </article>
+        </section>
+
+        <section id="prozent" class="panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Aufgabe 3</p>
+            <h2>Prozent, Bruch, Dezimalzahl</h2>
+            <p>
+              Gib eine Prozentzahl, den passenden Bruch und die Dezimalzahl ein. Der Assistent
+              prueft, ob alles zueinander passt.
+            </p>
+          </div>
+
+          <article class="task-card">
+            <div class="task-body">
+              <div class="answer-row triple">
+                <label>
+                  <span>Prozent</span>
+                  <input id="percent-value" inputmode="decimal" placeholder="z. B. 20" />
+                </label>
+                <label>
+                  <span>Bruch</span>
+                  <input id="fraction-value" placeholder="z. B. 1/5" />
+                </label>
+                <label>
+                  <span>Dezimalzahl</span>
+                  <input id="decimal-value" inputmode="decimal" placeholder="z. B. 0,20" />
+                </label>
+              </div>
+              <div class="task-actions">
+                <button type="button" class="ghost" id="percent-hint">Hinweis</button>
+                <button type="button" id="percent-check">Pruefen</button>
+              </div>
+              <p class="feedback" id="percent-feedback" aria-live="polite"></p>
+            </div>
+          </article>
+        </section>
+
+        <section id="zinsen" class="panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Aufgaben 4, 7 und 8</p>
+            <h2>Zinsen nur pruefen</h2>
+            <p>
+              Rechne selbst. Der Assistent bestaetigt oder bremst dich und gibt hoechstens einen
+              Rechenhinweis.
+            </p>
+          </div>
+
+          <div class="task-grid">
+            <article class="task-card interest-task" data-kind="simple-interest">
+              <div class="task-body">
+                <h3>Aufgabe 4A</h3>
+                <p class="task-note">Kapital 200 Euro, Zinssatz 11 Prozent</p>
+                <label>
+                  <span>Deine Zinsen nach 1 Jahr</span>
+                  <input data-role="interest-answer" inputmode="decimal" placeholder="Euro" />
+                </label>
+                <div class="task-actions">
+                  <button type="button" class="ghost" data-action="interest-hint">Hinweis</button>
+                  <button type="button" data-action="check-interest">Pruefen</button>
+                </div>
+                <p class="feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card interest-task" data-kind="simple-interest">
+              <div class="task-body">
+                <h3>Aufgabe 4B</h3>
+                <p class="task-note">Kapital 500 Euro, Zinssatz 3 Prozent</p>
+                <label>
+                  <span>Deine Zinsen nach 1 Jahr</span>
+                  <input data-role="interest-answer" inputmode="decimal" placeholder="Euro" />
+                </label>
+                <div class="task-actions">
+                  <button type="button" class="ghost" data-action="interest-hint">Hinweis</button>
+                  <button type="button" data-action="check-interest">Pruefen</button>
+                </div>
+                <p class="feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card interest-task" data-kind="simple-interest">
+              <div class="task-body">
+                <h3>Aufgabe 4C</h3>
+                <p class="task-note">Kapital 250 Euro, Zinssatz 5 Prozent</p>
+                <label>
+                  <span>Deine Zinsen nach 1 Jahr</span>
+                  <input data-role="interest-answer" inputmode="decimal" placeholder="Euro" />
+                </label>
+                <div class="task-actions">
+                  <button type="button" class="ghost" data-action="interest-hint">Hinweis</button>
+                  <button type="button" data-action="check-interest">Pruefen</button>
+                </div>
+                <p class="feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card" id="sevte-card">
+              <div class="task-body">
+                <h3>Aufgabe 7</h3>
+                <p class="task-note">850 Euro, 2 Prozent, Spiel kostet 79 Euro</p>
+                <div class="answer-row">
+                  <label>
+                    <span>Deine Zinsen</span>
+                    <input id="sevte-interest" inputmode="decimal" placeholder="Euro" />
+                  </label>
+                  <label>
+                    <span>Kann sie es kaufen?</span>
+                    <select id="sevte-decision">
+                      <option value="">waehlen</option>
+                      <option value="ja">Ja</option>
+                      <option value="nein">Nein</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="task-actions">
+                  <button type="button" class="ghost" id="sevte-hint">Hinweis</button>
+                  <button type="button" id="sevte-check">Pruefen</button>
+                </div>
+                <p class="feedback" id="sevte-feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card" id="thore-card">
+              <div class="task-body">
+                <h3>Aufgabe 8a</h3>
+                <p class="task-note">550 Euro werden nach 1 Jahr zu 594 Euro.</p>
+                <div class="answer-row">
+                  <label>
+                    <span>Dein Zinssatz</span>
+                    <input id="thore-rate" inputmode="decimal" placeholder="Prozent" />
+                  </label>
+                  <label>
+                    <span>Welche Kugel?</span>
+                    <select id="thore-ball">
+                      <option value="">waehlen</option>
+                      <option value="1">Kugel 1</option>
+                      <option value="2">Kugel 2</option>
+                      <option value="3">Kugel 3</option>
+                      <option value="4">Kugel 4</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="task-actions">
+                  <button type="button" class="ghost" id="thore-hint">Hinweis</button>
+                  <button type="button" id="thore-check">Pruefen</button>
+                </div>
+                <p class="feedback" id="thore-feedback" aria-live="polite"></p>
+              </div>
+            </article>
+
+            <article class="task-card" id="compound-card">
+              <div class="task-body">
+                <h3>Aufgabe 8b</h3>
+                <p class="task-note">Nutze denselben Zinssatz weiter. Jahr 0 = 550,00 Euro. Jahr 1 = 594,00 Euro.</p>
+                <div class="compound-grid">
+                  <label><span>Jahr 2</span><input id="year2" inputmode="decimal" placeholder="Euro" /></label>
+                  <label><span>Jahr 3</span><input id="year3" inputmode="decimal" placeholder="Euro" /></label>
+                  <label><span>Jahr 4</span><input id="year4" inputmode="decimal" placeholder="Euro" /></label>
+                  <label><span>Jahr 10</span><input id="year10" inputmode="decimal" placeholder="Euro" /></label>
+                </div>
+                <div class="task-actions">
+                  <button type="button" class="ghost" id="compound-hint">Hinweis</button>
+                  <button type="button" id="compound-check">Pruefen</button>
+                </div>
+                <p class="feedback" id="compound-feedback" aria-live="polite"></p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="konstruieren" class="panel">
+          <div class="panel-head">
+            <p class="panel-kicker">Aufgaben 5 und 6</p>
+            <h2>Konstruktionen Schritt fuer Schritt</h2>
+            <p>
+              Hier gibt es absichtlich keine Endzeichnung. Du bekommst nur den naechsten sauberen
+              Konstruktionsschritt.
+            </p>
+          </div>
+
+          <div class="task-grid">
+            <article class="task-card construction-card" data-construction="sss">
+              <div class="task-body">
+                <h3>Gleichseitiges Dreieck</h3>
+                <p class="task-note">SSS mit a = b = c = 10 cm</p>
+                <button type="button" data-action="next-step">Naechster Schritt</button>
+                <ol class="steps"></ol>
+              </div>
+            </article>
+
+            <article class="task-card construction-card" data-construction="sws">
+              <div class="task-body">
+                <h3>Dreieck mit SWS</h3>
+                <p class="task-note">c = 7 cm, b = 10 cm, dazu der in der Arbeit angegebene Winkel</p>
+                <button type="button" data-action="next-step">Naechster Schritt</button>
+                <ol class="steps"></ol>
+              </div>
+            </article>
+
+            <article class="task-card construction-card playground-card" data-construction="umkreis">
+              <img src="./assets/spielplatz-a.png" alt="Spielplatzbild mit A, B und C" class="task-image" />
+              <div class="task-body">
+                <h3>Umkreismittelpunkt finden</h3>
+                <p class="task-note">Spielplatz-Aufgabe mit A, B und C</p>
+                <button type="button" data-action="next-step">Naechster Schritt</button>
+                <ol class="steps"></ol>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
