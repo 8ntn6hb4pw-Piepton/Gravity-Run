@@ -9,16 +9,31 @@
   <body>
     <div class="app-shell">
       <header class="hero">
-        <p class="eyebrow">Mathe 8 · Berichtigung · Klassenarbeit 3</p>
-        <h1>Pruefen statt vorsagen.</h1>
-        <p class="hero-copy">
-          Dieser Assistent gibt keine fertigen Loesungen aus. Er hilft mit Regeln, Denkanstoessen
-          und Schrittfolgen. Wenn du ein Ergebnis eingibst, bekommst du direkt Rueckmeldung.
-        </p>
-        <div class="hero-pills">
-          <span>Smartphone first</span>
-          <span>Keine Loesungen auf Klick</span>
-          <span>Winkelsaetze statt Ablesen</span>
+        <div class="hero-topbar">
+          <p class="eyebrow">Mathe 8 · Berichtigung · Klassenarbeit 3</p>
+          <button type="button" class="hero-toggle" id="hero-toggle" aria-expanded="true">
+            Uebersicht schliessen
+          </button>
+        </div>
+        <div class="hero-content" id="hero-content">
+          <h1>Pruefen statt vorsagen.</h1>
+          <p class="hero-copy">
+            Dieser Assistent gibt keine fertigen Loesungen aus. Er hilft mit Regeln, Denkanstoessen
+            und Schrittfolgen. Wenn du ein Ergebnis eingibst, bekommst du direkt Rueckmeldung.
+          </p>
+          <div class="version-switch" role="group" aria-label="Version der Klassenarbeit">
+            <button type="button" class="version-button active" data-version="A">Arbeit A</button>
+            <button type="button" class="version-button" data-version="B">Arbeit B</button>
+          </div>
+          <p class="version-note" id="version-note">
+            Aktiv ist gerade Arbeit A. Unterschiedlich ist hier vor allem das Extrablatt zur
+            Spielplatz-Konstruktion.
+          </p>
+          <div class="hero-pills">
+            <span>Smartphone first</span>
+            <span>Keine Loesungen auf Klick</span>
+            <span>Winkelsaetze statt Ablesen</span>
+          </div>
         </div>
       </header>
 
@@ -103,6 +118,7 @@
                   <button type="button" class="ghost" data-action="hint">Hinweis</button>
                   <button type="button" data-action="check-angle">Pruefen</button>
                 </div>
+                <p class="partial-note">Du kannst auch nur einzelne Felder ausfuellen und pruefen.</p>
                 <p class="feedback" aria-live="polite"></p>
               </div>
             </article>
@@ -168,6 +184,7 @@
                   <button type="button" class="ghost" data-action="hint">Hinweis</button>
                   <button type="button" data-action="check-angle">Pruefen</button>
                 </div>
+                <p class="partial-note">Du kannst auch nur einzelne Felder ausfuellen und pruefen.</p>
                 <p class="feedback" aria-live="polite"></p>
               </div>
             </article>
@@ -233,6 +250,7 @@
                   <button type="button" class="ghost" data-action="hint">Hinweis</button>
                   <button type="button" data-action="check-angle">Pruefen</button>
                 </div>
+                <p class="partial-note">Du kannst auch nur einzelne Felder ausfuellen und pruefen.</p>
                 <p class="feedback" aria-live="polite"></p>
               </div>
             </article>
@@ -472,10 +490,15 @@
             </article>
 
             <article class="task-card construction-card playground-card" data-construction="umkreis">
-              <img src="./assets/spielplatz-a.png" alt="Spielplatzbild mit A, B und C" class="task-image" />
+              <img
+                src="./assets/spielplatz-a.png"
+                alt="Spielplatzbild mit A, B und C"
+                class="task-image"
+                id="playground-image"
+              />
               <div class="task-body">
                 <h3>Umkreismittelpunkt finden</h3>
-                <p class="task-note">Spielplatz-Aufgabe mit A, B und C</p>
+                <p class="task-note" id="playground-note">Extrablatt Arbeit A</p>
                 <button type="button" data-action="next-step">Naechster Schritt</button>
                 <ol class="steps"></ol>
               </div>

@@ -61,6 +61,7 @@ const constructionSteps = {
 };
 
 const hintState = new Map();
+let currentVersion = "A";
 
 function normalizeNumber(value) {
   if (!value) return NaN;
@@ -82,28 +83,57 @@ document.querySelectorAll("[data-action='check-angle']").forEach((button) => {
     const task = angleTasks[card.dataset.task];
     const feedback = card.querySelector(".feedback");
     const issues = [];
+    const successes = [];
+    let answered = 0;
 
     for (const field of ["alpha", "beta", "gamma"]) {
       const value = normalizeNumber(card.querySelector(`[data-role='value'][data-field='${field}']`).value);
       const rule = card.querySelector(`[data-role='rule'][data-field='${field}']`).value;
-      if (Number.isNaN(value) || !rule) {
-        issues.push(`${field}: Regel und Zahl fehlen noch.`);
+      const hasValue = !Number.isNaN(value);
+      const hasRule = Boolean(rule);
+
+      if (!hasValue && !hasRule) {
         continue;
       }
-      if (!approxEqual(value, task.values[field])) {
-        issues.push(`${field}: Zahl passt noch nicht.`);
+
+      answered += 1;
+
+      if (!hasValue || !hasRule) {
+        issues.push(`${field}: bitte Regel und Zahl zusammen angeben.`);
+        continue;
       }
-      if (rule !== task.rules[field]) {
-        issues.push(`${field}: Begruendung mit Winkelsatz passt noch nicht.`);
+
+      const valueOk = approxEqual(value, task.values[field]);
+      const ruleOk = rule === task.rules[field];
+
+      if (valueOk && ruleOk) {
+        successes.push(`${field} stimmt.`);
+        continue;
       }
+
+      if (!valueOk && !ruleOk) issues.push(`${field}: Zahl und Winkelsatz passen noch nicht.`);
+      else if (!valueOk) issues.push(`${field}: Zahl passt noch nicht.`);
+      else issues.push(`${field}: Winkelsatz passt noch nicht.`);
     }
 
-    if (issues.length === 0) {
-      setFeedback(feedback, "Stark. Alles passt und wurde mit Winkelsaetzen begruendet.", "ok");
+    if (answered === 0) {
+      setFeedback(feedback, "Fuellen zuerst mindestens ein Feld mit Regel und Winkelgroesse aus.", "bad");
       return;
     }
 
-    setFeedback(feedback, issues.join(" "), "bad");
+    if (issues.length === 0) {
+      setFeedback(
+        feedback,
+        answered === 3
+          ? "Stark. Alles passt und wurde mit Winkelsaetzen begruendet."
+          : `${successes.join(" ")} Teilloesung ist richtig.`,
+        "ok"
+      );
+      return;
+    }
+
+    const message = [...successes, ...issues].join(" ");
+    setFeedback(feedback, message, successes.length > 0 ? "neutral" : "bad");
   });
 });
 
@@ -310,4 +340,32 @@ document.querySelectorAll("[data-action='next-step']").forEach((button) => {
     li.textContent = steps[current];
     list.appendChild(li);
   });
+});
+
+const versionNote = document.getElementById("version-note");
+const playgroundImage = document.getElementById("playground-image");
+const playgroundNote = document.getElementById("playground-note");
+const heroToggle = document.getElementById("hero-toggle");
+const heroContent = document.getElementById("hero-content");
+
+document.querySelectorAll(".version-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    currentVersion = button.dataset.version;
+    document.querySelectorAll(".version-button").forEach((item) => {
+      item.classList.toggle("active", item === button);
+    });
+
+    const isA = currentVersion === "A";
+    versionNote.textContent = isA
+      ? "Aktiv ist gerade Arbeit A. Unterschiedlich ist hier vor allem das Extrablatt zur Spielplatz-Konstruktion."
+      : "Aktiv ist gerade Arbeit B. Das Extrablatt zur Spielplatz-Konstruktion wurde auf Version B umgestellt.";
+    playgroundImage.src = isA ? "./assets/spielplatz-a.png" : "./assets/spielplatz-b.png";
+    playgroundNote.textContent = isA ? "Extrablatt Arbeit A" : "Extrablatt Arbeit B";
+  });
+});
+
+heroToggle?.addEventListener("click", () => {
+  const collapsed = heroContent.classList.toggle("is-collapsed");
+  heroToggle.textContent = collapsed ? "Uebersicht oeffnen" : "Uebersicht schliessen";
+  heroToggle.setAttribute("aria-expanded", String(!collapsed));
 });

@@ -63,6 +63,27 @@ select {
   z-index: 10;
 }
 
+.hero-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hero-toggle {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--ink);
+  border: 1px solid rgba(24, 33, 38, 0.1);
+  flex-shrink: 0;
+}
+
+.hero-content.is-collapsed {
+  display: none;
+}
+
 .eyebrow,
 .panel-kicker,
 .task-note {
@@ -98,6 +119,32 @@ select {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 18px;
+}
+
+.version-switch {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 18px;
+  width: min(100%, 280px);
+}
+
+.version-button {
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+  border: 1px solid rgba(24, 33, 38, 0.12);
+}
+
+.version-button.active {
+  background: var(--accent-2);
+  color: #fff;
+}
+
+.version-note,
+.partial-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .hero-pills span,
@@ -317,6 +364,11 @@ button.ghost {
     padding: 20px;
   }
 
+  .hero-toggle {
+    display: inline-flex;
+    align-items: center;
+  }
+
   .quick-nav {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     top: 268px;
@@ -324,5 +376,11 @@ button.ghost {
 
   .answer-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 561px) {
+  .hero-toggle {
+    display: none;
   }
 }
