@@ -1,1 +1,2562 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Der letzte Tropfen</title>
+  <style>
+    :root {
+      --bg-top: #f5c780;
+      --bg-bottom: #7a3f1d;
+      --panel: rgba(38, 20, 10, 0.72);
+      --panel-border: rgba(255, 235, 210, 0.18);
+      --text: #fff4e7;
+      --accent: #8de3ff;
+      --warn: #ffd17a;
+      --danger: #ff7c6b;
+      --good: #8cf7d8;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: "Trebuchet MS", "Verdana", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.2), transparent 22%),
+        radial-gradient(circle at 80% 20%, rgba(255, 188, 110, 0.32), transparent 18%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+    }
+
+    .game-shell {
+      width: min(1280px, 100%);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      padding: 8px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(8px);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 18px;
+    }
+
+    .hud {
+      position: absolute;
+      inset: 16px 16px auto 16px;
+      display: grid;
+      gap: 10px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .hud-top {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .stat,
+    .message,
+    .mini-panel,
+    .badge {
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(13, 18, 28, 0.56);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .stat span {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffdba7;
+    }
+
+    .stat strong {
+      font-size: 1rem;
+    }
+
+    .hud-bottom {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .message {
+      min-height: 64px;
+      max-width: min(720px, 100%);
+      line-height: 1.4;
+    }
+
+    .message strong {
+      color: var(--good);
+    }
+
+    .battery-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pack-slots {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .pack-slot {
+      position: relative;
+      height: 22px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 2px solid rgba(255, 247, 231, 0.85);
+      background: rgba(9, 14, 22, 0.42);
+    }
+
+    .pack-slot::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      top: -4px;
+      width: 8px;
+      height: 5px;
+      border-radius: 6px 6px 0 0;
+      background: rgba(255, 247, 231, 0.85);
+    }
+
+    .pack-fill {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.18), #8de3ff 55%, #58c4ff);
+      transition: height 120ms ease;
+    }
+
+    .pack-slot.cracked {
+      border-color: rgba(255, 160, 120, 0.9);
+    }
+
+    .pack-slot.cracked::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      background:
+        linear-gradient(135deg, transparent 38%, rgba(255, 218, 199, 0.9) 40%, transparent 45%),
+        linear-gradient(45deg, transparent 48%, rgba(255, 218, 199, 0.7) 50%, transparent 54%);
+    }
+
+    .item-strip {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-height: 18px;
+    }
+
+    .item-chip {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.62rem;
+      color: #eefbff;
+    }
+
+    .badge {
+      justify-self: end;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      color: #ffe8ca;
+    }
+
+    .start-btn {
+      position: absolute;
+      left: 50%;
+      bottom: 112px;
+      z-index: 5;
+      transform: translateX(-50%);
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font: inherit;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #45200d;
+      background: linear-gradient(180deg, #8de3ff, #58c4ff);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+    }
+
+    .start-btn.hidden {
+      display: none;
+    }
+
+    .touch-controls {
+      position: absolute;
+      inset: auto 12px 88px 12px;
+      z-index: 4;
+      display: none;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+
+    .touch-pad,
+    .touch-actions {
+      display: grid;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .touch-pad {
+      grid-template-columns: 70px 70px;
+    }
+
+    .touch-actions {
+      grid-template-columns: 82px 82px;
+    }
+
+    .touch-btn {
+      min-height: 70px;
+      border: 0;
+      border-radius: 22px;
+      background: rgba(13, 18, 28, 0.82);
+      color: #fff3df;
+      font: inherit;
+      font-weight: bold;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .touch-btn:active {
+      transform: scale(0.96);
+      background: rgba(45, 58, 81, 0.92);
+    }
+
+    @media (max-width: 940px), (hover: none) and (pointer: coarse) {
+      body {
+        padding: 0;
+        min-height: 100dvh;
+        background: #120c08;
+      }
+
+      .game-shell {
+        width: 100vw;
+        height: 100dvh;
+      }
+
+      .canvas-wrap,
+      canvas {
+        border-radius: 0;
+      }
+
+      .canvas-wrap {
+        padding: 0;
+        width: 100vw;
+        height: 100dvh;
+        border: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #120c08;
+      }
+
+      canvas {
+        width: 100vw;
+        max-width: 100vw;
+        max-height: 100dvh;
+        height: auto;
+      }
+
+      .touch-controls {
+        display: flex;
+        inset: auto 6px 8px 6px;
+      }
+
+      .hud {
+        inset: 8px auto auto 8px;
+        width: min(166px, calc(100vw - 16px));
+        display: grid;
+        gap: 4px;
+        z-index: 5;
+      }
+
+      .hud-top {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+      }
+
+      .hud-top .stat:nth-child(4),
+      .hud-bottom .message,
+      .badge {
+        display: none;
+      }
+
+      .stat,
+      .mini-panel {
+        padding: 4px 5px;
+        border-radius: 9px;
+        background: rgba(10, 14, 22, 0.54);
+      }
+
+      .stat span {
+        margin-bottom: 1px;
+        font-size: 0.48rem;
+      }
+
+      .stat strong {
+        font-size: 0.66rem;
+      }
+
+      .hud-bottom {
+        display: block;
+      }
+
+      .mini-panel {
+        max-width: 166px;
+      }
+
+      .battery-wrap {
+        gap: 2px;
+      }
+
+      #waterText,
+      #factText {
+        margin: 0;
+        font-size: 0.6rem;
+        line-height: 1.15;
+      }
+
+      .item-strip {
+        min-height: 0;
+        gap: 3px;
+        display: none;
+      }
+
+      .touch-pad {
+        grid-template-columns: 58px 58px;
+        gap: 8px;
+      }
+
+      .touch-actions {
+        grid-template-columns: 68px 68px;
+        gap: 8px;
+      }
+
+      .touch-btn {
+        min-height: 54px;
+        border-radius: 16px;
+        font-size: 0.78rem;
+        background: rgba(10, 14, 22, 0.68);
+        box-shadow:
+          inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+          0 10px 22px rgba(0, 0, 0, 0.22);
+      }
+
+      .start-btn {
+        bottom: 86px;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-shell">
+    <main class="canvas-wrap">
+      <canvas id="game" width="980" height="600"></canvas>
+      <div class="hud">
+        <div class="hud-top">
+          <div class="stat">
+            <span id="labelOne">Level</span>
+            <strong id="levelName">-</strong>
+          </div>
+          <div class="stat">
+            <span id="labelTwo">Zeit</span>
+            <strong id="timeLeft">-</strong>
+          </div>
+          <div class="stat">
+            <span id="labelThree">Wasserflaschen</span>
+            <strong id="bottleCount">-</strong>
+          </div>
+          <div class="stat">
+            <span id="labelFour">Gravitation</span>
+            <strong id="gravityFactor">-</strong>
+          </div>
+        </div>
+        <div class="hud-bottom">
+          <div class="message" id="messageBox"></div>
+          <div class="mini-panel">
+            <div class="battery-wrap">
+              <p id="waterText">100 / 100 Wasser</p>
+            </div>
+            <div class="item-strip" id="itemStrip"></div>
+            <p id="factText">Wuestenwind, Schwitzen und Wassersauger werden hier erklaert.</p>
+          </div>
+        </div>
+        <div class="badge" id="statusBadge">Tropfen bereit</div>
+      </div>
+      <button class="start-btn" id="startButton" type="button">Spiel Starten</button>
+      <div class="touch-controls">
+        <div class="touch-pad">
+          <button class="touch-btn" id="touchLeft" type="button">L</button>
+          <button class="touch-btn" id="touchRight" type="button">R</button>
+        </div>
+        <div class="touch-actions">
+          <button class="touch-btn" id="touchDown" type="button">Duck</button>
+          <button class="touch-btn" id="touchJump" type="button">Sprung</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const ui = {
+      labelOne: document.getElementById("labelOne"),
+      labelTwo: document.getElementById("labelTwo"),
+      labelThree: document.getElementById("labelThree"),
+      labelFour: document.getElementById("labelFour"),
+      levelName: document.getElementById("levelName"),
+      timeLeft: document.getElementById("timeLeft"),
+      bottleCount: document.getElementById("bottleCount"),
+      gravityFactor: document.getElementById("gravityFactor"),
+      itemStrip: document.getElementById("itemStrip"),
+      waterText: document.getElementById("waterText"),
+      factText: document.getElementById("factText"),
+      messageBox: document.getElementById("messageBox"),
+      statusBadge: document.getElementById("statusBadge"),
+      startButton: document.getElementById("startButton"),
+      touchLeft: document.getElementById("touchLeft"),
+      touchRight: document.getElementById("touchRight"),
+      touchDown: document.getElementById("touchDown"),
+      touchJump: document.getElementById("touchJump")
+    };
+
+    const WORLD_WIDTH = 3200;
+    const PLAYER_WIDTH = 42;
+    const PLAYER_HEIGHT = 56;
+    const PLAYER_CROUCH_HEIGHT = 34;
+    const BASE_MOVE_SPEED = 310;
+    const GROUND_ACCEL = 1850;
+    const GROUND_FRICTION = 2200;
+    const AIR_ACCEL = 980;
+    const AIR_DRAG = 280;
+    const BASE_JUMP = 610;
+    const BASE_GRAVITY = 700;
+    const COYOTE_TIME = 0.12;
+    const JUMP_BUFFER_TIME = 0.15;
+    const MAX_WATER = 100;
+    const MAX_SLOTS = 5;
+    const SLOT_WATER = MAX_WATER / MAX_SLOTS;
+    const MAX_LEVEL_TIME = 70;
+    const HIT_INVULNERABILITY = 1;
+    const JUMP_TRACE_LIFE = 0.9;
+    let audioContext = null;
+
+    const DESERT_BIOMES = [
+      {
+        name: "Duenenfeld",
+        accent: "#8de3ff",
+        skyTop: "#f4d08a",
+        skyBottom: "#8c471d",
+        description: "Offene Duenen mit langen Spruengen. Die Sonne zieht dir staendig Wasser aus dem Koerper.",
+        lesson: "Ohne Wasser bricht alles schnell zusammen. Schon kurze Trockenheit veraendert, wie wir leben, lernen und ueberleben koennen."
+      },
+      {
+        name: "Salzbecken",
+        accent: "#c7f0ff",
+        skyTop: "#f6d8b0",
+        skyBottom: "#91593b",
+        description: "Helle Salzplatten und bruechige Kanten. Jeder Fehltritt fuehlt sich trocken an.",
+        lesson: "Salzige oder verdreckte Wasserquellen sehen manchmal fast normal aus, sind aber nicht sicher zum Trinken."
+      },
+      {
+        name: "Schrottoase",
+        accent: "#7dd9d3",
+        skyTop: "#ecc285",
+        skyBottom: "#704127",
+        description: "Verrostete Wassertechnik, tiefe Schlaeuche und viele falsche Flaschen.",
+        lesson: "Verschmutzung vergiftet Wasserreserven. Wenn sauberes Trinkwasser verloren geht, wird jede Entscheidung schwerer."
+      },
+      {
+        name: "Staubklippen",
+        accent: "#9ec5ff",
+        skyTop: "#e7bb75",
+        skyBottom: "#623117",
+        description: "Enge Kanten ueber trockenen Abgruenden. Hier werden Spruenge schnell teuer.",
+        lesson: "Klimawandel verstaerkt Duerre, Hitze und Unsicherheit. Wer wenig Wasser hat, kann sich Fehler kaum leisten."
+      }
+    ];
+
+    const BASE_LAYOUTS = [
+      {
+        platforms: [
+          { x: 0, y: 470, w: 360, h: 60 },
+          { x: 500, y: 418, w: 160, h: 18 },
+          { x: 760, y: 352, w: 160, h: 18 },
+          { x: 1030, y: 300, w: 170, h: 18 },
+          { x: 1320, y: 354, w: 180, h: 18 },
+          { x: 1620, y: 288, w: 180, h: 18 },
+          { x: 1980, y: 470, w: 220, h: 60 }
+        ],
+        bottles: [
+          { x: 540, y: 386 }, { x: 815, y: 322 }, { x: 1100, y: 270 },
+          { x: 1400, y: 326 }, { x: 1700, y: 258 }, { x: 2050, y: 426 }
+        ],
+        dirtyBottles: [
+          { x: 875, y: 318 }, { x: 1460, y: 320 }
+        ]
+      },
+      {
+        platforms: [
+          { x: 0, y: 470, w: 390, h: 60 },
+          { x: 500, y: 430, w: 160, h: 18 },
+          { x: 760, y: 394, w: 150, h: 18 },
+          { x: 1000, y: 426, w: 170, h: 18 },
+          { x: 1270, y: 382, w: 170, h: 18 },
+          { x: 1565, y: 418, w: 180, h: 18 },
+          { x: 1950, y: 470, w: 250, h: 60 }
+        ],
+        bottles: [
+          { x: 560, y: 396 }, { x: 820, y: 360 }, { x: 1070, y: 392 },
+          { x: 1348, y: 348 }, { x: 1650, y: 384 }, { x: 2040, y: 426 }
+        ],
+        dirtyBottles: [
+          { x: 615, y: 396 }, { x: 1595, y: 384 }
+        ]
+      },
+      {
+        platforms: [
+          { x: 0, y: 470, w: 380, h: 60 },
+          { x: 490, y: 420, w: 150, h: 18 },
+          { x: 730, y: 345, w: 160, h: 18 },
+          { x: 1000, y: 388, w: 160, h: 18 },
+          { x: 1280, y: 312, w: 170, h: 18 },
+          { x: 1580, y: 360, w: 180, h: 18 },
+          { x: 1970, y: 470, w: 230, h: 60 }
+        ],
+        bottles: [
+          { x: 555, y: 388 }, { x: 810, y: 315 }, { x: 1085, y: 358 },
+          { x: 1360, y: 282 }, { x: 1670, y: 330 }, { x: 2045, y: 426 }
+        ],
+        dirtyBottles: [
+          { x: 760, y: 312 }, { x: 1730, y: 326 }
+        ]
+      }
+    ];
+
+    function cloneLayout(layout) {
+      return {
+        platforms: layout.platforms.map(platform => ({ ...platform })),
+        bottles: layout.bottles.map(bottle => ({ ...bottle })),
+        dirtyBottles: layout.dirtyBottles.map(bottle => ({ ...bottle }))
+      };
+    }
+
+    function buildItems(platforms, variantIndex) {
+      const items = [];
+      const jetpackPlatform = platforms[Math.min(platforms.length - 3, 2 + variantIndex)];
+      const powerPlatform = platforms[Math.min(platforms.length - 2, 4 + variantIndex)];
+      const seedPlatform = platforms[Math.min(platforms.length - 2, 1 + variantIndex)];
+      if (jetpackPlatform) {
+        items.push({
+          x: jetpackPlatform.x + jetpackPlatform.w * 0.56,
+          y: jetpackPlatform.y - 34,
+          type: "jetpack",
+          collected: false
+        });
+      }
+      if (powerPlatform) {
+        items.push({
+          x: powerPlatform.x + powerPlatform.w * 0.38,
+          y: powerPlatform.y - 34,
+          type: "powerJump",
+          collected: false
+        });
+      }
+      if (seedPlatform) {
+        for (let i = 0; i < 3 + variantIndex; i++) {
+          items.push({
+            x: seedPlatform.x + 26 + i * 28,
+            y: seedPlatform.y - 26 - (i % 2) * 12,
+            type: "seed",
+            collected: false
+          });
+        }
+      }
+      return items;
+    }
+
+    function buildLevel(biome, biomeIndex, variantIndex) {
+      const layout = cloneLayout(BASE_LAYOUTS[variantIndex % BASE_LAYOUTS.length]);
+      const offsets = [
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, -16, 18, -10, 22, -18, 0],
+        [0, 18, -12, 26, -8, 18, 0]
+      ][variantIndex];
+      const bottleOffsets = [
+        [0, 0, 0, 0, 0, 0],
+        [-10, -16, -10, -18, -12, 0],
+        [12, 8, 14, 10, 12, 0]
+      ][variantIndex];
+
+      layout.platforms = layout.platforms.map((platform, index) => ({
+        ...platform,
+        y: platform.h >= 40 ? platform.y : platform.y + offsets[index]
+      }));
+      layout.bottles = layout.bottles.map((bottle, index) => ({
+        x: bottle.x,
+        y: bottle.y + bottleOffsets[index],
+        collected: false
+      }));
+      layout.dirtyBottles = layout.dirtyBottles.map((bottle, index) => ({
+        x: bottle.x + index * 18,
+        y: bottle.y + (variantIndex === 1 ? -8 : 0),
+        collected: false
+      }));
+
+      extendLevel(layout, variantIndex);
+      return {
+        id: `${biome.name}-${variantIndex}`,
+        biome: biome.name,
+        display: `${biome.name} ${["Anmarsch", "Flimmerzone", "Kernriss"][variantIndex]}`,
+        accent: biome.accent,
+        skyTop: biome.skyTop,
+        skyBottom: biome.skyBottom,
+        description: biome.description,
+        lesson: biome.lesson,
+        timeLimit: MAX_LEVEL_TIME - variantIndex * 4,
+        gravityText: "g = 7.00 N/kg",
+        platforms: layout.platforms,
+        bottles: layout.bottles,
+        dirtyBottles: layout.dirtyBottles,
+        items: buildItems(layout.platforms, variantIndex),
+        enemies: buildEnemies(layout.platforms, biomeIndex, variantIndex),
+        rocket: { x: WORLD_WIDTH - 164, y: 384, w: 84, h: 112 }
+      };
+    }
+
+    function extendLevel(layout, variantIndex) {
+      let previous = layout.platforms[layout.platforms.length - 1];
+      for (let i = 0; i < 3; i++) {
+        const width = 150 + ((i + variantIndex) % 2) * 20;
+        const gap = 94 + i * 18 + variantIndex * 6;
+        const rise = (i % 2 === 0 ? -1 : 1) * (26 + variantIndex * 10);
+        const y = clamp(previous.y + rise, 248, 438);
+        const x = previous.x + previous.w + gap;
+        layout.platforms.push({ x, y, w: width, h: 18 });
+        previous = layout.platforms[layout.platforms.length - 1];
+        if (i < 2) {
+          layout.bottles.push({ x: x + width / 2, y: y - 28, collected: false });
+        }
+      }
+      layout.platforms.push({ x: WORLD_WIDTH - 380, y: 470, w: 340, h: 60 });
+    }
+
+    function buildEnemies(platforms, biomeIndex, variantIndex) {
+      return platforms
+        .slice(1, -1)
+        .filter(platform => platform.w >= 145)
+        .flatMap((platform, index) => {
+          const amount = index % 2 === 0 ? 2 : 1;
+          return Array.from({ length: amount }, (_, subIndex) => ({
+            platformIndex: index + 1,
+            x: platform.x + 24 + subIndex * 52 + (index % 2) * 12,
+            y: platform.y - 30,
+            radius: 14 + ((biomeIndex + variantIndex + subIndex) % 2) * 3,
+            range: Math.min(92, platform.w - 48),
+            speed: 42 + index * 7 + variantIndex * 10,
+            dead: false,
+            direction: subIndex % 2 === 0 ? 1 : -1,
+            baseX: platform.x + 24 + subIndex * 52 + (index % 2) * 12,
+            jumpOffset: 0,
+            jumpVy: 0,
+            attached: false,
+            drainTimer: 0,
+            alertCooldown: 0.4 + Math.random() * 0.6
+          }));
+        });
+    }
+
+    const levels = DESERT_BIOMES.flatMap((biome, biomeIndex) => [
+      buildLevel(biome, biomeIndex, 0),
+      buildLevel(biome, biomeIndex, 1),
+      buildLevel(biome, biomeIndex, 2)
+    ]);
+
+    const state = {
+      levelIndex: 0,
+      timeLeft: 0,
+      started: false,
+      gameWon: false,
+      totalRunTime: 0,
+      levelElapsed: 0,
+      cameraX: 0,
+      particles: [],
+      jumpTraces: [],
+      bloomPatches: [],
+      transition: null,
+      worldEvent: null,
+      rescue: null,
+      message: "",
+      player: null,
+      introVisible: true
+    };
+
+    const keys = { left: false, right: false, down: false, jumpHeld: false };
+
+    function createPlayer() {
+      return {
+        x: 40,
+        y: 0,
+        w: PLAYER_WIDTH,
+        h: PLAYER_HEIGHT,
+        standHeight: PLAYER_HEIGHT,
+        crouchHeight: PLAYER_CROUCH_HEIGHT,
+        vx: 0,
+        vy: 0,
+        onGround: false,
+        crouching: false,
+        facing: 1,
+        jumpBuffer: 0,
+        coyoteTimer: 0,
+        invulnerable: 0,
+        water: MAX_WATER,
+        habitat: 60,
+        collected: 0,
+        hidden: false,
+        attachedEnemy: null,
+        rocketFuel: 0,
+        powerJumpReady: false,
+        seeds: 0,
+        restorationTimer: 0,
+        contaminationTimer: 0,
+        coolnessTimer: 0,
+        recentJumpLoss: 0,
+        shipHintCooldown: 0,
+        sweatPulse: 0,
+        respawnPoint: { x: 40, y: 0 }
+      };
+    }
+
+    function getLevel(index = state.levelIndex) {
+      return levels[index];
+    }
+
+    function getSolids(level) {
+      return level.platforms;
+    }
+
+    function resetLevel(index, keepMessage = false) {
+      state.levelIndex = index;
+      state.timeLeft = getLevel(index).timeLimit;
+      state.levelElapsed = 0;
+      state.cameraX = 0;
+      state.transition = null;
+      state.worldEvent = { type: "heat", timer: 7, duration: 0, active: false };
+      state.rescue = null;
+      state.player = createPlayer();
+      state.introVisible = true;
+      state.particles = [];
+      state.jumpTraces = [];
+      state.bloomPatches = [];
+
+      const level = getLevel(index);
+      level.bottles = level.bottles.map(bottle => ({ ...bottle, collected: false }));
+      level.dirtyBottles = level.dirtyBottles.map(bottle => ({ ...bottle, collected: false }));
+      level.items = level.items.map(item => ({ ...item, collected: false }));
+      level.enemies = level.enemies.map(enemy => ({
+        ...enemy,
+        dead: false,
+        attached: false,
+        drainTimer: 0,
+        jumpOffset: 0,
+        jumpVy: 0
+      }));
+
+      const spawnY = level.platforms[0].y - PLAYER_HEIGHT;
+      state.player.y = spawnY;
+      state.player.respawnPoint = { x: state.player.x, y: spawnY };
+
+      if (!keepMessage) {
+        state.message = `<strong>${level.display}</strong> ${level.description}`;
+      }
+      syncUi();
+    }
+
+    function syncUi() {
+      const level = getLevel();
+      const player = state.player;
+      const isMobileHud = window.matchMedia("(max-width: 940px), (hover: none) and (pointer: coarse)").matches;
+      const collected = level.bottles.filter(bottle => bottle.collected).length;
+      const missing = Math.max(0, level.bottles.length - collected);
+      if (isMobileHud) {
+        ui.labelOne.textContent = "Wasser";
+        ui.labelTwo.textContent = "Lebensraum";
+        ui.labelThree.textContent = "Fehlen";
+        ui.levelName.textContent = `${Math.round(player.water)}`;
+        ui.timeLeft.textContent = `${Math.round(player.habitat)}`;
+        ui.bottleCount.textContent = `${missing}`;
+        ui.gravityFactor.textContent = level.gravityText;
+        ui.waterText.textContent = `W ${Math.round(player.water)} · L ${Math.round(player.habitat)}`;
+      } else {
+        ui.labelOne.textContent = "Level";
+        ui.labelTwo.textContent = "Zeit";
+        ui.labelThree.textContent = "Wasserflaschen";
+        ui.labelFour.textContent = "Gravitation";
+        ui.levelName.textContent = level.display;
+        ui.timeLeft.textContent = `${Math.max(0, state.timeLeft).toFixed(1)} s`;
+        ui.bottleCount.textContent = `${collected} / ${level.bottles.length}`;
+        ui.gravityFactor.textContent = level.gravityText;
+        ui.waterText.textContent = `${Math.round(player.water)} / ${MAX_WATER} Wasser · Lebensraum ${Math.round(player.habitat)}`;
+      }
+      if (ui.itemStrip) {
+        const chips = [];
+        if (player.rocketFuel > 0) {
+          chips.push(`Jetpack ${player.rocketFuel.toFixed(1)}s`);
+        }
+        if (player.powerJumpReady) {
+          chips.push("Powersprung 1x");
+        }
+        if (player.seeds > 0) {
+          chips.push(`Samen ${player.seeds}`);
+        }
+        ui.itemStrip.innerHTML = chips.map(text => `<span class="item-chip">${text}</span>`).join("");
+      }
+
+      const tags = [];
+      if (player.contaminationTimer > 0) {
+        tags.push("schwach");
+      }
+      if (player.coolnessTimer > 0) {
+        tags.push("gekuehlt");
+      }
+      if (player.restorationTimer > 0) {
+        tags.push("lebt auf");
+      }
+      if (state.worldEvent && state.worldEvent.active) {
+        tags.push(state.worldEvent.type === "heat" ? "heiss" : "smog");
+      }
+      ui.factText.textContent = tags.length ? tags.join(" · ") : "stabil";
+      ui.messageBox.innerHTML = isMobileHud ? "" : state.message;
+
+      if (state.transition) {
+        ui.statusBadge.textContent = "Flaschenrakete startet";
+      } else if (player.attachedEnemy) {
+        ui.statusBadge.textContent = "Wassersauger am Kopf";
+      } else if (player.contaminationTimer > 0) {
+        ui.statusBadge.textContent = "Verunreinigtes Wasser";
+      } else if (player.rocketFuel > 0) {
+        ui.statusBadge.textContent = "Jetpack geladen";
+      } else if (player.powerJumpReady) {
+        ui.statusBadge.textContent = "Powersprung bereit";
+      } else if (player.water < 25) {
+        ui.statusBadge.textContent = "Kritisch trocken";
+      } else if (collected === level.bottles.length) {
+        ui.statusBadge.textContent = "Rakete startklar";
+      } else {
+        ui.statusBadge.textContent = "Tropfen unterwegs";
+      }
+
+      ui.startButton.classList.toggle("hidden", state.started);
+    }
+
+    function ensureAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+    }
+
+    function playSound(kind) {
+      if (!audioContext) {
+        return;
+      }
+      const now = audioContext.currentTime;
+      const configs = {
+        jump: { type: "triangle", f1: 320, f2: 560, dur: 0.08, gain: 0.03 },
+        bottle: { type: "sine", f1: 500, f2: 760, dur: 0.09, gain: 0.04 },
+        bad: { type: "sawtooth", f1: 260, f2: 150, dur: 0.14, gain: 0.04 },
+        hit: { type: "square", f1: 180, f2: 100, dur: 0.12, gain: 0.045 },
+        start: { type: "sine", f1: 330, f2: 620, dur: 0.2, gain: 0.04 },
+        rocket: { type: "sawtooth", f1: 120, f2: 460, dur: 0.46, gain: 0.07 },
+        win: { type: "triangle", f1: 420, f2: 860, dur: 0.24, gain: 0.04 }
+      };
+      const config = configs[kind];
+      if (!config) {
+        return;
+      }
+      const osc = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      osc.type = config.type;
+      osc.frequency.setValueAtTime(config.f1, now);
+      osc.frequency.exponentialRampToValueAtTime(config.f2, now + config.dur);
+      gain.gain.setValueAtTime(config.gain, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + config.dur);
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start(now);
+      osc.stop(now + config.dur);
+    }
+
+    function startGame() {
+      ensureAudio();
+      state.started = true;
+      state.totalRunTime = 0;
+      state.message = `<strong>${getLevel().display}</strong> Der Tropfen trocknet staendig aus. Sammle saubere Wasserflaschen und meide verunreinigte Attrappen.`;
+      playSound("start");
+      syncUi();
+    }
+
+    function update(dt) {
+      if (!state.started) {
+        syncUi();
+        return;
+      }
+
+      if (state.gameWon) {
+        updateParticles(dt);
+        syncUi();
+        return;
+      }
+
+      const level = getLevel();
+      const player = state.player;
+
+      state.timeLeft -= dt;
+      state.totalRunTime += dt;
+      state.levelElapsed += dt;
+      updateWorldEvent(dt);
+      player.jumpBuffer = Math.max(0, player.jumpBuffer - dt);
+      player.coyoteTimer = Math.max(0, player.coyoteTimer - dt);
+      player.invulnerable = Math.max(0, player.invulnerable - dt);
+      player.contaminationTimer = Math.max(0, player.contaminationTimer - dt);
+      player.coolnessTimer = Math.max(0, player.coolnessTimer - dt);
+      player.restorationTimer = Math.max(0, player.restorationTimer - dt);
+      player.rocketFuel = Math.max(0, player.rocketFuel - dt);
+      player.shipHintCooldown = Math.max(0, player.shipHintCooldown - dt);
+      player.sweatPulse += dt * 9;
+
+      if (state.timeLeft <= 0) {
+        dryOut("Die Sonne war schneller als du. Das Level beginnt neu.");
+        return;
+      }
+
+      if (state.rescue) {
+        updateRescue(dt);
+        updateParticles(dt);
+        syncUi();
+        return;
+      }
+
+      if (state.transition) {
+        updateTransition(dt);
+        updateParticles(dt);
+        syncUi();
+        return;
+      }
+
+      const moveDir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+      if (moveDir !== 0) {
+        player.facing = moveDir;
+      }
+
+      updateCrouchState(level, player);
+
+      const moveSpeed = BASE_MOVE_SPEED * (player.contaminationTimer > 0 ? 0.8 : 1) * (player.rocketFuel > 0 ? 1.06 : 1);
+      if (!player.onGround) {
+        player.vy += BASE_GRAVITY * dt;
+      } else {
+        player.coyoteTimer = COYOTE_TIME;
+      }
+
+      if (player.rocketFuel > 0) {
+        if (keys.jumpHeld) {
+          player.vy -= 1180 * dt;
+        }
+        if (keys.left) {
+          player.vx -= 340 * dt;
+        }
+        if (keys.right) {
+          player.vx += 340 * dt;
+        }
+        if (keys.down) {
+          player.vy += 420 * dt;
+        }
+        if (keys.jumpHeld || keys.left || keys.right || keys.down) {
+          emitParticle(player.x + player.w / 2, player.y + player.h + 2, "#9cecff", 1, 26);
+        }
+      }
+
+      if (player.onGround) {
+        if (moveDir !== 0) {
+          player.vx = moveTowards(player.vx, moveDir * moveSpeed, GROUND_ACCEL * dt);
+        } else {
+          player.vx = moveTowards(player.vx, 0, GROUND_FRICTION * dt);
+        }
+      } else {
+        if (moveDir !== 0) {
+          player.vx = moveTowards(player.vx, moveDir * moveSpeed, AIR_ACCEL * dt);
+        } else {
+          player.vx = moveTowards(player.vx, 0, AIR_DRAG * dt);
+        }
+      }
+
+      updateEnemies(level, dt);
+
+      player.x += player.vx * dt;
+      resolveHorizontal(level, player);
+      player.y += player.vy * dt;
+      resolveVertical(level, player);
+
+      if (player.jumpBuffer > 0 && player.coyoteTimer > 0) {
+        jump();
+      }
+
+      applyWaterDrain(dt);
+      updateParticles(dt);
+
+      player.x = clamp(player.x, 0, WORLD_WIDTH - player.w);
+      state.cameraX = clamp(player.x - canvas.width * 0.4, 0, WORLD_WIDTH - canvas.width);
+
+      if (player.y > canvas.height + 140) {
+        spendWater(18);
+        triggerRescue();
+        return;
+      }
+
+      if (player.water <= 0) {
+        dryOut("Der Tropfen ist vollstaendig ausgetrocknet. Das Level beginnt neu.");
+        return;
+      }
+
+      handleEnemyCollisions(level);
+      collectBottles(level);
+      collectItems(level);
+      checkRocket(level);
+      syncUi();
+    }
+
+    function applyWaterDrain(dt) {
+      const player = state.player;
+      const speed = Math.abs(player.vx);
+      const baseDrain = player.contaminationTimer > 0 ? 6.8 : player.coolnessTimer > 0 ? 2.2 : 3.8;
+      let totalDrain = baseDrain * (player.restorationTimer > 0 ? 0.78 : 1) * dt;
+
+      if (state.worldEvent && state.worldEvent.active && state.worldEvent.type === "heat") {
+        totalDrain += 2.6 * dt;
+      }
+
+      if (speed > 245) {
+        totalDrain += ((speed - 245) / 120) * 4.4 * dt;
+        if (Math.random() > 0.6) {
+          emitParticle(player.x + player.w / 2, player.y + 12, "#c9f8ff", 2);
+        }
+      }
+
+      if (!player.onGround && player.vy < -560) {
+        totalDrain += 2.8 * dt;
+      }
+
+      if (player.attachedEnemy) {
+        totalDrain += 10 * dt;
+      }
+
+      spendWater(totalDrain);
+    }
+
+    function updateWorldEvent(dt) {
+      if (!state.worldEvent || state.transition || state.gameWon) {
+        return;
+      }
+
+      const event = state.worldEvent;
+      event.timer -= dt;
+      if (event.active) {
+        event.duration -= dt;
+        if (event.duration <= 0) {
+          event.active = false;
+          event.type = event.type === "heat" ? "pollution" : "heat";
+          event.timer = 7 + Math.random() * 4;
+        }
+      } else if (event.timer <= 0) {
+        event.active = true;
+        event.duration = event.type === "heat" ? 4.5 : 3.8;
+        if (event.type === "heat") {
+          state.message = "<strong>Hitzewelle!</strong> Klimawandel macht die Luft trockener. Dein Tropfen verdunstet jetzt schneller.";
+        } else {
+          state.message = "<strong>Verschmutzungswolke!</strong> Verdreckte Luft und belastete Quellen machen den Weg gefaehrlicher.";
+        }
+      }
+
+      if (event.active && event.type === "pollution") {
+        const push = Math.sin(state.levelElapsed * 2.5) * 18 * dt;
+        state.player.vx += push;
+        if (Math.random() > 0.7) {
+          emitParticle(state.player.x + state.player.w / 2, state.player.y + 20, "#8d7759", 1, 18);
+        }
+      }
+    }
+
+    function spendWater(amount) {
+      state.player.water = clamp(state.player.water - amount, 0, MAX_WATER);
+    }
+
+    function refillWater(amount) {
+      state.player.water = clamp(state.player.water + amount, 0, MAX_WATER);
+    }
+
+    function addBloomPatch(x, y, strength = 1) {
+      const existing = state.bloomPatches.find(patch => Math.abs(patch.x - x) < 44 && Math.abs(patch.y - y) < 24);
+      if (existing) {
+        existing.strength = clamp(existing.strength + strength * 0.35, 0.4, 1.8);
+        existing.life = Math.min(1, existing.life + 0.18);
+      } else {
+        state.bloomPatches.push({
+          x,
+          y,
+          strength: clamp(strength, 0.5, 1.8),
+          life: 1
+        });
+      }
+      state.player.habitat = clamp(state.bloomPatches.length * 7, 0, 100);
+    }
+
+    function collectBottles(level) {
+      const player = state.player;
+
+      for (const bottle of level.bottles) {
+        if (bottle.collected) {
+          continue;
+        }
+        if (overlaps(player, { x: bottle.x - 12, y: bottle.y - 20, w: 24, h: 40 })) {
+          bottle.collected = true;
+          player.collected += 1;
+          refillWater(18);
+          player.coolnessTimer = Math.max(player.coolnessTimer, 4);
+          player.restorationTimer = Math.max(player.restorationTimer, 5);
+          addBloomPatch(bottle.x, bottle.y + 24, 1.6);
+          state.message = `<strong>Saubere Flasche!</strong> Deine Wasserreserve steigt und der Tropfen kuehlt sich kurz herunter.`;
+          emitParticle(bottle.x, bottle.y, "#8de3ff", 12);
+          emitParticle(bottle.x, bottle.y - 8, "#87d86d", 6);
+          playSound("bottle");
+        }
+      }
+
+      for (const bottle of level.dirtyBottles) {
+        if (bottle.collected) {
+          continue;
+        }
+        if (overlaps(player, { x: bottle.x - 12, y: bottle.y - 20, w: 24, h: 40 })) {
+          bottle.collected = true;
+          spendWater(14);
+          player.habitat = clamp(player.habitat - 5, 0, 100);
+          player.contaminationTimer = Math.max(player.contaminationTimer, 7);
+          player.vx *= 0.7;
+          state.message = `<strong>Verdreckte Flasche!</strong> Genau das zeigt das Spiel: Verschmutztes Wasser hilft nicht, sondern macht Menschen und Natur noch verletzlicher.`;
+          emitParticle(bottle.x, bottle.y, "#9e7e57", 12);
+          playSound("bad");
+        }
+      }
+    }
+
+    function collectItems(level) {
+      const player = state.player;
+      for (const item of level.items || []) {
+        if (item.collected) {
+          continue;
+        }
+        if (!overlaps(player, { x: item.x - 14, y: item.y - 14, w: 28, h: 28 })) {
+          continue;
+        }
+
+        item.collected = true;
+        if (item.type === "jetpack") {
+          player.rocketFuel = Math.max(player.rocketFuel, 10);
+          state.message = "<strong>Jetpack-Item!</strong> Du kannst jetzt frei fliegen: hoch, seitlich und auch kontrolliert wieder runter.";
+          emitParticle(item.x, item.y, "#9cecff", 14);
+        } else if (item.type === "powerJump") {
+          player.powerJumpReady = true;
+          state.message = "<strong>Powersprung!</strong> Dein naechster Sprung wird einmalig extra stark.";
+          emitParticle(item.x, item.y, "#ffe48c", 14);
+        } else {
+          player.seeds += 1;
+          player.restorationTimer = Math.max(player.restorationTimer, 2.5);
+          addBloomPatch(item.x, item.y + 18, 1.1);
+          state.message = "<strong>Blumensamen!</strong> Nicht lebenswichtig, aber vielleicht bluht diese tote Welt ja doch noch einmal auf.";
+          emitParticle(item.x, item.y, "#a9e37d", 10);
+        }
+      }
+    }
+
+    function checkRocket(level) {
+      const player = state.player;
+      if (!overlaps(player, level.rocket)) {
+        return;
+      }
+
+      const allCollected = level.bottles.every(bottle => bottle.collected);
+      if (!allCollected) {
+        if (player.shipHintCooldown <= 0) {
+          const missing = level.bottles.filter(bottle => !bottle.collected).length;
+          state.message = `<strong>Die Flaschenrakete bleibt zu.</strong> Es fehlen noch ${missing} saubere Wasserflaschen.`;
+          player.shipHintCooldown = 0.8;
+        }
+        return;
+      }
+
+      state.transition = { timer: 0, duration: 3.6, soundPlayed: false, attached: false };
+      state.message = `<strong>Abflug!</strong> Der Tropfen steigt in die Flaschenrakete und schiesst weiter durch die Wuestenwelt.`;
+      player.vx = 0;
+      player.vy = 0;
+    }
+
+    function updateTransition(dt) {
+      const transition = state.transition;
+      const level = getLevel();
+      const player = state.player;
+      transition.timer += dt;
+
+      const rocketCenterX = level.rocket.x + level.rocket.w / 2 - player.w / 2;
+      const rocketSeatY = level.rocket.y + 46;
+      if (transition.timer < 0.85) {
+        player.hidden = false;
+        player.x += (rocketCenterX - player.x) * Math.min(1, dt * 4.2);
+        player.y += (rocketSeatY - player.y) * Math.min(1, dt * 5);
+      } else {
+        transition.attached = true;
+        player.hidden = true;
+      }
+
+      if (transition.timer > 0.45 && !transition.soundPlayed) {
+        playSound("rocket");
+        transition.soundPlayed = true;
+      }
+
+      if (Math.random() > 0.4) {
+        emitParticle(level.rocket.x + level.rocket.w / 2, level.rocket.y + level.rocket.h, "#ffd17a", 4, 90);
+      }
+
+      if (transition.timer >= transition.duration) {
+        if (state.levelIndex === levels.length - 1) {
+          state.transition = null;
+          player.hidden = false;
+          state.gameWon = true;
+          state.message = "<strong>Gerettet!</strong> Der letzte Tropfen erinnert daran, wie kostbar sauberes Trinkwasser ist und wie sehr Duerre, Hitze und Verschmutzung es bedrohen.";
+          playSound("win");
+        } else {
+          resetLevel(state.levelIndex + 1);
+        }
+      }
+    }
+
+    function updateEnemies(level, dt) {
+      const player = state.player;
+
+      for (const enemy of level.enemies) {
+        if (enemy.dead) {
+          continue;
+        }
+
+        if (enemy.attached) {
+          enemy.drainTimer += dt;
+          enemy.x = player.x + player.w / 2 - enemy.radius;
+          enemy.y = player.y - enemy.radius * 0.45;
+          if (player.vy < -180 || player.onGround && Math.abs(player.vx) > 220) {
+            enemy.dead = true;
+            player.attachedEnemy = null;
+            state.message = "<strong>Abgeschuettelt!</strong> Der Wassersauger hat den Halt verloren.";
+            emitParticle(enemy.x + enemy.radius, enemy.y + enemy.radius, "#ffe2a8", 10);
+          }
+          continue;
+        }
+
+        const platform = level.platforms[enemy.platformIndex];
+        const minX = platform.x + 14;
+        const maxX = Math.min(platform.x + platform.w - enemy.radius * 2 - 14, enemy.baseX + enemy.range);
+        const lowX = Math.max(minX, enemy.baseX - enemy.range);
+
+        enemy.alertCooldown = Math.max(0, enemy.alertCooldown - dt);
+        enemy.x += enemy.direction * enemy.speed * dt;
+
+        if (enemy.x < lowX) {
+          enemy.x = lowX;
+          enemy.direction = 1;
+        }
+        if (enemy.x > maxX) {
+          enemy.x = maxX;
+          enemy.direction = -1;
+        }
+
+        const playerNear = Math.abs((player.x + player.w / 2) - (enemy.x + enemy.radius)) < 120 &&
+          Math.abs((player.y + player.h / 2) - (platform.y - enemy.radius)) < 110;
+
+        if (playerNear && enemy.jumpOffset === 0 && enemy.alertCooldown <= 0) {
+          enemy.jumpVy = -195;
+          enemy.direction = player.x < enemy.x ? -1 : 1;
+          enemy.alertCooldown = 1 + Math.random() * 0.6;
+        }
+
+        enemy.jumpVy += BASE_GRAVITY * 0.72 * dt;
+        enemy.jumpOffset += enemy.jumpVy * dt;
+        if (enemy.jumpOffset > 0) {
+          enemy.jumpOffset = 0;
+          enemy.jumpVy = 0;
+        }
+
+        enemy.y = platform.y - enemy.radius * 2 + enemy.jumpOffset;
+      }
+    }
+
+    function handleEnemyCollisions(level) {
+      const player = state.player;
+      const playerBox = { x: player.x, y: player.y, w: player.w, h: player.h };
+
+      for (const enemy of level.enemies) {
+        if (enemy.dead || enemy.attached) {
+          continue;
+        }
+
+        const enemyBox = { x: enemy.x, y: enemy.y, w: enemy.radius * 2, h: enemy.radius * 2 };
+        if (!overlaps(playerBox, enemyBox)) {
+          continue;
+        }
+
+        const stomp = player.vy > 120 && player.y + player.h - enemy.y < enemy.radius + 12;
+        if (stomp) {
+          enemy.dead = true;
+          player.vy = -300;
+          player.onGround = false;
+          state.message = "<strong>Gelandet!</strong> Ein Wassersauger wurde platt auf den Sand gedrueckt.";
+          emitParticle(enemy.x + enemy.radius, enemy.y + enemy.radius, "#ffd17a", 12);
+        } else {
+          enemy.attached = true;
+          player.attachedEnemy = enemy;
+          spendWater(8);
+          player.invulnerable = 0.3;
+          state.message = "<strong>Alarm!</strong> Ein Wassersauger sitzt am Kopf und saugt an deiner Reserve.";
+          playSound("hit");
+        }
+        return;
+      }
+    }
+
+    function jump() {
+      const player = state.player;
+      if ((player.coyoteTimer <= 0 && !player.onGround) || state.transition || state.gameWon) {
+        return;
+      }
+
+      let jumpForce = BASE_JUMP * (player.contaminationTimer > 0 ? 0.88 : 1);
+      if (player.powerJumpReady) {
+        jumpForce *= 1.35;
+        player.powerJumpReady = false;
+        state.message = "<strong>Powersprung!</strong> Der Tropfen entlaedt seinen Extraschub.";
+      }
+      player.vy = -jumpForce;
+      player.onGround = false;
+      player.coyoteTimer = 0;
+      player.jumpBuffer = 0;
+      playSound("jump");
+      emitParticle(player.x + player.w / 2, player.y + player.h - 8, "#8de3ff", 8);
+      startJumpTrace(player);
+
+      if (Math.abs(player.vx) > 210) {
+        spendWater(1.5);
+      }
+      if (Math.abs(player.vx) > 260) {
+        spendWater(1.8);
+        state.message = "<strong>Schwitzsprung!</strong> Der Tropfen war zu schnell und verliert dabei Wasser.";
+      }
+      if (Math.abs(player.vx) < 170) {
+        state.message = "<strong>Sprung!</strong> Halte deine Linie flach, dann bleibt mehr Wasser im Tropfen.";
+      }
+      syncUi();
+    }
+
+    function resolveHorizontal(level, player) {
+      for (const solid of getSolids(level)) {
+        if (!overlaps(player, solid)) {
+          continue;
+        }
+        if (player.vx > 0) {
+          player.x = solid.x - player.w;
+        } else if (player.vx < 0) {
+          player.x = solid.x + solid.w;
+        }
+      }
+    }
+
+    function resolveVertical(level, player) {
+      player.onGround = false;
+      for (const solid of getSolids(level)) {
+        if (!overlaps(player, solid)) {
+          continue;
+        }
+        if (player.vy > 0) {
+          player.y = solid.y - player.h;
+          if (!player.onGround && player.vy > 560) {
+            spendWater(2.2);
+            state.message = "<strong>Harte Landung!</strong> Der Tropfen spritzt auf und verliert Wasser.";
+          }
+          player.vy = 0;
+          player.onGround = true;
+          addBloomPatch(player.x + player.w / 2, solid.y + 8, 0.55);
+          const platformIndex = level.platforms.indexOf(solid);
+          if (platformIndex >= 0) {
+            player.respawnPoint = {
+              x: clamp(solid.x + Math.min(28, solid.w / 3), 0, WORLD_WIDTH - player.w),
+              y: solid.y - player.standHeight
+            };
+          }
+        } else if (player.vy < 0) {
+          player.y = solid.y + solid.h;
+          player.vy = 28;
+        }
+      }
+    }
+
+    function updateCrouchState(level, player) {
+      const wantsCrouch = keys.down && player.onGround;
+      if (wantsCrouch && !player.crouching) {
+        player.crouching = true;
+        player.y += player.standHeight - player.crouchHeight;
+        player.h = player.crouchHeight;
+      } else if (!wantsCrouch && player.crouching && canStandUp(level, player)) {
+        player.y -= player.standHeight - player.crouchHeight;
+        player.h = player.standHeight;
+        player.crouching = false;
+      }
+    }
+
+    function canStandUp(level, player) {
+      const testBox = {
+        x: player.x,
+        y: player.y - (player.standHeight - player.crouchHeight),
+        w: player.w,
+        h: player.standHeight
+      };
+      return !getSolids(level).some(solid => overlaps(testBox, solid));
+    }
+
+    function getSafeSpawnAt(level, worldX) {
+      let best = null;
+      for (const platform of level.platforms) {
+        const center = platform.x + platform.w / 2;
+        const dx = Math.abs(center - worldX);
+        const penalty = platform.h >= 40 ? 0 : 10;
+        const score = dx + penalty;
+        if (!best || score < best.score) {
+          best = { platform, score };
+        }
+      }
+
+      const platform = best ? best.platform : level.platforms[0];
+      return {
+        x: clamp(worldX - PLAYER_WIDTH / 2, platform.x + 10, platform.x + platform.w - PLAYER_WIDTH - 10),
+        y: platform.y - PLAYER_HEIGHT
+      };
+    }
+
+    function respawnPlayer(reason) {
+      const player = state.player;
+      player.x = player.respawnPoint.x;
+      player.y = player.respawnPoint.y;
+      player.vx = 0;
+      player.vy = 0;
+      player.onGround = true;
+      player.attachedEnemy = null;
+      state.message = `<strong>Zurueck auf festen Sand.</strong> ${reason}`;
+      syncUi();
+    }
+
+    function triggerRescue() {
+      if (state.rescue || state.transition || state.gameWon) {
+        return;
+      }
+
+      const level = getLevel();
+      const player = state.player;
+      player.vx = 0;
+      player.vy = 0;
+      player.onGround = false;
+      player.attachedEnemy = null;
+      player.hidden = true;
+
+      const faucetX = clamp(player.x + player.w / 2, 56, WORLD_WIDTH - 56);
+      const safeSpawn = getSafeSpawnAt(level, faucetX);
+      const targetX = safeSpawn.x;
+      const targetY = Math.max(96, safeSpawn.y - 72);
+
+      state.rescue = {
+        x: faucetX,
+        y: -84,
+        pipeBottomY: targetY - 42,
+        dripY: safeSpawn.y - 12,
+        targetX,
+        targetY: safeSpawn.y,
+        timer: 0,
+        phase: "fall",
+        fade: 1,
+        ghostY: player.y,
+        ghostX: player.x,
+        pipeLocked: false
+      };
+      state.message = "<strong>Rohr-Rettung!</strong> Ein Rohr faehrt von oben an die Absturzstelle und setzt den Tropfen wieder auf sicheren Boden.";
+    }
+
+    function updateRescue(dt) {
+      const rescue = state.rescue;
+      const player = state.player;
+      if (!rescue) {
+        return;
+      }
+
+      rescue.timer += dt;
+      state.cameraX = clamp(rescue.x - canvas.width * 0.45, 0, WORLD_WIDTH - canvas.width);
+
+      if (rescue.phase === "fall") {
+        rescue.ghostY += 170 * dt;
+        rescue.fade = Math.max(0, rescue.fade - dt * 0.7);
+        if (rescue.timer >= 0.8) {
+          rescue.phase = "pipe";
+          rescue.timer = 0;
+        }
+        return;
+      }
+
+      if (rescue.phase === "pipe") {
+        if (rescue.y < rescue.pipeBottomY) {
+          rescue.y += 140 * dt;
+        } else {
+          rescue.pipeLocked = true;
+        }
+        if (Math.random() > 0.58) {
+          emitParticle(rescue.x + 12, rescue.pipeBottomY + 10, "#d9fbff", 1, 10);
+        }
+        if (rescue.timer >= 1.15) {
+          rescue.phase = "drop";
+          rescue.timer = 0;
+        }
+        return;
+      }
+
+      player.hidden = false;
+      player.x = rescue.targetX;
+      player.y = Math.min(rescue.targetY, rescue.dripY + rescue.timer * 26);
+      player.vx = 0;
+      player.vy = 10;
+
+      if (player.y >= rescue.targetY) {
+        player.y = rescue.targetY;
+        player.x = rescue.targetX;
+        player.vy = 0;
+        player.onGround = true;
+        player.hidden = false;
+        state.rescue = null;
+        state.message = "<strong>Zurueck im Spiel!</strong> Das Rohr hat den Tropfen wieder sauber auf einer Plattform abgesetzt.";
+      }
+    }
+
+    function dryOut(reason) {
+      state.message = `<strong>Ausgetrocknet!</strong> ${reason}`;
+      resetLevel(state.levelIndex, true);
+    }
+
+    function emitParticle(x, y, color, amount = 8, speedY = 40) {
+      for (let i = 0; i < amount; i++) {
+        const life = 0.35 + Math.random() * 0.3;
+        state.particles.push({
+          x: x + (Math.random() - 0.5) * 18,
+          y: y + (Math.random() - 0.5) * 14,
+          vx: (Math.random() - 0.5) * 50,
+          vy: (Math.random() - 0.5) * speedY,
+          life,
+          maxLife: life,
+          size: 3 + Math.random() * 4,
+          color
+        });
+      }
+    }
+
+    function startJumpTrace(player) {
+      state.jumpTraces.push({
+        life: JUMP_TRACE_LIFE,
+        maxLife: JUMP_TRACE_LIFE,
+        points: [{ x: player.x + player.w / 2, y: player.y + player.h * 0.72 }]
+      });
+    }
+
+    function updateJumpTraces(dt) {
+      if (!state.jumpTraces) {
+        return;
+      }
+      const active = state.jumpTraces[state.jumpTraces.length - 1];
+      if (active && !state.player.onGround && !state.rescue && !state.transition) {
+        active.points.push({ x: state.player.x + state.player.w / 2, y: state.player.y + state.player.h * 0.72 });
+        if (active.points.length > 26) {
+          active.points.shift();
+        }
+      }
+      state.jumpTraces = state.jumpTraces.filter(trace => {
+        if (trace !== active || state.player.onGround) {
+          trace.life -= dt;
+        }
+        return trace.life > 0;
+      });
+    }
+
+    function updateParticles(dt) {
+      updateJumpTraces(dt);
+      state.particles = state.particles.filter(particle => {
+        particle.life -= dt;
+        particle.x += particle.vx * dt;
+        particle.y += particle.vy * dt;
+        particle.vy += 35 * dt;
+        return particle.life > 0;
+      });
+    }
+
+    function draw() {
+      const level = getLevel();
+      drawSky(level);
+      drawSun(level);
+      drawParallax(level);
+      drawWorldEventOverlay();
+
+      ctx.save();
+      ctx.translate(-state.cameraX, 0);
+      drawDunes(level);
+      drawJumpTraces();
+      drawPlatforms(level);
+      drawBottles(level.bottles, false);
+      drawBottles(level.dirtyBottles, true);
+      drawItems(level);
+      drawEnemies(level);
+      drawRocket(level);
+      drawParticles();
+      drawRescue();
+      drawPlayer(state.player);
+      ctx.restore();
+
+      if (!state.started) {
+        drawStartOverlay();
+      } else if (state.gameWon) {
+        drawWinOverlay();
+      }
+
+      if (state.introVisible && state.started && !state.gameWon) {
+        drawIntroCard(level);
+      }
+
+      drawMiniHud(level);
+    }
+
+    function drawSky(level) {
+      const habitatRatio = state.player ? state.player.habitat / 100 : 0.6;
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, habitatRatio > 0.55 ? lighten(level.skyTop, 0.12 * habitatRatio) : level.skyTop);
+      gradient.addColorStop(1, habitatRatio > 0.45 ? lighten(level.skyBottom, 0.05 * habitatRatio) : level.skyBottom);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (habitatRatio > 0.6) {
+        ctx.fillStyle = `rgba(116, 208, 118, ${0.05 + habitatRatio * 0.08})`;
+        ctx.fillRect(0, canvas.height * 0.56, canvas.width, canvas.height * 0.22);
+      }
+    }
+
+    function drawSun(level) {
+      const sunX = canvas.width - 140;
+      const sunY = 108;
+      const halo = ctx.createRadialGradient(sunX, sunY, 18, sunX, sunY, 130);
+      halo.addColorStop(0, "rgba(255,255,220,0.92)");
+      halo.addColorStop(0.3, "rgba(255,218,140,0.5)");
+      halo.addColorStop(1, "rgba(255,190,90,0)");
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 130, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#fff2bf";
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 36, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawParallax(level) {
+      const habitatRatio = state.player ? state.player.habitat / 100 : 0.6;
+      const bands = [
+        { y: 318, speed: 0.18, alpha: 0.12 + habitatRatio * 0.08, amp: 18, color: habitatRatio > 0.55 ? "#8fcf7e" : lighten(level.accent, 0.1) },
+        { y: 368, speed: 0.34, alpha: 0.08 + habitatRatio * 0.06, amp: 22, color: habitatRatio > 0.52 ? "#95bf63" : "#f3ba72" },
+        { y: 430, speed: 0.55, alpha: 0.08 + habitatRatio * 0.03, amp: 28, color: habitatRatio > 0.48 ? "#6f8d3f" : "#a4582b" }
+      ];
+
+      for (const [index, band] of bands.entries()) {
+        ctx.fillStyle = hexToRgba(band.color, band.alpha);
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height);
+        for (let x = 0; x <= canvas.width; x += 22) {
+          const wave = Math.sin((x + state.cameraX * band.speed) * 0.01 + index) * band.amp;
+          ctx.lineTo(x, band.y + wave);
+        }
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      drawSunflowers(habitatRatio);
+    }
+
+    function drawSunflowers(habitatRatio) {
+      const shift = -state.cameraX * 0.18;
+      const playerCenter = state.player ? state.player.x + state.player.w / 2 : 0;
+      for (let i = 0; i < 6; i++) {
+        const baseX = 100 + i * 150 + shift;
+        const y = 326 + (i % 2) * 18;
+        const cheerful = Math.abs((100 + i * 150) - playerCenter) < 160 || habitatRatio > 0.65;
+        ctx.strokeStyle = cheerful ? "rgba(104, 176, 82, 0.42)" : "rgba(120, 92, 44, 0.34)";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(baseX, y + 18);
+        ctx.lineTo(baseX, y + 56);
+        ctx.stroke();
+
+        ctx.fillStyle = cheerful ? "rgba(242, 208, 98, 0.78)" : "rgba(165, 128, 70, 0.52)";
+        for (let p = 0; p < 8; p++) {
+          ctx.beginPath();
+          ctx.ellipse(baseX + Math.cos((Math.PI * 2 * p) / 8) * 10, y + Math.sin((Math.PI * 2 * p) / 8) * 10, 5, 9, p * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = cheerful ? "rgba(92, 60, 28, 0.9)" : "rgba(80, 58, 38, 0.76)";
+        ctx.beginPath();
+        ctx.arc(baseX, y, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = cheerful ? "rgba(40, 24, 12, 0.9)" : "rgba(60, 40, 24, 0.8)";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        if (cheerful) {
+          ctx.arc(baseX, y + 2, 4, 0.2, Math.PI - 0.2);
+        } else {
+          ctx.arc(baseX, y + 7, 4, Math.PI + 0.25, Math.PI * 2 - 0.25);
+        }
+        ctx.stroke();
+      }
+    }
+
+    function drawDunes(level) {
+      for (let i = 1; i < level.platforms.length; i++) {
+        const previous = level.platforms[i - 1];
+        const next = level.platforms[i];
+        const gapStart = previous.x + previous.w;
+        const gapWidth = next.x - gapStart;
+        if (gapWidth <= 0) {
+          continue;
+        }
+        const gradient = ctx.createLinearGradient(gapStart, Math.min(previous.y, next.y), gapStart, canvas.height);
+        gradient.addColorStop(0, "rgba(255, 214, 147, 0.08)");
+        gradient.addColorStop(1, "rgba(44, 16, 5, 0.82)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(gapStart, Math.min(previous.y, next.y) + 18, gapWidth, canvas.height);
+      }
+    }
+
+    function drawJumpTraces() {
+      for (const trace of state.jumpTraces || []) {
+        if (trace.points.length < 2) {
+          continue;
+        }
+        ctx.strokeStyle = `rgba(157, 236, 255, ${Math.max(0.18, trace.life / trace.maxLife)})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(trace.points[0].x, trace.points[0].y);
+        for (let i = 1; i < trace.points.length; i++) {
+          ctx.lineTo(trace.points[i].x, trace.points[i].y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    function drawPlatforms(level) {
+      const habitatRatio = state.player ? state.player.habitat / 100 : 0.6;
+      for (const platform of level.platforms) {
+        const gradient = ctx.createLinearGradient(platform.x, platform.y, platform.x, platform.y + platform.h);
+        gradient.addColorStop(0, habitatRatio > 0.55 ? "#bfe18b" : "#f6cf8d");
+        gradient.addColorStop(1, habitatRatio > 0.55 ? "#7a8e43" : "#965128");
+        ctx.fillStyle = gradient;
+        roundRect(platform.x, platform.y, platform.w, platform.h, 12);
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255,255,255,0.08)";
+        ctx.lineWidth = 2;
+        roundRect(platform.x, platform.y, platform.w, platform.h, 12);
+        ctx.stroke();
+
+        if (platform.h >= 40) {
+          ctx.fillStyle = habitatRatio > 0.55 ? "rgba(192, 240, 160, 0.34)" : "rgba(255, 239, 196, 0.28)";
+          for (let i = 0; i < 4; i++) {
+            ctx.fillRect(platform.x + 18 + i * 34, platform.y + 6, 22, 5);
+          }
+          if (habitatRatio > 0.58) {
+            ctx.fillStyle = `rgba(110, 185, 84, ${0.35 + habitatRatio * 0.3})`;
+            for (let i = 0; i < 3; i++) {
+              const x = platform.x + 22 + i * 26;
+              ctx.beginPath();
+              ctx.moveTo(x, platform.y + 2);
+              ctx.lineTo(x - 4, platform.y - 10);
+              ctx.lineTo(x + 4, platform.y - 6);
+              ctx.closePath();
+              ctx.fill();
+            }
+          }
+        }
+      }
+
+      for (const patch of state.bloomPatches) {
+        ctx.fillStyle = `rgba(111, 183, 86, ${0.18 + patch.strength * 0.14})`;
+        ctx.beginPath();
+        ctx.ellipse(patch.x, patch.y + 2, 34 + patch.strength * 16, 10 + patch.strength * 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = `rgba(134, 212, 104, ${0.22 + patch.strength * 0.18})`;
+        for (let i = 0; i < 4; i++) {
+          const x = patch.x - 20 + i * 12;
+          ctx.beginPath();
+          ctx.moveTo(x, patch.y + 2);
+          ctx.lineTo(x - 4, patch.y - 8 - (i % 2) * 3);
+          ctx.lineTo(x + 4, patch.y - 5 - (i % 2) * 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+    }
+
+    function drawBottles(bottles, dirty) {
+      for (const bottle of bottles) {
+        if (bottle.collected) {
+          continue;
+        }
+        ctx.save();
+        ctx.translate(bottle.x, bottle.y);
+        ctx.rotate(Math.sin((state.levelElapsed + bottle.x) * 0.01) * 0.08);
+
+        ctx.fillStyle = dirty ? "#7a6246" : "#e9f8ff";
+        roundRect(-10, -18, 20, 34, 7);
+        ctx.fill();
+        ctx.fillStyle = dirty ? "#6d5841" : "#7dd8ff";
+        roundRect(-8, -8, 16, 20, 5);
+        ctx.fill();
+        ctx.fillStyle = dirty ? "#473523" : "#d8f6ff";
+        ctx.fillRect(-4, -24, 8, 8);
+
+        if (dirty) {
+          ctx.strokeStyle = "#3d2817";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-6, -6);
+          ctx.lineTo(6, 8);
+          ctx.moveTo(6, -6);
+          ctx.lineTo(-6, 8);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    function drawItems(level) {
+      for (const item of level.items || []) {
+        if (item.collected) {
+          continue;
+        }
+        ctx.save();
+        ctx.translate(item.x, item.y);
+        if (item.type === "jetpack") {
+          ctx.fillStyle = "#c9f5ff";
+          roundRect(-10, -14, 20, 28, 7);
+          ctx.fill();
+          ctx.fillStyle = "#66d3ff";
+          ctx.fillRect(-14, -6, 6, 14);
+          ctx.fillRect(8, -6, 6, 14);
+          ctx.fillStyle = "#ffd27c";
+          ctx.beginPath();
+          ctx.moveTo(-10, 14);
+          ctx.lineTo(-4, 24);
+          ctx.lineTo(0, 14);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(10, 14);
+          ctx.lineTo(4, 24);
+          ctx.lineTo(0, 14);
+          ctx.fill();
+        } else if (item.type === "powerJump") {
+          ctx.fillStyle = "#ffe28a";
+          ctx.beginPath();
+          ctx.arc(0, 0, 12, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#7b5414";
+          ctx.font = "bold 13px Trebuchet MS";
+          ctx.textAlign = "center";
+          ctx.fillText("P", 0, 4);
+          ctx.textAlign = "left";
+        } else {
+          ctx.fillStyle = "#83cf67";
+          for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.ellipse(-6 + i * 6, 2 + (i % 2) * 2, 4, 6, i * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.strokeStyle = "#4f8f38";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(0, 8);
+          ctx.lineTo(0, 16);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    function drawEnemies(level) {
+      for (const enemy of level.enemies) {
+        if (enemy.dead) {
+          continue;
+        }
+        const cx = enemy.x + enemy.radius;
+        const cy = enemy.y + enemy.radius;
+        const pulse = Math.sin(state.levelElapsed * 8 + enemy.x * 0.06) * 1.2;
+
+        ctx.fillStyle = "#5a2d18";
+        ctx.beginPath();
+        ctx.arc(cx, cy, enemy.radius + pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffd3aa";
+        ctx.beginPath();
+        ctx.arc(cx - enemy.radius * 0.35, cy - enemy.radius * 0.25, enemy.radius * 0.22, 0, Math.PI * 2);
+        ctx.arc(cx + enemy.radius * 0.35, cy - enemy.radius * 0.25, enemy.radius * 0.22, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#20110a";
+        ctx.beginPath();
+        ctx.arc(cx - enemy.radius * 0.34, cy - enemy.radius * 0.24, enemy.radius * 0.08, 0, Math.PI * 2);
+        ctx.arc(cx + enemy.radius * 0.34, cy - enemy.radius * 0.24, enemy.radius * 0.08, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#2a130b";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(cx - enemy.radius * 0.22, cy + enemy.radius * 0.1);
+        ctx.lineTo(cx - enemy.radius * 0.58, cy + enemy.radius * 0.95);
+        ctx.moveTo(cx + enemy.radius * 0.22, cy + enemy.radius * 0.1);
+        ctx.lineTo(cx + enemy.radius * 0.58, cy + enemy.radius * 0.95);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#8de3ff";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy + enemy.radius * 0.25, enemy.radius * 0.42, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+      }
+    }
+
+    function drawRocket(level) {
+      const launchOffset = state.transition ? Math.max(0, state.transition.timer - 0.45) * 220 : 0;
+      const x = level.rocket.x;
+      const y = level.rocket.y - launchOffset * launchOffset * 0.35;
+      const ready = level.bottles.every(bottle => bottle.collected);
+
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.fillStyle = ready ? "#ecfaff" : "#a6a197";
+      roundRect(12, 8, level.rocket.w - 24, level.rocket.h - 14, 18);
+      ctx.fill();
+
+      ctx.fillStyle = ready ? "#69d2ff" : "#706a62";
+      roundRect(18, 34, level.rocket.w - 36, 48, 14);
+      ctx.fill();
+
+      if (state.transition && state.transition.attached) {
+        ctx.fillStyle = "rgba(201, 245, 255, 0.9)";
+        ctx.beginPath();
+        ctx.moveTo(level.rocket.w / 2, 42);
+        ctx.bezierCurveTo(level.rocket.w / 2 + 9, 48, level.rocket.w / 2 + 7, 60, level.rocket.w / 2, 68);
+        ctx.bezierCurveTo(level.rocket.w / 2 - 7, 60, level.rocket.w / 2 - 9, 48, level.rocket.w / 2, 42);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = ready ? "#eaf9ff" : "#938d84";
+      ctx.beginPath();
+      ctx.arc(level.rocket.w / 2, 18, 18, Math.PI, 0);
+      ctx.fill();
+
+      ctx.fillStyle = ready ? "#5fc7ff" : "#655f59";
+      ctx.beginPath();
+      ctx.moveTo(18, level.rocket.h - 18);
+      ctx.lineTo(0, level.rocket.h + 18);
+      ctx.lineTo(22, level.rocket.h - 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(level.rocket.w - 18, level.rocket.h - 18);
+      ctx.lineTo(level.rocket.w, level.rocket.h + 18);
+      ctx.lineTo(level.rocket.w - 22, level.rocket.h - 4);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      ctx.fillRect(level.rocket.w / 2 - 4, 4, 8, 12);
+
+      if (ready) {
+        ctx.fillStyle = "rgba(255, 215, 120, 0.74)";
+        ctx.beginPath();
+        ctx.moveTo(28, level.rocket.h - 2);
+        ctx.lineTo(40, level.rocket.h - 2);
+        ctx.lineTo(34, level.rocket.h + 22 + Math.sin(state.levelElapsed * 12) * 5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(level.rocket.w - 28, level.rocket.h - 2);
+        ctx.lineTo(level.rocket.w - 40, level.rocket.h - 2);
+        ctx.lineTo(level.rocket.w - 34, level.rocket.h + 22 + Math.sin(state.levelElapsed * 12) * 5);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawPlayer(player) {
+      if (player.hidden) {
+        return;
+      }
+
+      if (player.invulnerable > 0 && Math.floor(player.invulnerable * 16) % 2 === 0) {
+        return;
+      }
+
+      ctx.save();
+      ctx.translate(player.x, player.y);
+      const waterRatio = clamp(player.water / MAX_WATER, 0.28, 1);
+      const shimmer = 0.75 + Math.sin(player.sweatPulse) * 0.08;
+      const bodyWidth = player.w * (0.74 + waterRatio * 0.26);
+      const centerX = player.w / 2;
+      const leftX = centerX - bodyWidth / 2;
+
+      ctx.fillStyle = "rgba(74, 110, 130, 0.45)";
+      roundRect(-16, 14, 12, 30, 6);
+      ctx.fill();
+      for (let i = 0; i < MAX_SLOTS; i++) {
+        const slotY = 16 + i * 5.4;
+        ctx.strokeStyle = "rgba(230,245,255,0.5)";
+        ctx.lineWidth = 1;
+        roundRect(-14, slotY, 8, 4, 2);
+        ctx.stroke();
+        const slotFilled = player.water > (MAX_SLOTS - i - 1) * SLOT_WATER;
+        if (slotFilled) {
+          const slotWater = clamp(player.water - (MAX_SLOTS - i - 1) * SLOT_WATER, 0, SLOT_WATER);
+          ctx.fillStyle = `rgba(141, 227, 255, ${0.4 + (slotWater / SLOT_WATER) * 0.5})`;
+          roundRect(-13, slotY + 1, 6, 2, 1);
+          ctx.fill();
+        }
+      }
+
+      ctx.fillStyle = `rgba(116, 220, 255, ${shimmer})`;
+      ctx.beginPath();
+      ctx.moveTo(centerX, 0);
+      ctx.bezierCurveTo(leftX + bodyWidth + 10, 18, leftX + bodyWidth + 2, player.h - 6, centerX, player.h * (0.9 + waterRatio * 0.1));
+      ctx.bezierCurveTo(leftX - 2, player.h - 6, leftX - 10, 18, centerX, 0);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(223, 252, 255, 0.72)";
+      ctx.beginPath();
+      ctx.ellipse(centerX - 6, 18, 7 + waterRatio * 2, 10 + waterRatio * 3, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(14, player.crouching ? 18 : 20, 4, 0, Math.PI * 2);
+      ctx.arc(player.w - 14, player.crouching ? 18 : 20, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#14394d";
+      ctx.beginPath();
+      ctx.arc(14 + player.facing * 1.2, player.crouching ? 18 : 20, 2, 0, Math.PI * 2);
+      ctx.arc(player.w - 14 + player.facing * 1.2, player.crouching ? 18 : 20, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = "#d6fbff";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(player.w / 2, player.crouching ? 30 : 34, 6, 0.2, Math.PI - 0.2);
+      ctx.stroke();
+
+      if (player.contaminationTimer > 0) {
+        ctx.strokeStyle = "rgba(121, 80, 39, 0.9)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(10, 28);
+        ctx.lineTo(18, 36);
+        ctx.lineTo(28, 26);
+        ctx.lineTo(34, 34);
+        ctx.stroke();
+      }
+
+      if (player.attachedEnemy) {
+        ctx.strokeStyle = "rgba(255, 232, 186, 0.8)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(player.w / 2, 10, player.w / 2 + 6, Math.PI, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawParticles() {
+      for (const particle of state.particles) {
+        const alpha = particle.life / particle.maxLife;
+        ctx.fillStyle = hexToRgba(particle.color, alpha);
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawRescue() {
+      const rescue = state.rescue;
+      if (!rescue) {
+        return;
+      }
+
+      ctx.save();
+      ctx.translate(rescue.x, 0);
+
+      if (rescue.phase === "fall") {
+        ctx.globalAlpha = rescue.fade;
+        ctx.fillStyle = "rgba(180, 236, 255, 0.75)";
+        ctx.beginPath();
+        ctx.moveTo(rescue.ghostX - rescue.x + 20, rescue.ghostY);
+        ctx.bezierCurveTo(rescue.ghostX - rescue.x + 32, rescue.ghostY + 12, rescue.ghostX - rescue.x + 28, rescue.ghostY + 28, rescue.ghostX - rescue.x + 20, rescue.ghostY + 36);
+        ctx.bezierCurveTo(rescue.ghostX - rescue.x + 12, rescue.ghostY + 28, rescue.ghostX - rescue.x + 8, rescue.ghostY + 12, rescue.ghostX - rescue.x + 20, rescue.ghostY);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.fillStyle = "#6fbf73";
+      roundRect(-14, -6, 28, rescue.y + 20, 8);
+      ctx.fill();
+      ctx.fillStyle = "#8bd48f";
+      roundRect(-20, rescue.y, 40, 20, 8);
+      ctx.fill();
+      ctx.fillStyle = "#4f9e57";
+      ctx.fillRect(4, rescue.y + 16, 18, 8);
+
+      ctx.fillStyle = "#c7f4ff";
+      ctx.beginPath();
+      ctx.moveTo(12, rescue.y + 24);
+      ctx.bezierCurveTo(19, rescue.y + 36, 19, rescue.y + 48, 12, rescue.y + 56);
+      ctx.bezierCurveTo(5, rescue.y + 48, 5, rescue.y + 36, 12, rescue.y + 24);
+      ctx.fill();
+
+      if (rescue.timer > 0.7) {
+        const dripSwing = Math.sin(rescue.timer * 10) * 1.4;
+        ctx.fillStyle = "rgba(222,252,255,0.82)";
+        ctx.beginPath();
+        ctx.moveTo(12, rescue.y + 24 + dripSwing);
+        ctx.bezierCurveTo(20, rescue.y + 44 + dripSwing, 18, rescue.y + 62 + dripSwing, 12, rescue.y + 76 + dripSwing);
+        ctx.bezierCurveTo(6, rescue.y + 62 + dripSwing, 4, rescue.y + 44 + dripSwing, 12, rescue.y + 24 + dripSwing);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawStartOverlay() {
+      ctx.fillStyle = "rgba(7, 10, 18, 0.65)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#fff5e2";
+      ctx.textAlign = "center";
+      ctx.font = "bold 36px Trebuchet MS";
+      ctx.fillText("Der letzte Tropfen", canvas.width / 2, 114);
+      ctx.font = "20px Trebuchet MS";
+      ctx.fillText("Zum Tag des Wassers: Du bist ein Wassertropfen in einer ausgetrockneten Welt.", canvas.width / 2, 160);
+      ctx.fillText("Saubere Flaschen retten dich, verschmutztes Wasser schwaecht dich, Hitze trocknet dich aus.", canvas.width / 2, 192);
+      ctx.fillText("Wassersauger, Duerre und Klimawandel zeigen, wie kostbar sauberes Trinkwasser ist.", canvas.width / 2, 224);
+      ctx.fillText("Jetpack, Powersprung und Blumensamen sind Extras auf deinem Weg zur Flaschenrakete.", canvas.width / 2, 256);
+      ctx.font = "bold 24px Trebuchet MS";
+      ctx.fillText("Bewegung: A/D oder Pfeile, Ducken: S, Sprung: Leertaste oder W", canvas.width / 2, 350);
+      ctx.fillText("Tippe auf 'Spiel Starten' oder druecke Leertaste/Enter", canvas.width / 2, 388);
+      ctx.textAlign = "left";
+    }
+
+    function drawIntroCard(level) {
+      ctx.save();
+      ctx.fillStyle = "rgba(9, 14, 25, 0.84)";
+      roundRect(18, 18, canvas.width - 36, 96, 18);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.lineWidth = 1.5;
+      roundRect(18, 18, canvas.width - 36, 96, 18);
+      ctx.stroke();
+      ctx.fillStyle = "#fff0d7";
+      ctx.font = "bold 20px Trebuchet MS";
+      ctx.fillText(level.display, 34, 48);
+      ctx.font = "14px Trebuchet MS";
+      ctx.fillText(`Gravitation: ${level.gravityText} · Tippen/Klicken zum Schliessen`, 34, 72);
+      drawWrappedText(`${level.description} ${level.lesson}`, 34, 94, canvas.width - 68, 18, 2);
+      ctx.restore();
+    }
+
+    function drawWorldEventOverlay() {
+      if (!state.worldEvent || !state.worldEvent.active) {
+        return;
+      }
+
+      ctx.save();
+      if (state.worldEvent.type === "heat") {
+        ctx.fillStyle = "rgba(255, 184, 84, 0.12)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < 6; i++) {
+          ctx.strokeStyle = `rgba(255, 231, 180, ${0.1 + i * 0.03})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let x = 0; x <= canvas.width; x += 24) {
+            const y = 110 + i * 55 + Math.sin((x + state.levelElapsed * 150) * 0.02 + i) * 8;
+            if (x === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              ctx.lineTo(x, y);
+            }
+          }
+          ctx.stroke();
+        }
+      } else {
+        ctx.fillStyle = "rgba(101, 78, 54, 0.08)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < 26; i++) {
+          const x = (i * 42 + state.levelElapsed * 120) % (canvas.width + 60) - 30;
+          const y = 120 + (i * 19) % 280;
+          ctx.fillStyle = "rgba(132, 110, 86, 0.18)";
+          ctx.fillRect(x, y, 18, 3);
+        }
+      }
+      ctx.restore();
+    }
+
+    function drawMiniHud(level) {
+      if (!state.started || state.gameWon) {
+        return;
+      }
+
+      ctx.save();
+      const isCompact = window.matchMedia("(max-width: 940px), (hover: none) and (pointer: coarse)").matches;
+      if (isCompact) {
+        ctx.restore();
+        return;
+      }
+      const panelAlpha = 0.24;
+      const smallFont = 10;
+      const strongFont = 13;
+      const levelLabel = level.display;
+      const topY = canvas.height - 52;
+      const bottomY = canvas.height - 18;
+
+      ctx.fillStyle = `rgba(9, 14, 22, ${panelAlpha})`;
+      roundRect(8, topY, 80, 18, 9);
+      ctx.fill();
+      ctx.fillStyle = "#fff6e9";
+      ctx.font = `bold ${strongFont}px Trebuchet MS`;
+      ctx.fillText(formatTime(state.levelElapsed), 14, topY + 13);
+
+      ctx.fillStyle = `rgba(9, 14, 22, ${panelAlpha})`;
+      roundRect(8, topY + 22, 74, 16, 9);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,243,223,0.88)";
+      ctx.font = `${smallFont}px Trebuchet MS`;
+      ctx.fillText(levelLabel, 14, topY + 33);
+
+      const total = level.bottles.length;
+      const collected = level.bottles.filter(bottle => bottle.collected).length;
+      const text = `${collected}/${total}`;
+      const startX = canvas.width - 20 - total * 12;
+      const panelWidth = 78;
+      ctx.fillStyle = `rgba(9, 14, 22, ${panelAlpha})`;
+      roundRect(canvas.width - panelWidth - 8, topY, panelWidth, 18, 9);
+      ctx.fill();
+      ctx.fillStyle = "#eafaff";
+      ctx.font = `bold ${smallFont}px Trebuchet MS`;
+      ctx.fillText(text, canvas.width - panelWidth + 6, topY + 13);
+      for (let i = 0; i < total; i++) {
+        ctx.fillStyle = i < collected ? "#8de3ff" : "rgba(255,255,255,0.2)";
+        ctx.beginPath();
+        ctx.roundRect(startX + i * 12 - 3, topY + 3, 6, 10, 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = `rgba(9, 14, 22, ${panelAlpha})`;
+      roundRect(8, bottomY, 88, 16, 9);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,243,223,0.82)";
+      ctx.font = `${smallFont}px Trebuchet MS`;
+      ctx.fillText(level.gravityText, 14, bottomY + 11);
+
+      const waterDots = 5;
+      const boxWidth = 60;
+      const dotStartX = canvas.width - boxWidth + 10;
+      ctx.fillStyle = `rgba(9, 14, 22, ${panelAlpha})`;
+      roundRect(canvas.width - boxWidth - 8, bottomY, boxWidth, 16, 9);
+      ctx.fill();
+      for (let i = 0; i < waterDots; i++) {
+        ctx.beginPath();
+        const full = state.player.water >= ((i + 1) / waterDots) * MAX_WATER;
+        ctx.fillStyle = full ? "#8de3ff" : "rgba(160, 170, 170, 0.42)";
+        ctx.arc(dotStartX + i * 8, bottomY + 8, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawWinOverlay() {
+      ctx.fillStyle = "rgba(4, 8, 15, 0.62)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#fff2d9";
+      ctx.textAlign = "center";
+      ctx.font = "bold 36px Trebuchet MS";
+      ctx.fillText("Der Tropfen lebt noch!", canvas.width / 2, 190);
+      ctx.font = "20px Trebuchet MS";
+      ctx.fillText("Alle Wuestenabschnitte wurden ueberlebt und jede Flaschenrakete ist gestartet.", canvas.width / 2, 235);
+      ctx.fillText(`Gesamtzeit: ${formatTime(state.totalRunTime)}`, canvas.width / 2, 270);
+      ctx.fillText("Druecke R fuer einen neuen Durchlauf.", canvas.width / 2, 305);
+      ctx.textAlign = "left";
+    }
+
+    function drawWrappedText(text, x, y, maxWidth, lineHeight, maxLines = 2) {
+      const words = text.split(" ");
+      let line = "";
+      let lineIndex = 0;
+      for (const word of words) {
+        const testLine = line ? `${line} ${word}` : word;
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+          ctx.fillText(line, x, y + lineIndex * lineHeight);
+          line = word;
+          lineIndex += 1;
+          if (lineIndex >= maxLines - 1) {
+            break;
+          }
+        } else {
+          line = testLine;
+        }
+      }
+      if (lineIndex < maxLines) {
+        ctx.fillText(line, x, y + lineIndex * lineHeight);
+      }
+    }
+
+    function formatTime(seconds) {
+      const total = Math.max(0, Math.round(seconds * 10) / 10);
+      const minutes = Math.floor(total / 60);
+      const rest = (total - minutes * 60).toFixed(1).padStart(4, "0");
+      return `${minutes}:${rest}`;
+    }
+
+    function roundRect(x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+
+    function hexToRgba(hex, alpha) {
+      const value = hex.replace("#", "");
+      const bigint = parseInt(value, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function lighten(hex, amount) {
+      const value = hex.replace("#", "");
+      const bigint = parseInt(value, 16);
+      let r = (bigint >> 16) & 255;
+      let g = (bigint >> 8) & 255;
+      let b = bigint & 255;
+      r = Math.round(r + (255 - r) * amount);
+      g = Math.round(g + (255 - g) * amount);
+      b = Math.round(b + (255 - b) * amount);
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    function overlaps(a, b) {
+      return a.x < b.x + b.w &&
+        a.x + a.w > b.x &&
+        a.y < b.y + b.h &&
+        a.y + a.h > b.y;
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function moveTowards(current, target, maxDelta) {
+      if (current < target) {
+        return Math.min(current + maxDelta, target);
+      }
+      if (current > target) {
+        return Math.max(current - maxDelta, target);
+      }
+      return current;
+    }
+
+    document.addEventListener("keydown", event => {
+      if (!state.started && (event.code === "Space" || event.code === "Enter")) {
+        event.preventDefault();
+        startGame();
+        return;
+      }
+
+      if (event.code === "ArrowLeft" || event.code === "KeyA") {
+        keys.left = true;
+      }
+      if (event.code === "ArrowRight" || event.code === "KeyD") {
+        keys.right = true;
+      }
+      if (event.code === "ArrowDown" || event.code === "KeyS") {
+        keys.down = true;
+      }
+      if (event.code === "Space" || event.code === "KeyW" || event.code === "ArrowUp") {
+        event.preventDefault();
+        keys.jumpHeld = true;
+        state.player.jumpBuffer = JUMP_BUFFER_TIME;
+        jump();
+      }
+      if (event.code === "KeyR") {
+        if (!state.started) {
+          startGame();
+        }
+        const restartIndex = state.gameWon ? 0 : state.levelIndex;
+        if (state.gameWon || state.levelIndex === 0) {
+          state.totalRunTime = 0;
+        }
+        state.gameWon = false;
+        resetLevel(restartIndex);
+      }
+    });
+
+    document.addEventListener("keyup", event => {
+      if (event.code === "ArrowLeft" || event.code === "KeyA") {
+        keys.left = false;
+      }
+      if (event.code === "ArrowRight" || event.code === "KeyD") {
+        keys.right = false;
+      }
+      if (event.code === "ArrowDown" || event.code === "KeyS") {
+        keys.down = false;
+      }
+      if (event.code === "Space" || event.code === "KeyW" || event.code === "ArrowUp") {
+        keys.jumpHeld = false;
+      }
+    });
+
+    function bindHoldButton(element, onStart, onEnd = onStart) {
+      if (!element) {
+        return;
+      }
+      const start = event => {
+        event.preventDefault();
+        ensureAudio();
+        onStart(true);
+      };
+      const end = event => {
+        event.preventDefault();
+        onEnd(false);
+      };
+      element.addEventListener("touchstart", start, { passive: false });
+      element.addEventListener("touchend", end, { passive: false });
+      element.addEventListener("touchcancel", end, { passive: false });
+      element.addEventListener("mousedown", start);
+      element.addEventListener("mouseup", end);
+      element.addEventListener("mouseleave", end);
+    }
+
+    function setupTouchControls() {
+      bindHoldButton(ui.touchLeft, pressed => { keys.left = pressed; });
+      bindHoldButton(ui.touchRight, pressed => { keys.right = pressed; });
+      bindHoldButton(ui.touchDown, pressed => { keys.down = pressed; });
+      bindHoldButton(ui.touchJump, pressed => {
+        keys.jumpHeld = pressed;
+        if (pressed) {
+          if (!state.started) {
+            startGame();
+          }
+          state.player.jumpBuffer = JUMP_BUFFER_TIME;
+          jump();
+        }
+      }, pressed => { keys.jumpHeld = pressed; });
+
+      ui.startButton.addEventListener("click", () => {
+        if (!state.started) {
+          startGame();
+        }
+      });
+    }
+
+    function dismissIntroCard() {
+      if (state.started && !state.gameWon) {
+        state.introVisible = false;
+      }
+    }
+
+    canvas.addEventListener("click", dismissIntroCard);
+    canvas.addEventListener("touchstart", dismissIntroCard, { passive: true });
+
+    let lastTime = performance.now();
+    function loop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.033);
+      lastTime = now;
+      update(dt);
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    resetLevel(0);
+    setupTouchControls();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
