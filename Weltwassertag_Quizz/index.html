@@ -1312,60 +1312,192 @@
 
     @media (max-width: 640px) {
       .page-shell {
-        padding: 14px;
+        padding: 10px;
       }
 
       .app {
-        border-radius: 26px;
+        border-radius: 22px;
       }
 
       .screen {
-        padding: 20px;
+        padding: 14px;
       }
 
       .question-card,
       .feedback-card,
       .result-card {
-        padding: 20px;
-        border-radius: 24px;
+        padding: 14px;
+        border-radius: 20px;
       }
 
       .quiz-topbar {
         align-items: stretch;
+        gap: 8px;
       }
 
       .stat-pill {
         width: 100%;
+        min-width: 0;
+        padding: 10px 14px;
+        font-size: 0.95rem;
       }
 
       .button-row .btn {
         width: 100%;
         justify-content: center;
+        min-height: 50px;
+        padding: 12px 18px;
       }
 
       .quiz-layout .button-row {
         position: sticky;
         bottom: 0;
-        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        margin-top: 16px;
+        padding-top: 8px;
+        padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
         background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.92) 34%, rgba(255, 255, 255, 0.96));
       }
 
+      .progress-group {
+        gap: 8px;
+      }
+
+      .progress-meta {
+        font-size: 0.84rem;
+      }
+
+      .progress-track,
+      .score-track {
+        height: 44px;
+      }
+
+      .progress-track::before {
+        top: 10px;
+        height: 10px;
+      }
+
+      .progress-track::after,
+      .score-track::before {
+        height: 8px;
+      }
+
+      .progress-track::after {
+        bottom: 8px;
+      }
+
+      .score-track::before {
+        top: 17px;
+      }
+
+      .progress-fish {
+        width: 40px;
+        height: 26px;
+        top: 8px;
+      }
+
+      .progress-goal {
+        width: 26px;
+        height: 26px;
+        right: 8px;
+        font-size: 0.82rem;
+      }
+
+      .eel-progress {
+        width: 48px;
+        height: 24px;
+        top: 11px;
+      }
+
+      .medal-marker {
+        width: 24px;
+        height: 24px;
+      }
+
+      .medal-marker span {
+        font-size: 0.72rem;
+      }
+
       .option {
-        padding: 16px;
+        padding: 13px 14px;
+        gap: 12px;
+      }
+
+      .option-text {
+        font-size: 0.95rem;
+        line-height: 1.35;
+      }
+
+      .option-marker {
+        width: 22px;
+        height: 22px;
+        font-size: 0.8rem;
+      }
+
+      .question-header {
+        margin-bottom: 12px;
+        gap: 10px;
+      }
+
+      .question-title {
+        font-size: 1.2rem;
+        line-height: 1.22;
+        margin-bottom: 8px;
+      }
+
+      .question-hint,
+      .feedback-text,
+      .feedback-solution,
+      .field-help,
+      .helper-text,
+      .result-note {
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+
+      .options-grid,
+      .input-grid,
+      .number-grid {
+        gap: 10px;
+        margin-top: 16px;
       }
 
       .input-card,
       .number-card,
       .match-card,
       .slider-wrap {
-        padding: 16px;
+        padding: 12px;
+        gap: 8px;
       }
 
       .text-field,
       .number-field,
       .match-select {
-        min-height: 56px;
+        min-height: 50px;
         font-size: 16px;
+        padding: 12px 14px;
+      }
+
+      .field-label {
+        font-size: 0.88rem;
+      }
+
+      .slider-wrap {
+        margin-top: 16px;
+      }
+
+      .slider-header {
+        gap: 8px;
+      }
+
+      .slider-value {
+        min-width: 82px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+      }
+
+      .badge {
+        padding: 7px 10px;
+        font-size: 0.8rem;
       }
 
       .medal {
