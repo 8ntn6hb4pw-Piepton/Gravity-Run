@@ -3,2870 +3,2499 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Der letzte Tropfen</title>
+  <title>Weltwassertag Quiz</title>
   <style>
     :root {
-      --bg-top: #f5c780;
-      --bg-bottom: #7a3f1d;
-      --panel: rgba(38, 20, 10, 0.72);
-      --panel-border: rgba(255, 235, 210, 0.18);
-      --text: #fff4e7;
-      --accent: #8de3ff;
-      --warn: #ffd17a;
-      --danger: #ff7c6b;
-      --good: #8cf7d8;
+      --bg-ice: #f5fcff;
+      --bg-aqua: #d5f2fb;
+      --bg-turquoise: #82d7ea;
+      --water-blue: #338fcd;
+      --water-deep: #1c6ea3;
+      --marine: #081d46;
+      --white: #ffffff;
+      --text-main: #12314b;
+      --text-soft: #4c6a7d;
+      --border-soft: rgba(15, 76, 117, 0.12);
+      --shadow-card: 0 24px 60px rgba(14, 59, 94, 0.12);
+      --shadow-soft: 0 10px 24px rgba(11, 46, 74, 0.12);
+      --success: #1f9f72;
+      --success-bg: #ddf8ee;
+      --error: #d75a6c;
+      --error-bg: #ffe8ee;
+      --selected: #dff6ff;
+      --selected-border: #2897d9;
+      --transition: 220ms ease;
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --content-width: 920px;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      min-height: 100%;
+    }
+
     body {
       margin: 0;
+      font-family: "Avenir Next", "Montserrat", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at 10% 12%, rgba(160, 229, 241, 0.62), transparent 24%),
+        radial-gradient(circle at 78% 10%, rgba(51, 143, 205, 0.22), transparent 26%),
+        radial-gradient(circle at 15% 82%, rgba(28, 110, 163, 0.16), transparent 21%),
+        radial-gradient(circle at 88% 82%, rgba(130, 215, 234, 0.34), transparent 24%),
+        linear-gradient(180deg, #f9fdff 0%, #eaf8fd 40%, #d4ebf8 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(2px);
+    }
+
+    body::before {
+      width: 460px;
+      height: 460px;
+      left: -120px;
+      top: 120px;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(130, 215, 234, 0.22) 55%, transparent 72%);
+      border-radius: 58% 42% 70% 30% / 44% 62% 38% 56%;
+      animation: floatBlob 16s ease-in-out infinite;
+    }
+
+    body::after {
+      width: 390px;
+      height: 390px;
+      right: -100px;
+      bottom: 80px;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.92), rgba(51, 143, 205, 0.16) 58%, transparent 72%);
+      border-radius: 42% 58% 32% 68% / 50% 34% 66% 50%;
+      animation: floatBlob 18s ease-in-out infinite reverse;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 1;
       min-height: 100vh;
+      padding: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-      font-family: "Trebuchet MS", "Verdana", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.2), transparent 22%),
-        radial-gradient(circle at 80% 20%, rgba(255, 188, 110, 0.32), transparent 18%),
-        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
     }
 
-    .game-shell {
-      width: min(1280px, 100%);
-    }
-
-    .canvas-wrap {
-      position: relative;
-      padding: 8px;
-      border-radius: 24px;
+    .water-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
       overflow: hidden;
-      background: var(--panel);
-      border: 1px solid var(--panel-border);
-      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.32);
-      backdrop-filter: blur(8px);
+      z-index: 0;
     }
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 18px;
-    }
-
-    .hud {
+    .wave,
+    .drop {
       position: absolute;
-      inset: 16px 16px auto 16px;
-      display: grid;
-      gap: 10px;
-      z-index: 4;
+      opacity: 0.45;
+    }
+
+    .wave {
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      border-radius: 999px;
+      animation: drift 20s linear infinite;
+    }
+
+    .wave-1 {
+      width: 380px;
+      height: 120px;
+      left: -40px;
+      bottom: 80px;
+    }
+
+    .wave-2 {
+      width: 320px;
+      height: 100px;
+      right: 5%;
+      top: 100px;
+      animation-duration: 24s;
+      animation-delay: -8s;
+    }
+
+    .wave-3 {
+      width: 220px;
+      height: 70px;
+      right: 18%;
+      bottom: 18%;
+      animation-duration: 18s;
+      animation-delay: -5s;
+    }
+
+    .drop {
+      width: 14px;
+      height: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(126, 216, 230, 0.45));
+      border-radius: 50% 50% 56% 56% / 42% 42% 58% 58%;
+      transform: rotate(25deg);
+      box-shadow: 0 6px 18px rgba(42, 137, 201, 0.12);
+      animation: rise 14s ease-in-out infinite;
+    }
+
+    .drop::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      clip-path: polygon(50% 0%, 78% 36%, 90% 62%, 74% 100%, 28% 100%, 10% 62%, 22% 36%);
+      background: inherit;
+    }
+
+    .drop-1 {
+      left: 12%;
+      bottom: 18%;
+      animation-delay: -2s;
+    }
+
+    .drop-2 {
+      right: 12%;
+      bottom: 30%;
+      animation-delay: -6s;
+    }
+
+    .drop-3 {
+      left: 72%;
+      top: 18%;
+      animation-delay: -10s;
+    }
+
+    .app {
+      width: min(100%, var(--content-width));
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 36px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .screen {
+      display: none;
+      min-height: min(88vh, 860px);
+      padding: 32px;
+      position: relative;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      animation: fadeUp 420ms ease;
+    }
+
+    .screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(126, 216, 230, 0.16), transparent 26%),
+        radial-gradient(circle at bottom left, rgba(21, 92, 141, 0.09), transparent 24%);
       pointer-events: none;
     }
 
-    .hud-top {
+    .screen > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero,
+    .result-hero {
+      flex: 1;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
+      gap: 28px;
+      align-items: center;
     }
 
-    .stat,
-    .message,
-    .mini-panel,
-    .badge {
-      padding: 10px 12px;
-      border-radius: 16px;
-      background: rgba(13, 18, 28, 0.56);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(8px);
+    .hero {
+      grid-template-columns: 1.1fr 0.9fr;
     }
 
-    .stat span {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #ffdba7;
-    }
-
-    .stat strong {
-      font-size: 1rem;
-    }
-
-    .hud-bottom {
-      display: flex;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
       gap: 10px;
-      align-items: flex-start;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--water-deep);
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--bg-turquoise), var(--water-blue));
+      box-shadow: 0 0 0 6px rgba(126, 216, 230, 0.2);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    .title {
+      font-size: clamp(2.9rem, 6vw, 5.2rem);
+      line-height: 0.94;
+      color: var(--marine);
+      margin-top: 18px;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+      text-wrap: balance;
+      text-shadow: 0 10px 30px rgba(8, 29, 70, 0.08);
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.7;
+      color: var(--text-soft);
+      max-width: 56ch;
+      margin-top: 18px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .feature-card,
+    .stat-pill,
+    .question-card,
+    .feedback-card,
+    .result-card {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .feature-card {
+      padding: 18px;
+      border-radius: var(--radius-lg);
+    }
+
+    .feature-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      color: var(--water-deep);
+    }
+
+    .feature-card span {
+      color: var(--text-soft);
+      line-height: 1.5;
+      font-size: 0.96rem;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 420px;
+      border-radius: 36px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.96), transparent 28%),
+        radial-gradient(circle at 76% 24%, rgba(130, 215, 234, 0.52), transparent 32%),
+        linear-gradient(180deg, rgba(51, 143, 205, 0.12) 0%, rgba(8, 29, 70, 0.14) 100%);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), var(--shadow-soft);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .hero-visual::before,
+    .hero-visual::after {
+      content: "";
+      position: absolute;
+      inset: auto;
+      pointer-events: none;
+    }
+
+    .hero-visual::before {
+      width: 125%;
+      height: 170px;
+      left: -12%;
+      bottom: -36px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(14, 82, 128, 0.16));
+      border-radius: 54% 46% 0 0 / 100% 100% 0 0;
+    }
+
+    .hero-visual::after {
+      width: 210px;
+      height: 210px;
+      right: -42px;
+      top: -26px;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.86), rgba(130, 215, 234, 0.16) 62%, transparent 64%);
+      border-radius: 50%;
+      opacity: 0.85;
+    }
+
+    .pool {
+      position: absolute;
+      inset: 44px 26px 34px 28px;
+      border-radius: 42% 58% 48% 52% / 38% 44% 56% 62%;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.14) 22%, transparent 24%),
+        radial-gradient(circle at 58% 28%, rgba(255, 255, 255, 0.26), transparent 18%),
+        linear-gradient(145deg, rgba(144, 224, 239, 0.8), rgba(51, 143, 205, 0.82) 52%, rgba(8, 29, 70, 0.95));
+      animation: morph 14s ease-in-out infinite;
+      box-shadow:
+        inset -18px -26px 40px rgba(6, 23, 54, 0.18),
+        inset 18px 18px 30px rgba(255, 255, 255, 0.12),
+        0 24px 40px rgba(8, 29, 70, 0.12);
+    }
+
+    .pool::before,
+    .pool::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .pool::before {
+      width: 210px;
+      height: 66px;
+      left: 13%;
+      top: 21%;
+    }
+
+    .pool::after {
+      width: 126px;
+      height: 42px;
+      right: 11%;
+      bottom: 18%;
+    }
+
+    .pool-glow,
+    .pool-wave,
+    .pool-swirl {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .pool-glow {
+      width: 180px;
+      height: 180px;
+      left: 18px;
+      bottom: 20px;
+      border-radius: 58% 42% 56% 44% / 42% 52% 48% 58%;
+      background: radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.06) 52%, transparent 58%);
+      filter: blur(2px);
+    }
+
+    .pool-wave {
+      left: 9%;
+      right: 8%;
+      bottom: 56px;
+      height: 74px;
+      border-top: 3px solid rgba(255, 255, 255, 0.28);
+      border-radius: 50% 50% 0 0;
+      opacity: 0.75;
+    }
+
+    .pool-swirl {
+      width: 120px;
+      height: 120px;
+      right: 34px;
+      bottom: 36px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      box-shadow:
+        inset 0 0 0 12px rgba(255, 255, 255, 0.04),
+        inset 0 0 0 24px rgba(255, 255, 255, 0.03);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .btn {
+      min-height: 56px;
+      padding: 15px 24px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition), opacity var(--transition);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-2px);
+    }
+
+    .btn:focus-visible,
+    .option:focus-visible {
+      outline: 3px solid rgba(42, 137, 201, 0.28);
+      outline-offset: 3px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--water-blue), var(--water-deep));
+      color: var(--white);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      box-shadow: 0 18px 32px rgba(21, 92, 141, 0.24);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--water-deep);
+    }
+
+    .btn[disabled] {
+      cursor: not-allowed;
+      opacity: 0.45;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .quiz-layout {
+      display: grid;
+      gap: 22px;
+      height: 100%;
+    }
+
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
       justify-content: space-between;
     }
 
-    .message {
-      min-height: 64px;
-      max-width: min(720px, 100%);
-      line-height: 1.4;
+    .progress-group {
+      flex: 1 1 360px;
+      display: grid;
+      gap: 12px;
     }
 
-    .message strong {
-      color: var(--good);
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--text-soft);
+      font-weight: 600;
+      font-size: 0.96rem;
     }
 
-    .battery-wrap {
+    .score-progress {
       display: grid;
       gap: 8px;
     }
 
-    .pack-slots {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 5px;
+    .score-progress .progress-meta {
+      font-size: 0.9rem;
     }
 
-    .pack-slot {
-      position: relative;
-      height: 22px;
+    .progress-track {
+      width: 100%;
+      height: 54px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.72), transparent 18%),
+        linear-gradient(180deg, rgba(223, 247, 255, 0.92), rgba(188, 228, 245, 0.95));
+      border: 1px solid rgba(42, 137, 201, 0.16);
       overflow: hidden;
-      border-radius: 8px;
-      border: 2px solid rgba(255, 247, 231, 0.85);
-      background: rgba(9, 14, 22, 0.42);
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
     }
 
-    .pack-slot::after {
+    .progress-track::before,
+    .progress-track::after {
       content: "";
       position: absolute;
-      right: 5px;
-      top: -4px;
-      width: 8px;
-      height: 5px;
-      border-radius: 6px 6px 0 0;
-      background: rgba(255, 247, 231, 0.85);
+      left: 14px;
+      right: 14px;
+      border-radius: 999px;
+      pointer-events: none;
     }
 
-    .pack-fill {
+    .progress-track::before {
+      top: 14px;
+      height: 12px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.08));
+      opacity: 0.7;
+    }
+
+    .progress-track::after {
+      bottom: 10px;
+      height: 10px;
+      background: linear-gradient(90deg, rgba(51, 143, 205, 0.2), rgba(28, 110, 163, 0.06));
+      opacity: 0.8;
+    }
+
+    .progress-fill {
       position: absolute;
       left: 0;
-      right: 0;
+      top: 0;
       bottom: 0;
+      width: 0;
+      transition: width 360ms ease;
+      background: linear-gradient(90deg, rgba(126, 216, 230, 0.15), rgba(51, 143, 205, 0.18));
+    }
+
+    .progress-fish {
+      position: absolute;
+      left: clamp(12px, calc(var(--progress, 0%) - 20px), calc(100% - 56px));
+      top: 8px;
+      width: 48px;
+      height: 32px;
+      transition: left 360ms ease, transform 360ms ease;
+      filter: drop-shadow(0 8px 16px rgba(21, 92, 141, 0.18));
+      animation: fishSwim 2.8s ease-in-out infinite;
+    }
+
+    .progress-fish svg {
+      display: block;
       width: 100%;
       height: 100%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.18), #8de3ff 55%, #58c4ff);
-      transition: height 120ms ease;
+      transform: scaleX(-1);
+      transform-origin: center;
     }
 
-    .pack-slot.cracked {
-      border-color: rgba(255, 160, 120, 0.9);
+    .progress-goal {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      color: var(--water-deep);
+      font-size: 1rem;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.68);
+      box-shadow: 0 6px 16px rgba(10, 45, 77, 0.1);
     }
 
-    .pack-slot.cracked::before {
+    .score-track {
+      width: 100%;
+      height: 56px;
+      border-radius: 999px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.68), transparent 18%),
+        linear-gradient(180deg, rgba(230, 247, 251, 0.96), rgba(193, 231, 239, 0.96));
+      border: 1px solid rgba(42, 137, 201, 0.14);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    .score-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      background: linear-gradient(90deg, rgba(126, 216, 230, 0.16), rgba(28, 110, 163, 0.16));
+      transition: width 360ms ease;
+    }
+
+    .score-track::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 20px;
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.06));
+    }
+
+    .eel-progress {
+      position: absolute;
+      left: clamp(10px, calc(var(--score-progress, 0%) - 22px), calc(100% - 64px));
+      top: 13px;
+      width: 56px;
+      height: 28px;
+      transition: left 360ms ease;
+      filter: drop-shadow(0 8px 14px rgba(8, 29, 70, 0.16));
+      animation: eelGlide 3.2s ease-in-out infinite;
+    }
+
+    .eel-progress svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .medal-marker {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 14px rgba(10, 45, 77, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .medal-marker::before {
       content: "";
       position: absolute;
       inset: 3px;
-      background:
-        linear-gradient(135deg, transparent 38%, rgba(255, 218, 199, 0.9) 40%, transparent 45%),
-        linear-gradient(45deg, transparent 48%, rgba(255, 218, 199, 0.7) 50%, transparent 54%);
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.45);
     }
 
-    .item-strip {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      min-height: 24px;
-      align-items: center;
-    }
-
-    .collect-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-size: 0.62rem;
-      color: #eefbff;
-    }
-
-    .collect-icons {
-      display: inline-flex;
-      gap: 3px;
-      align-items: center;
-    }
-
-    .collect-icon {
-      width: 7px;
-      height: 11px;
-      border-radius: 2px 2px 3px 3px;
-      display: inline-block;
-      position: relative;
-      background: rgba(255,255,255,0.18);
-    }
-
-    .collect-icon::before {
+    .medal-marker::after {
       content: "";
       position: absolute;
-      left: 2px;
-      top: -3px;
-      width: 3px;
-      height: 3px;
-      border-radius: 2px 2px 0 0;
-      background: currentColor;
-      opacity: 0.9;
+      top: 4px;
+      left: 6px;
+      width: 15px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.42);
+      transform: rotate(-18deg);
     }
 
-    .collect-icon.bottle {
-      color: #e8fbff;
-      background: linear-gradient(180deg, #ecfbff, #7dd8ff 68%, #4db6f2);
+    .medal-marker span {
+      position: relative;
+      z-index: 1;
+      font-size: 0.85rem;
+      line-height: 1;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
     }
 
-    .collect-icon.seed {
-      width: 8px;
-      height: 8px;
-      border-radius: 60% 55% 50% 55%;
-      transform: rotate(22deg);
-      color: #7a5a31;
-      background: linear-gradient(180deg, #8f6a38, #6b4d25);
+    .medal-marker.bronze {
+      left: 50%;
+      background: linear-gradient(145deg, #efc5a2, #bc7d48 58%, #8a5630);
     }
 
-    .collect-icon.seed::before {
-      display: none;
+    .medal-marker.silver {
+      left: 70%;
+      background: linear-gradient(145deg, #eef6ff, #b9c9da 58%, #8596a8);
+    }
+
+    .medal-marker.gold {
+      left: 90%;
+      background: linear-gradient(145deg, #f8e38f, #d7a82f 60%, #b17b1e);
+    }
+
+    .stat-pill {
+      min-width: 126px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 800;
+      color: var(--water-deep);
+    }
+
+    .stat-pill::before {
+      content: "💧";
+      font-size: 1rem;
+    }
+
+    .question-card,
+    .feedback-card,
+    .result-card {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .question-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .question-tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .badge {
-      justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
       border-radius: 999px;
+      background: rgba(126, 216, 230, 0.14);
+      color: var(--water-deep);
       font-size: 0.9rem;
-      color: #ffe8ca;
+      font-weight: 700;
     }
 
-    .start-btn {
-      position: absolute;
-      left: 50%;
-      bottom: 112px;
-      z-index: 5;
-      transform: translateX(-50%);
-      border: 0;
-      border-radius: 999px;
-      padding: 14px 28px;
+    .badge.station {
+      background: rgba(21, 92, 141, 0.1);
+    }
+
+    .question-title {
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      line-height: 1.3;
+      color: var(--marine);
+      margin-bottom: 12px;
+    }
+
+    .question-hint {
+      color: var(--text-soft);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .input-grid,
+    .number-grid,
+    .match-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .slider-wrap {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: rgba(245, 252, 255, 0.94);
+      border: 1px solid rgba(42, 137, 201, 0.14);
+      box-shadow: 0 8px 20px rgba(10, 45, 77, 0.05);
+    }
+
+    .input-card,
+    .number-card,
+    .match-card {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      background: rgba(245, 252, 255, 0.94);
+      border: 2px solid transparent;
+      box-shadow: 0 8px 20px rgba(10, 45, 77, 0.05);
+      transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+    }
+
+    .input-card.correct,
+    .number-card.correct,
+    .match-card.correct,
+    .slider-wrap.correct {
+      background: var(--success-bg);
+      border-color: rgba(31, 159, 114, 0.32);
+    }
+
+    .input-card.incorrect,
+    .number-card.incorrect,
+    .match-card.incorrect,
+    .slider-wrap.incorrect {
+      background: var(--error-bg);
+      border-color: rgba(215, 90, 108, 0.26);
+    }
+
+    .field-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--water-deep);
+    }
+
+    .text-field,
+    .number-field,
+    .match-select {
+      width: 100%;
+      min-height: 58px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 2px solid rgba(18, 49, 75, 0.12);
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--text-main);
       font: inherit;
-      font-weight: bold;
       font-size: 1rem;
-      color: #45200d;
-      background: linear-gradient(180deg, #8de3ff, #58c4ff);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
-      cursor: pointer;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+      appearance: none;
     }
 
-    .start-btn.hidden {
-      display: none;
+    .text-field:focus,
+    .number-field:focus,
+    .match-select:focus,
+    .slider-field:focus {
+      outline: none;
+      border-color: rgba(42, 137, 201, 0.65);
+      box-shadow: 0 0 0 4px rgba(42, 137, 201, 0.12);
     }
 
-    .touch-controls {
-      position: absolute;
-      inset: auto 12px 88px 12px;
-      z-index: 4;
-      display: none;
+    .field-help {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    .slider-header {
+      display: flex;
       justify-content: space-between;
-      align-items: flex-end;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .slider-value {
+      min-width: 96px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow-soft);
+      color: var(--marine);
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .slider-scale {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--text-soft);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .slider-field {
+      width: 100%;
+      accent-color: var(--water-blue);
+      min-height: 34px;
+    }
+
+    .result-note {
+      margin-top: -6px;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      padding: 18px 18px 18px 20px;
+      border-radius: var(--radius-md);
+      background: rgba(245, 252, 255, 0.94);
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: transform var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
+      color: var(--text-main);
+      box-shadow: 0 8px 20px rgba(10, 45, 77, 0.05);
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border-color: rgba(42, 137, 201, 0.18);
+    }
+
+    .option.selected {
+      background: var(--selected);
+      border-color: var(--selected-border);
+      box-shadow: 0 14px 28px rgba(42, 137, 201, 0.14);
+    }
+
+    .option.correct {
+      background: var(--success-bg);
+      border-color: rgba(31, 159, 114, 0.32);
+      color: #155a45;
+    }
+
+    .option.incorrect {
+      background: var(--error-bg);
+      border-color: rgba(215, 90, 108, 0.26);
+      color: #7d2d42;
+    }
+
+    .option.disabled {
       pointer-events: none;
     }
 
-    .touch-pad,
-    .touch-actions {
+    .option-marker {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid rgba(18, 49, 75, 0.22);
       display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 0.92rem;
+      color: transparent;
+      background: var(--white);
+      transition: inherit;
+    }
+
+    .option.multiple .option-marker {
+      border-radius: 8px;
+    }
+
+    .option.selected .option-marker {
+      color: var(--white);
+      background: linear-gradient(135deg, var(--water-blue), var(--water-deep));
+      border-color: transparent;
+    }
+
+    .option.correct .option-marker {
+      color: var(--white);
+      background: var(--success);
+      border-color: transparent;
+    }
+
+    .option.incorrect .option-marker {
+      color: var(--white);
+      background: var(--error);
+      border-color: transparent;
+    }
+
+    .option-text {
+      font-size: 1rem;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .feedback-card {
+      margin-top: 18px;
+      display: none;
+      gap: 16px;
+    }
+
+    .feedback-card.show {
+      display: grid;
+      animation: fadeUp 360ms ease;
+    }
+
+    .feedback-state {
+      display: inline-flex;
+      align-items: center;
       gap: 10px;
-      pointer-events: auto;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 800;
     }
 
-    .touch-pad {
-      grid-template-columns: 70px 70px;
+    .feedback-state.correct {
+      color: #155a45;
+      background: var(--success-bg);
     }
 
-    .touch-actions {
-      grid-template-columns: 82px 82px;
+    .feedback-state.incorrect {
+      color: #842a3f;
+      background: var(--error-bg);
     }
 
-    .touch-btn {
-      min-height: 70px;
-      border: 0;
-      border-radius: 22px;
-      background: rgba(13, 18, 28, 0.82);
-      color: #fff3df;
-      font: inherit;
-      font-weight: bold;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-      touch-action: manipulation;
-      user-select: none;
-      -webkit-user-select: none;
+    .feedback-state.skipped {
+      color: var(--water-deep);
+      background: rgba(223, 247, 255, 0.92);
     }
 
-    .touch-btn:active {
-      transform: scale(0.96);
-      background: rgba(45, 58, 81, 0.92);
+    .feedback-text {
+      color: var(--text-soft);
+      line-height: 1.7;
+      font-size: 1rem;
     }
 
-    @media (max-width: 940px), (hover: none) and (pointer: coarse) {
-      body {
-        padding: 0;
-        min-height: 100dvh;
-        background: #120c08;
+    .feedback-solution {
+      color: var(--water-deep);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      font-weight: 700;
+    }
+
+    .result-hero {
+      grid-template-columns: 0.95fr 1.05fr;
+    }
+
+    .result-card {
+      display: grid;
+      gap: 20px;
+    }
+
+    .medal-wrap {
+      display: grid;
+      place-items: center;
+      padding: 16px 0 6px;
+    }
+
+    .medal {
+      position: relative;
+      width: 180px;
+      height: 240px;
+      display: grid;
+      place-items: center;
+    }
+
+    .ribbons {
+      position: absolute;
+      top: 0;
+      display: flex;
+      gap: 18px;
+    }
+
+    .ribbon {
+      width: 46px;
+      height: 92px;
+      border-radius: 18px 18px 10px 10px;
+      background: linear-gradient(180deg, var(--water-deep), var(--marine));
+      clip-path: polygon(0 0, 100% 0, 100% 82%, 50% 100%, 0 82%);
+      box-shadow: 0 14px 26px rgba(10, 45, 77, 0.18);
+    }
+
+    .medal-disc {
+      position: absolute;
+      bottom: 12px;
+      width: 156px;
+      height: 156px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 22px 36px rgba(10, 45, 77, 0.18);
+      overflow: hidden;
+    }
+
+    .medal-disc::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.54);
+    }
+
+    .medal-disc::after {
+      content: "";
+      position: absolute;
+      inset: auto auto 26px 30px;
+      width: 94px;
+      height: 28px;
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      transform: rotate(-16deg);
+    }
+
+    .medal-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .medal-inner strong {
+      font-size: 2.2rem;
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.96);
+    }
+
+    .medal-inner span {
+      font-size: 0.92rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .medal.gold .medal-disc {
+      background: linear-gradient(145deg, #f8e38f, #d7a82f 60%, #b17b1e);
+    }
+
+    .medal.silver .medal-disc {
+      background: linear-gradient(145deg, #eef6ff, #b9c9da 58%, #8596a8);
+    }
+
+    .medal.bronze .medal-disc {
+      background: linear-gradient(145deg, #efc5a2, #bc7d48 58%, #8a5630);
+    }
+
+    .score-ring {
+      width: 120px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.98) 0 53%, transparent 54% 100%),
+        conic-gradient(var(--water-blue) 0deg, var(--water-deep) var(--score-angle), rgba(18, 49, 75, 0.1) var(--score-angle), rgba(18, 49, 75, 0.1) 360deg);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), var(--shadow-soft);
+    }
+
+    .score-ring strong {
+      font-size: 1.5rem;
+      color: var(--marine);
+      line-height: 1;
+    }
+
+    .score-ring span {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      font-weight: 700;
+    }
+
+    .result-title {
+      font-size: clamp(2.2rem, 4.4vw, 3.4rem);
+      line-height: 1.05;
+      color: var(--marine);
+      letter-spacing: -0.03em;
+    }
+
+    .result-copy {
+      color: var(--text-soft);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .result-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .helper-text {
+      font-size: 0.96rem;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      margin-top: auto;
+      padding-top: 22px;
+      color: rgba(18, 49, 75, 0.62);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatBlob {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(12px, -16px, 0) scale(1.04);
+      }
+    }
+
+    @keyframes drift {
+      0%,
+      100% {
+        transform: translateX(0) translateY(0);
+      }
+      50% {
+        transform: translateX(18px) translateY(-10px);
+      }
+    }
+
+    @keyframes rise {
+      0%,
+      100% {
+        transform: translateY(0) rotate(25deg);
+        opacity: 0.28;
+      }
+      50% {
+        transform: translateY(-14px) rotate(20deg);
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes bob {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes morph {
+      0%,
+      100% {
+        border-radius: 36% 64% 48% 52% / 40% 42% 58% 60%;
+      }
+      50% {
+        border-radius: 54% 46% 60% 40% / 48% 60% 40% 52%;
+      }
+    }
+
+    @keyframes fishSwim {
+      0%,
+      100% {
+        transform: translateY(0) scaleX(1);
+      }
+      50% {
+        transform: translateY(-2px) scaleX(1.02);
+      }
+    }
+
+    @keyframes eelGlide {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-1px);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .screen {
+        min-height: auto;
       }
 
-      .game-shell {
-        width: 100vw;
-        height: 100dvh;
+      .hero,
+      .result-hero {
+        grid-template-columns: 1fr;
       }
 
-      .canvas-wrap,
-      canvas {
-        border-radius: 0;
+      .hero-visual {
+        min-height: 320px;
       }
 
-      .canvas-wrap {
-        padding: 0;
-        width: 100vw;
-        height: 100dvh;
-        border: 0;
-        display: flex;
-        align-items: center;
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-shell {
+        padding: 14px;
+      }
+
+      .app {
+        border-radius: 26px;
+      }
+
+      .screen {
+        padding: 20px;
+      }
+
+      .question-card,
+      .feedback-card,
+      .result-card {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .quiz-topbar {
+        align-items: stretch;
+      }
+
+      .stat-pill {
+        width: 100%;
+      }
+
+      .button-row .btn {
+        width: 100%;
         justify-content: center;
-        background: #120c08;
       }
 
-      canvas {
-        width: 100vw;
-        max-width: 100vw;
-        max-height: 100dvh;
-        height: auto;
+      .quiz-layout .button-row {
+        position: sticky;
+        bottom: 0;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.92) 34%, rgba(255, 255, 255, 0.96));
       }
 
-      .touch-controls {
-        display: flex;
-        inset: auto 6px 8px 6px;
+      .option {
+        padding: 16px;
       }
 
-      .hud {
-        inset: 8px auto auto 8px;
-        width: min(166px, calc(100vw - 16px));
-        display: grid;
-        gap: 4px;
-        z-index: 5;
+      .input-card,
+      .number-card,
+      .match-card,
+      .slider-wrap {
+        padding: 16px;
       }
 
-      .hud-top {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 4px;
+      .text-field,
+      .number-field,
+      .match-select {
+        min-height: 56px;
+        font-size: 16px;
       }
 
-      .hud-top .stat:nth-child(4),
-      .hud-bottom .message,
-      .badge {
-        display: none;
+      .medal {
+        transform: scale(0.92);
       }
+    }
 
-      .stat,
-      .mini-panel {
-        padding: 4px 5px;
-        border-radius: 9px;
-        background: rgba(10, 14, 22, 0.54);
-      }
-
-      .stat span {
-        margin-bottom: 1px;
-        font-size: 0.48rem;
-      }
-
-      .stat strong {
-        font-size: 0.66rem;
-      }
-
-      .hud-bottom {
-        display: block;
-      }
-
-      .mini-panel {
-        max-width: 166px;
-      }
-
-      .battery-wrap {
-        gap: 2px;
-      }
-
-      #waterText,
-      #factText {
-        margin: 0;
-        font-size: 0.6rem;
-        line-height: 1.15;
-      }
-
-      .item-strip {
-        min-height: 0;
-        gap: 3px;
-        display: none;
-      }
-
-      .touch-pad {
-        grid-template-columns: 58px 58px;
-        gap: 8px;
-      }
-
-      .touch-actions {
-        grid-template-columns: 68px 68px;
-        gap: 8px;
-      }
-
-      .touch-btn {
-        min-height: 54px;
-        border-radius: 16px;
-        font-size: 0.78rem;
-        background: rgba(10, 14, 22, 0.68);
-        box-shadow:
-          inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-          0 10px 22px rgba(0, 0, 0, 0.22);
-      }
-
-      .start-btn {
-        bottom: 86px;
-        padding: 12px 20px;
-        font-size: 0.9rem;
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="game-shell">
-    <main class="canvas-wrap">
-      <canvas id="game" width="980" height="600"></canvas>
-      <div class="hud">
-        <div class="hud-top">
-          <div class="stat">
-            <span id="labelOne">Level</span>
-            <strong id="levelName">-</strong>
-          </div>
-          <div class="stat">
-            <span id="labelTwo">Zeit</span>
-            <strong id="timeLeft">-</strong>
-          </div>
-          <div class="stat">
-            <span id="labelThree">Wasserflaschen</span>
-            <strong id="bottleCount">-</strong>
-          </div>
-          <div class="stat">
-            <span id="labelFour">Gravitation</span>
-            <strong id="gravityFactor">-</strong>
-          </div>
-        </div>
-        <div class="hud-bottom">
-          <div class="message" id="messageBox"></div>
-          <div class="mini-panel">
-            <div class="battery-wrap">
-              <p id="waterText">Swoppie 100% · Austrocknung 0%</p>
+  <div class="water-layer" aria-hidden="true">
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    <div class="drop drop-1"></div>
+    <div class="drop drop-2"></div>
+    <div class="drop drop-3"></div>
+  </div>
+
+  <div class="page-shell">
+    <main class="app" aria-live="polite">
+      <section class="screen active" id="start-screen">
+        <div class="hero">
+          <div>
+            <span class="eyebrow">Begleitquiz zur Ausstellung</span>
+            <h1 class="title">Weltwassertag Quiz</h1>
+            <p class="subtitle">Erkunde die Ausstellung, beantworte die Fragen und sammle Punkte.</p>
+
+            <div class="feature-grid" aria-label="Quiz-Vorteile">
+              <article class="feature-card">
+                <strong>25 Fragen</strong>
+                <span>Eine Mischung aus Wissen, Beobachtung und Entdecken begleitet dich durch die Ausstellung.</span>
+              </article>
+              <article class="feature-card">
+                <strong>Direktes Feedback</strong>
+                <span>Nach jeder Frage siehst du sofort die Auflösung und eine kurze Erklärung.</span>
+              </article>
+              <article class="feature-card">
+                <strong>Medaille am Ende</strong>
+                <span>Je nach Ergebnis erreichst du Bronze, Silber oder Gold.</span>
+              </article>
             </div>
-            <div class="item-strip" id="itemStrip"></div>
-            <p id="factText">Wuestenwind, Schwitzen und Wassersauger werden hier erklaert.</p>
+
+            <div class="button-row">
+              <button class="btn btn-primary" id="start-button" type="button">Quiz starten</button>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="pool">
+              <div class="pool-glow"></div>
+              <div class="pool-wave"></div>
+              <div class="pool-swirl"></div>
+            </div>
           </div>
         </div>
-        <div class="badge" id="statusBadge">Tropfen bereit</div>
-      </div>
-      <button class="start-btn" id="startButton" type="button">Spiel Starten</button>
-      <div class="touch-controls">
-        <div class="touch-pad">
-          <button class="touch-btn" id="touchLeft" type="button">L</button>
-          <button class="touch-btn" id="touchRight" type="button">R</button>
+        <p class="footer-note">Optimiert für Handy, Tablet und Desktop.</p>
+      </section>
+
+      <section class="screen" id="quiz-screen">
+        <div class="quiz-layout">
+          <div class="quiz-topbar">
+            <div class="progress-group">
+              <div class="progress-meta">
+                <span id="progress-label">Frage 1 von 25</span>
+                <span id="progress-percent">5%</span>
+              </div>
+              <div class="progress-track" aria-hidden="true">
+                <div class="progress-fill" id="progress-fill"></div>
+                <div class="progress-fish" id="progress-fish">
+                  <svg viewBox="0 0 96 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="fishGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#89def0" />
+                        <stop offset="55%" stop-color="#338fcd" />
+                        <stop offset="100%" stop-color="#1c6ea3" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M10 30C20 15 43 9 61 15C73 19 81 17 91 10L83 28L91 50C81 42 72 41 61 45C43 51 20 45 10 30Z" fill="url(#fishGradient)" />
+                    <path d="M31 24C43 18 57 18 67 23" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="27" cy="28" r="3.6" fill="#ffffff" />
+                    <circle cx="28" cy="28" r="1.8" fill="#081d46" />
+                    <path d="M56 26C61 27 65 30 67 34" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="progress-goal">🏁</div>
+              </div>
+              <div class="score-progress">
+                <div class="progress-meta">
+                  <span>Punkte-Fortschritt</span>
+                  <span id="score-progress-text">0 von 25 Punkten</span>
+                </div>
+                <div class="score-track" id="score-track" aria-hidden="true">
+                  <div class="score-fill" id="score-fill"></div>
+                  <div class="eel-progress" id="eel-progress">
+                    <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="eelGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#7fd77f" />
+                          <stop offset="60%" stop-color="#2f9c61" />
+                          <stop offset="100%" stop-color="#1d6f49" />
+                        </linearGradient>
+                      </defs>
+                      <path d="M9 34C19 19 35 14 54 19C72 24 81 42 98 41C107 40 113 35 116 28C111 25 107 21 104 16C99 23 92 28 81 27C65 26 56 12 39 11C26 10 16 15 9 26" fill="none" stroke="url(#eelGradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="18" cy="29" r="3.2" fill="#ffffff" />
+                      <circle cx="19" cy="29" r="1.4" fill="#103a2a" />
+                    </svg>
+                  </div>
+                  <div class="medal-marker bronze"><span>🥉</span></div>
+                  <div class="medal-marker silver"><span>🥈</span></div>
+                  <div class="medal-marker gold"><span>🥇</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="stat-pill" id="score-pill">0 Punkte</div>
+          </div>
+
+          <article class="question-card">
+            <div class="question-header">
+              <div class="question-tag-group" id="question-tags"></div>
+            </div>
+
+            <h2 class="question-title" id="question-text"></h2>
+            <p class="question-hint" id="question-hint"></p>
+
+            <div class="options-grid" id="options-container"></div>
+
+            <div class="button-row">
+              <button class="btn btn-secondary" id="skip-button" type="button" hidden>Überspringen</button>
+              <button class="btn btn-primary" id="confirm-button" type="button" disabled>Antwort prüfen</button>
+            </div>
+          </article>
+
+          <article class="feedback-card" id="feedback-card" aria-live="polite">
+            <div class="feedback-state" id="feedback-state"></div>
+            <p class="feedback-text" id="feedback-text"></p>
+            <div class="button-row">
+              <button class="btn btn-primary" id="next-button" type="button">Weiter</button>
+            </div>
+          </article>
         </div>
-        <div class="touch-actions">
-          <button class="touch-btn" id="touchDown" type="button">Duck</button>
-          <button class="touch-btn" id="touchJump" type="button">Sprung</button>
+      </section>
+
+      <section class="screen" id="result-screen">
+        <div class="result-hero">
+          <div class="result-card">
+            <div class="medal-wrap">
+              <div class="medal bronze" id="medal">
+                <div class="ribbons">
+                  <div class="ribbon"></div>
+                  <div class="ribbon"></div>
+                </div>
+                <div class="medal-disc">
+                  <div class="medal-inner">
+                    <strong id="medal-letter">B</strong>
+                    <span id="medal-name">Bronze</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-stats">
+              <div class="score-ring" id="score-ring" style="--score-angle: 0deg;">
+                <div>
+                  <strong id="final-score">0/25</strong>
+                  <span>Punkte</span>
+                </div>
+              </div>
+              <div>
+                <p class="helper-text">Dein Ergebnis im Überblick</p>
+                <p class="helper-text" id="result-medal-text">Bronze-Medaille</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="result-card">
+            <span class="eyebrow">Quiz abgeschlossen</span>
+            <h2 class="result-title" id="result-title">Wasser-Entdecker</h2>
+            <p class="result-copy" id="result-copy"></p>
+            <p class="result-note" id="result-note">Medaillen: Bronze ab 50 %, Silber ab 70 %, Gold ab 90 %.</p>
+            <div class="button-row">
+              <button class="btn btn-primary" id="restart-button" type="button">Nochmal spielen</button>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </main>
   </div>
 
   <script>
-    const canvas = document.getElementById("game");
-    const ctx = canvas.getContext("2d");
+    // Vollstaendige Fragenbasis fuer das Smartphone-Quiz.
+    const baseQuizQuestions = [
+      {
+        id: 1,
+        type: "single",
+        question: "Wie viel Liter Wasser verbraucht ein Tourist im Urlaub durchschnittlich pro Tag?",
+        options: ["80-150 Liter", "200-300 Liter", "400-800 Liter", "900-1200 Liter"],
+        correctAnswers: [2],
+        explanation: "Im Urlaub ist der Wasserverbrauch oft deutlich höher als im Alltag.",
+        solutionText: "Richtig ist: 400-800 Liter."
+      },
+      {
+        id: 2,
+        type: "text-multi",
+        question: "Nenne mindestens drei Inhaltsstoffe von Wasser.",
+        hint: "Gib drei verschiedene Begriffe ein. Kleine Schreibfehler werden toleriert.",
+        inputCount: 3,
+        acceptedTerms: [
+          "Natrium", "Nitrat", "Nitrit", "Sulfat", "Fluorid", "Mangan",
+          "Arsen", "Uran", "Radium", "Radium 226", "Radium 228"
+        ],
+        minMatches: 3,
+        requireUniqueAnswers: true,
+        explanation: "Im Wasser koennen verschiedene gelöste Stoffe nachgewiesen werden.",
+        solutionText: "Beispiele: Natrium, Nitrat, Sulfat, Fluorid, Mangan, Arsen, Uran, Radium."
+      },
+      {
+        id: 3,
+        type: "single",
+        question: "Womit haben sich die Römer nach dem Toilettengang gereinigt?",
+        options: ["Mit Stofftüchern", "Mit Bürsten und Moos", "Mit Sand und Wasser", "Mit Holzspänen"],
+        correctAnswers: [1],
+        explanation: "In der Ausstellung wird gezeigt, wie Hygiene in der Antike aussah.",
+        solutionText: "Richtig ist: Mit Bürsten und Moos."
+      },
+      {
+        id: 4,
+        type: "single",
+        question: "Wie viel Wasser enthält der Körper eines erwachsenen Menschen ungefähr?",
+        options: ["25 Liter", "35 Liter", "49 Liter", "70 Liter"],
+        correctAnswers: [2],
+        explanation: "Der menschliche Körper besteht zu einem großen Teil aus Wasser.",
+        solutionText: "Richtig ist: ungefähr 49 Liter."
+      },
+      {
+        id: 5,
+        type: "single",
+        question: "Wie heißt „Trockenheit“ auf Französisch?",
+        options: ["sécheresse", "inondation", "température", "rivière"],
+        correctAnswers: [0],
+        explanation: "Die Rally verbindet Wasserwissen auch mit Sprache.",
+        solutionText: "Richtig ist: sécheresse."
+      },
+      {
+        id: 6,
+        type: "single",
+        question: "Wie heißt „Überschwemmung“ auf Französisch?",
+        options: ["glace", "inondation", "montagne", "vent"],
+        correctAnswers: [1],
+        explanation: "Auch Fachbegriffe rund um Wasser tauchen in anderen Sprachen auf.",
+        solutionText: "Richtig ist: inondation."
+      },
+      {
+        id: 7,
+        type: "single",
+        question: "Welchen Einfluss hat das Schmerzmittel Ibuprofen auf Fische?",
+        options: [
+          "Es beschleunigt ihr Wachstum",
+          "Es erhöht ihre Fortpflanzungsrate",
+          "Es führt dazu, dass sie weniger Eier legen",
+          "Es verändert ihre Farbe"
+        ],
+        correctAnswers: [2],
+        explanation: "Medikamentenreste im Wasser können Tiere belasten.",
+        solutionText: "Richtig ist: Sie legen weniger Eier."
+      },
+      {
+        id: 8,
+        type: "multiple",
+        question: "Wohin soll man Medikamente NICHT entsorgen?",
+        hint: "Mehrere Antworten möglich",
+        options: ["In die Toilette", "Ins Waschbecken", "In den Hausmüll", "Zur Apotheke oder Schadstoffsammlung"],
+        correctAnswers: [0, 1],
+        explanation: "Medikamente sollen nicht über das Abwasser entsorgt werden.",
+        solutionText: "Nicht in Toilette oder Waschbecken entsorgen."
+      },
+      {
+        id: 9,
+        type: "multiple",
+        question: "In welchen Ländern müssen Menschen einen besonders weiten Weg zu sauberem Trinkwasser auf sich nehmen?",
+        hint: "Mehrere Antworten möglich",
+        options: ["Äthiopien", "Somalia", "Sudan", "Deutschland"],
+        correctAnswers: [0, 1, 2],
+        explanation: "In mehreren Regionen der Welt ist sauberer Zugang zu Trinkwasser schwierig.",
+        solutionText: "Richtig sind: Äthiopien, Somalia und Sudan."
+      },
+      {
+        id: 10,
+        type: "multiple",
+        question: "Wie kannst du zuhause Wasser sparen?",
+        hint: "Mehrere Antworten möglich",
+        options: [
+          "Beim Zähneputzen den Wasserhahn zudrehen",
+          "Einen Sparduschkopf verwenden",
+          "Nur volle Wasch- oder Spülmaschinen laufen lassen",
+          "Das Wasser unnötig laufen lassen"
+        ],
+        correctAnswers: [0, 1, 2],
+        explanation: "Schon kleine Gewohnheiten machen im Alltag einen Unterschied.",
+        solutionText: "Sinnvoll sind zudrehen, Sparduschkopf und volle Maschinen."
+      },
+      {
+        id: 11,
+        type: "single",
+        question: "Was bedeutet Renaturierung?",
+        options: [
+          "Ein Gewässer wird betoniert",
+          "Ein Naturraum wird wieder naturnah hergestellt",
+          "Ein Fluss wird begradigt",
+          "Ein See wird trockengelegt"
+        ],
+        correctAnswers: [1],
+        explanation: "Renaturierung bringt Natur- und Gewässerräume wieder näher an ihren ursprünglichen Zustand.",
+        solutionText: "Richtig ist: Ein Naturraum wird wieder naturnah hergestellt."
+      },
+      {
+        id: 12,
+        type: "multiple",
+        question: "Welche Fischarten kommen in der Wupper vor?",
+        hint: "Mehrere Antworten möglich",
+        options: ["Bachforelle", "Äsche", "Hecht", "Hai"],
+        correctAnswers: [0, 1, 2],
+        explanation: "An Gewässerstationen geht es auch um heimische Tierarten.",
+        solutionText: "Richtig sind: Bachforelle, Äsche und Hecht."
+      },
+      {
+        id: 13,
+        type: "single",
+        question: "Welches ist das größte Tier der Erde?",
+        options: ["Elefant", "Pottwal", "Blauwal", "Walhai"],
+        correctAnswers: [2],
+        explanation: "Der Blauwal übertrifft alle anderen heute lebenden Tiere.",
+        solutionText: "Richtig ist: der Blauwal."
+      },
+      {
+        id: 14,
+        type: "single",
+        question: "Welche Kombination passt zum größten Tier der Erde?",
+        options: ["10 m und 5 t", "20 m und 50 t", "33 m und 200 t", "50 m und 500 t"],
+        correctAnswers: [2],
+        explanation: "Die Ausstellung nennt beeindruckende Maße des Blauwals.",
+        solutionText: "Richtig ist: 33 m und 200 t."
+      },
+      {
+        id: 15,
+        type: "single",
+        question: "Ab welchem Jahrhundert wurden Abwasserkanäle gebaut?",
+        options: ["15. Jahrhundert", "17. Jahrhundert", "19. Jahrhundert", "21. Jahrhundert"],
+        correctAnswers: [2],
+        explanation: "Großstädtische Abwasserkanäle entstanden vor allem im 19. Jahrhundert.",
+        solutionText: "Richtig ist: ab dem 19. Jahrhundert."
+      },
+      {
+        id: 16,
+        type: "single",
+        question: "Welche Aufgabe erfüllen Wasserflöhe im Trinkwasser?",
+        options: [
+          "Sie reinigen mechanisch das Wasser",
+          "Weibliche Wasserflöhe zeigen Verunreinigungen an",
+          "Sie produzieren Sauerstoff",
+          "Sie erwärmen das Wasser"
+        ],
+        correctAnswers: [1],
+        explanation: "Wasserflöhe werden als Zeigerorganismen genutzt.",
+        solutionText: "Richtig ist: Weibliche Wasserflöhe zeigen Verunreinigungen an."
+      },
+      {
+        id: 17,
+        type: "multiple",
+        question: "Nenne drei Formen von Niederschlag im Wasserkreislauf.",
+        hint: "Mehrere Antworten möglich",
+        options: ["Regen", "Hagel", "Schnee", "Nebel"],
+        correctAnswers: [0, 1, 2],
+        explanation: "Im Wasserkreislauf gehören Regen, Hagel und Schnee zu den Niederschlagsformen.",
+        solutionText: "Richtig sind: Regen, Hagel und Schnee."
+      },
+      {
+        id: 18,
+        type: "single",
+        question: "Welches Hauptmotiv haben die 3 großen Gemälde der EF?",
+        options: ["Berge", "Seerosen", "Wälder", "Städte"],
+        correctAnswers: [1],
+        explanation: "Die großen Werke greifen ein wiederkehrendes Wasser-Motiv auf.",
+        solutionText: "Richtig ist: Seerosen."
+      },
+      {
+        id: 19,
+        type: "single",
+        question: "Begib dich in das Zelt und horche. Was hörst du?",
+        station: "Zelt",
+        options: ["Wassergeräusche", "Verkehr", "Musik", "Stimmen"],
+        correctAnswers: [0],
+        explanation: "An dieser Station geht es um das bewusste Hinhören.",
+        solutionText: "Richtig ist: Wassergeräusche."
+      },
+      {
+        id: 20,
+        type: "single",
+        question: "Aus welchen Farben bestehen die Eiskristalle?",
+        station: "Eiskristalle",
+        options: ["Mehrfarbig", "Rot", "Monochrom blau", "Grün"],
+        correctAnswers: [2],
+        explanation: "Die Eiskristalle bleiben bewusst in einer kühlen Farbwelt.",
+        solutionText: "Richtig ist: Monochrom blau."
+      },
+      {
+        id: 21,
+        type: "slider",
+        question: "Welche Temperatur hat ein See am Grund im Sommer und im Winter?",
+        hint: "Ziehe den Regler auf die richtige Temperatur.",
+        min: 0,
+        max: 10,
+        correctValue: 4,
+        unit: "°C",
+        explanation: "Wasser hat bei 4 Grad Celsius seine größte Dichte und sammelt sich deshalb am Grund.",
+        solutionText: "Richtig ist: 4 °C."
+      },
+      {
+        id: 22,
+        type: "single",
+        question: "Welche Fische „leben“ an der Schwebebank?",
+        station: "Schwebebank",
+        options: ["Forellen", "Haie", "Karpfen", "Aale"],
+        correctAnswers: [1],
+        explanation: "Die Schwebebank ist als eigene Beobachtungsstation in die Rally eingebunden.",
+        solutionText: "Richtig ist: Haie."
+      },
+      {
+        id: 23,
+        type: "multiple",
+        question: "Welche Tiere leben im Baum im Garten?",
+        station: "Baum im Garten",
+        hint: "Mehrere Antworten möglich",
+        options: ["Bienen", "Schmetterlinge", "Vögel", "Pinguine"],
+        correctAnswers: [0, 1, 2],
+        explanation: "Ein Baum ist Lebensraum für viele verschiedene Tiere.",
+        solutionText: "Richtig sind: Bienen, Schmetterlinge und Vögel."
+      },
+      {
+        id: 24,
+        type: "number-dual",
+        question: "Wie viele Enten und wie viele Pinguine findest du?",
+        station: "Suche",
+        fields: [
+          { label: "Enten", correct: 2 },
+          { label: "Pinguine", correct: 2 }
+        ],
+        explanation: "Hier zählt genaues Beobachten in der Ausstellung.",
+        solutionText: "Richtig ist: 2 Enten und 2 Pinguine."
+      },
+      {
+        id: 25,
+        type: "single",
+        question: "Was hat die Klasse 5e im Fach Informatik erstellt?",
+        station: "Informatik",
+        options: ["Ein Aquarium", "Ein Wassermärchen", "Ein Wettermodell", "Ein Experiment"],
+        correctAnswers: [1],
+        explanation: "Auch Beiträge aus dem Unterricht sind Teil der Ausstellung.",
+        solutionText: "Richtig ist: ein Wassermärchen."
+      }
+    ];
 
-    const ui = {
-      labelOne: document.getElementById("labelOne"),
-      labelTwo: document.getElementById("labelTwo"),
-      labelThree: document.getElementById("labelThree"),
-      labelFour: document.getElementById("labelFour"),
-      levelName: document.getElementById("levelName"),
-      timeLeft: document.getElementById("timeLeft"),
-      bottleCount: document.getElementById("bottleCount"),
-      gravityFactor: document.getElementById("gravityFactor"),
-      itemStrip: document.getElementById("itemStrip"),
-      waterText: document.getElementById("waterText"),
-      factText: document.getElementById("factText"),
-      messageBox: document.getElementById("messageBox"),
-      statusBadge: document.getElementById("statusBadge"),
-      startButton: document.getElementById("startButton"),
-      touchLeft: document.getElementById("touchLeft"),
-      touchRight: document.getElementById("touchRight"),
-      touchDown: document.getElementById("touchDown"),
-      touchJump: document.getElementById("touchJump")
+    const screens = {
+      start: document.getElementById("start-screen"),
+      quiz: document.getElementById("quiz-screen"),
+      result: document.getElementById("result-screen")
     };
 
-    const WORLD_WIDTH = 3200;
-    const PLAYER_WIDTH = 42;
-    const PLAYER_HEIGHT = 56;
-    const PLAYER_CROUCH_HEIGHT = 34;
-    const BASE_MOVE_SPEED = 310;
-    const GROUND_ACCEL = 1850;
-    const GROUND_FRICTION = 2200;
-    const AIR_ACCEL = 980;
-    const AIR_DRAG = 280;
-    const BASE_JUMP = 610;
-    const BASE_GRAVITY = 700;
-    const COYOTE_TIME = 0.12;
-    const JUMP_BUFFER_TIME = 0.15;
-    const MAX_WATER = 100;
-    const MAX_SLOTS = 5;
-    const SLOT_WATER = MAX_WATER / MAX_SLOTS;
-    const MAX_LEVEL_TIME = 70;
-    const HIT_INVULNERABILITY = 1;
-    const JUMP_TRACE_LIFE = 0.9;
-    let audioContext = null;
+    const startButton = document.getElementById("start-button");
+    const confirmButton = document.getElementById("confirm-button");
+    const skipButton = document.getElementById("skip-button");
+    const nextButton = document.getElementById("next-button");
+    const restartButton = document.getElementById("restart-button");
 
-    const DESERT_BIOMES = [
-      {
-        name: "Duenenfeld",
-        accent: "#8de3ff",
-        skyTop: "#f4d08a",
-        skyBottom: "#8c471d",
-        description: "Offene Duenen mit langen Spruengen. Die Sonne zieht dir staendig Wasser aus dem Koerper.",
-        lesson: "Ohne Wasser bricht alles schnell zusammen. Schon kurze Trockenheit veraendert, wie wir leben, lernen und ueberleben koennen."
-      },
-      {
-        name: "Salzbecken",
-        accent: "#c7f0ff",
-        skyTop: "#f6d8b0",
-        skyBottom: "#91593b",
-        description: "Helle Salzplatten und bruechige Kanten. Jeder Fehltritt fuehlt sich trocken an.",
-        lesson: "Salzige oder verdreckte Wasserquellen sehen manchmal fast normal aus, sind aber nicht sicher zum Trinken."
-      },
-      {
-        name: "Schrottoase",
-        accent: "#7dd9d3",
-        skyTop: "#ecc285",
-        skyBottom: "#704127",
-        description: "Verrostete Wassertechnik, tiefe Schlaeuche und viele falsche Flaschen.",
-        lesson: "Verschmutzung vergiftet Wasserreserven. Wenn sauberes Trinkwasser verloren geht, wird jede Entscheidung schwerer."
-      },
-      {
-        name: "Staubklippen",
-        accent: "#9ec5ff",
-        skyTop: "#e7bb75",
-        skyBottom: "#623117",
-        description: "Enge Kanten ueber trockenen Abgruenden. Hier werden Spruenge schnell teuer.",
-        lesson: "Klimawandel verstaerkt Duerre, Hitze und Unsicherheit. Wer wenig Wasser hat, kann sich Fehler kaum leisten."
+    const progressLabel = document.getElementById("progress-label");
+    const progressPercent = document.getElementById("progress-percent");
+    const progressFill = document.getElementById("progress-fill");
+    const progressFish = document.getElementById("progress-fish");
+    const scoreProgressText = document.getElementById("score-progress-text");
+    const scoreFill = document.getElementById("score-fill");
+    const scoreTrack = document.getElementById("score-track");
+    const scorePill = document.getElementById("score-pill");
+
+    const questionTags = document.getElementById("question-tags");
+    const questionText = document.getElementById("question-text");
+    const questionHint = document.getElementById("question-hint");
+    const optionsContainer = document.getElementById("options-container");
+    const feedbackCard = document.getElementById("feedback-card");
+    const feedbackState = document.getElementById("feedback-state");
+    const feedbackText = document.getElementById("feedback-text");
+    const feedbackSolution = document.createElement("p");
+    feedbackSolution.className = "feedback-solution";
+    feedbackCard.insertBefore(feedbackSolution, feedbackCard.querySelector(".button-row"));
+
+    const medal = document.getElementById("medal");
+    const medalLetter = document.getElementById("medal-letter");
+    const medalName = document.getElementById("medal-name");
+    const finalScore = document.getElementById("final-score");
+    const scoreRing = document.getElementById("score-ring");
+    const resultMedalText = document.getElementById("result-medal-text");
+    const resultTitle = document.getElementById("result-title");
+    const resultCopy = document.getElementById("result-copy");
+    const resultNote = document.getElementById("result-note");
+
+    let quizQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let currentResponse = null;
+    let answeredCurrentQuestion = false;
+
+    function showScreen(screenName) {
+      Object.values(screens).forEach((screen) => screen.classList.remove("active"));
+      screens[screenName].classList.add("active");
+    }
+
+    function startQuiz() {
+      quizQuestions = buildPlayableQuestions();
+      currentQuestionIndex = 0;
+      score = 0;
+      currentResponse = null;
+      answeredCurrentQuestion = false;
+      updateScore();
+      showScreen("quiz");
+      renderQuestion();
+    }
+
+    function updateScore() {
+      scorePill.textContent = score === 1 ? "1 Punkt" : score + " Punkte";
+      scoreProgressText.textContent = score + " von " + quizQuestions.length + " Punkten";
+      const scorePercentValue = (score / quizQuestions.length) * 100;
+      scoreFill.style.width = scorePercentValue + "%";
+      scoreTrack.style.setProperty("--score-progress", scorePercentValue + "%");
+    }
+
+    function shuffleArray(items) {
+      const clonedItems = [...items];
+      for (let index = clonedItems.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [clonedItems[index], clonedItems[randomIndex]] = [clonedItems[randomIndex], clonedItems[index]];
       }
-    ];
+      return clonedItems;
+    }
 
-    const BASE_LAYOUTS = [
-      {
-        platforms: [
-          { x: 0, y: 470, w: 360, h: 60 },
-          { x: 500, y: 418, w: 160, h: 18 },
-          { x: 760, y: 352, w: 160, h: 18 },
-          { x: 1030, y: 300, w: 170, h: 18 },
-          { x: 1320, y: 354, w: 180, h: 18 },
-          { x: 1620, y: 288, w: 180, h: 18 },
-          { x: 1980, y: 470, w: 220, h: 60 }
-        ],
-        bottles: [
-          { x: 540, y: 386 }, { x: 815, y: 322 }, { x: 1100, y: 270 },
-          { x: 1400, y: 326 }, { x: 1700, y: 258 }, { x: 2050, y: 426 }
-        ],
-        dirtyBottles: [
-          { x: 875, y: 318 }, { x: 1460, y: 320 }
-        ]
-      },
-      {
-        platforms: [
-          { x: 0, y: 470, w: 390, h: 60 },
-          { x: 500, y: 430, w: 160, h: 18 },
-          { x: 760, y: 394, w: 150, h: 18 },
-          { x: 1000, y: 426, w: 170, h: 18 },
-          { x: 1270, y: 382, w: 170, h: 18 },
-          { x: 1565, y: 418, w: 180, h: 18 },
-          { x: 1950, y: 470, w: 250, h: 60 }
-        ],
-        bottles: [
-          { x: 560, y: 396 }, { x: 820, y: 360 }, { x: 1070, y: 392 },
-          { x: 1348, y: 348 }, { x: 1650, y: 384 }, { x: 2040, y: 426 }
-        ],
-        dirtyBottles: [
-          { x: 615, y: 396 }, { x: 1595, y: 384 }
-        ]
-      },
-      {
-        platforms: [
-          { x: 0, y: 470, w: 380, h: 60 },
-          { x: 490, y: 420, w: 150, h: 18 },
-          { x: 730, y: 345, w: 160, h: 18 },
-          { x: 1000, y: 388, w: 160, h: 18 },
-          { x: 1280, y: 312, w: 170, h: 18 },
-          { x: 1580, y: 360, w: 180, h: 18 },
-          { x: 1970, y: 470, w: 230, h: 60 }
-        ],
-        bottles: [
-          { x: 555, y: 388 }, { x: 810, y: 315 }, { x: 1085, y: 358 },
-          { x: 1360, y: 282 }, { x: 1670, y: 330 }, { x: 2045, y: 426 }
-        ],
-        dirtyBottles: [
-          { x: 760, y: 312 }, { x: 1730, y: 326 }
-        ]
+    function shuffleQuestionOptions(question) {
+      if (!question.options || !Array.isArray(question.correctAnswers)) {
+        return question;
       }
-    ];
 
-    function cloneLayout(layout) {
+      const shuffledEntries = shuffleArray(
+        question.options.map((option, index) => ({
+          option,
+          isCorrect: question.correctAnswers.includes(index)
+        }))
+      );
+
       return {
-        platforms: layout.platforms.map(platform => ({ ...platform })),
-        bottles: layout.bottles.map(bottle => ({ ...bottle })),
-        dirtyBottles: layout.dirtyBottles.map(bottle => ({ ...bottle }))
+        ...question,
+        options: shuffledEntries.map((entry) => entry.option),
+        correctAnswers: shuffledEntries
+          .map((entry, index) => (entry.isCorrect ? index : null))
+          .filter((value) => value !== null)
       };
     }
 
-    function buildItems(platforms, variantIndex) {
-      const items = [];
-      const jetpackPlatform = platforms[Math.min(platforms.length - 3, 2 + variantIndex)];
-      const powerPlatform = platforms[Math.min(platforms.length - 2, 4 + variantIndex)];
-      const seedPlatforms = platforms
-        .slice(1, -1)
-        .filter(platform => platform.w >= 145)
-        .slice(0, Math.min(5, 3 + variantIndex));
-      if (jetpackPlatform) {
-        items.push({
-          x: jetpackPlatform.x + jetpackPlatform.w * 0.56,
-          y: jetpackPlatform.y - 34,
-          type: "jetpack",
-          collected: false
-        });
-      }
-      if (powerPlatform) {
-        items.push({
-          x: powerPlatform.x + powerPlatform.w * 0.38,
-          y: powerPlatform.y - 34,
-          type: "powerJump",
-          collected: false
-        });
-      }
-      seedPlatforms.forEach((platform, index) => {
-        items.push({
-          x: platform.x + platform.w * [0.22, 0.5, 0.78, 0.34, 0.64][index % 5],
-          y: platform.y - 14,
-          type: "seed",
-          collected: false
-        });
+    function buildPlayableQuestions() {
+      return baseQuizQuestions.map((question) => {
+        if (question.type === "single" || question.type === "multiple") {
+          return shuffleQuestionOptions(question);
+        }
+        return { ...question };
       });
-      return items;
     }
 
-    function buildLevel(biome, biomeIndex, variantIndex) {
-      const layout = cloneLayout(BASE_LAYOUTS[variantIndex % BASE_LAYOUTS.length]);
-      const offsets = [
-        [0, 0, 0, 0, 0, 0, 0],
-        [0, -16, 18, -10, 22, -18, 0],
-        [0, 18, -12, 26, -8, 18, 0]
-      ][variantIndex];
-      const bottleOffsets = [
-        [0, 0, 0, 0, 0, 0],
-        [-10, -16, -10, -18, -12, 0],
-        [12, 8, 14, 10, 12, 0]
-      ][variantIndex];
+    function renderTags(question) {
+      questionTags.innerHTML = "";
 
-      layout.platforms = layout.platforms.map((platform, index) => ({
-        ...platform,
-        y: platform.h >= 40 ? platform.y : platform.y + offsets[index]
-      }));
-      layout.bottles = layout.bottles.map((bottle, index) => ({
-        x: bottle.x,
-        y: bottle.y + bottleOffsets[index],
-        collected: false
-      }));
-      layout.dirtyBottles = layout.dirtyBottles.map((bottle, index) => ({
-        x: bottle.x + index * 18,
-        y: bottle.y + (variantIndex === 1 ? -8 : 0),
-        collected: false
-      }));
+      const typeLabels = {
+        single: "Single Choice",
+        multiple: "Multiple Choice",
+        "text-multi": "Texteingabe",
+        slider: "Schieberegler",
+        "number-dual": "Zahlenfeld"
+      };
 
-      extendLevel(layout, variantIndex);
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = typeLabels[question.type] || "Quizfrage";
+      questionTags.appendChild(typeBadge);
+
+      if (question.station) {
+        const stationBadge = document.createElement("span");
+        stationBadge.className = "badge station";
+        stationBadge.textContent = "Station: " + question.station;
+        questionTags.appendChild(stationBadge);
+      }
+    }
+
+    function renderQuestion() {
+      const question = quizQuestions[currentQuestionIndex];
+      const questionNumber = currentQuestionIndex + 1;
+      const progressValue = (questionNumber / quizQuestions.length) * 100;
+
+      answeredCurrentQuestion = false;
+      currentResponse = getInitialResponse(question);
+      confirmButton.disabled = true;
+      skipButton.hidden = question.type !== "text-multi";
+      skipButton.disabled = false;
+      feedbackCard.classList.remove("show");
+      feedbackState.className = "feedback-state";
+      feedbackState.textContent = "";
+      feedbackText.textContent = "";
+      feedbackSolution.textContent = "";
+
+      progressLabel.textContent = "Frage " + questionNumber + " von " + quizQuestions.length;
+      progressPercent.textContent = Math.round(progressValue) + "%";
+      progressFill.style.width = progressValue + "%";
+      progressFill.parentElement.style.setProperty("--progress", progressValue + "%");
+
+      renderTags(question);
+      questionText.textContent = question.question;
+      questionHint.textContent = getQuestionHint(question);
+
+      optionsContainer.innerHTML = "";
+      renderQuestionBody(question);
+      updateConfirmButtonState(question);
+    }
+
+    function getInitialResponse(question) {
+      if (question.type === "single" || question.type === "multiple") {
+        return [];
+      }
+      if (question.type === "text-multi") {
+        return Array(question.inputCount).fill("");
+      }
+      if (question.type === "number-dual") {
+        return question.fields.map(() => "");
+      }
+      if (question.type === "slider") {
+        return String(question.min);
+      }
+      return null;
+    }
+
+    function getQuestionHint(question) {
+      if (question.hint) {
+        return question.hint;
+      }
+
+      const hints = {
+        single: "Wähle eine Antwort aus.",
+        multiple: "Mehrere Antworten möglich.",
+        "text-multi": "Fülle alle Felder aus.",
+        slider: "Ziehe den Regler auf den passenden Wert.",
+        "number-dual": "Trage beide Zahlen ein."
+      };
+      return hints[question.type] || "";
+    }
+
+    function renderQuestionBody(question) {
+      if (question.type === "single" || question.type === "multiple") {
+        renderChoiceQuestion(question);
+        return;
+      }
+      if (question.type === "text-multi") {
+        renderTextMultiQuestion(question);
+        return;
+      }
+      if (question.type === "slider") {
+        renderSliderQuestion(question);
+        return;
+      }
+      if (question.type === "number-dual") {
+        renderNumberDualQuestion(question);
+      }
+    }
+
+    function renderChoiceQuestion(question) {
+      question.options.forEach((optionText, index) => {
+        const optionButton = document.createElement("button");
+        optionButton.type = "button";
+        optionButton.className = "option " + question.type;
+        optionButton.dataset.index = index;
+        optionButton.setAttribute("aria-pressed", "false");
+
+        const marker = document.createElement("span");
+        marker.className = "option-marker";
+        marker.textContent = "✓";
+
+        const label = document.createElement("span");
+        label.className = "option-text";
+        label.textContent = optionText;
+
+        optionButton.appendChild(marker);
+        optionButton.appendChild(label);
+        optionButton.addEventListener("click", () => toggleSelection(index));
+
+        optionsContainer.appendChild(optionButton);
+      });
+    }
+
+    function renderTextMultiQuestion(question) {
+      const grid = document.createElement("div");
+      grid.className = "input-grid";
+
+      currentResponse.forEach((value, index) => {
+        const card = document.createElement("label");
+        card.className = "input-card";
+
+        const label = document.createElement("span");
+        label.className = "field-label";
+        label.textContent = "Begriff " + (index + 1);
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "text-field";
+        input.placeholder = "Antwort eingeben";
+        input.autocomplete = "off";
+        input.value = value;
+        input.dataset.index = index;
+        input.addEventListener("input", (event) => {
+          currentResponse[index] = event.target.value;
+          updateConfirmButtonState(question);
+        });
+
+        card.appendChild(label);
+        card.appendChild(input);
+        grid.appendChild(card);
+      });
+
+      if (question.solutionText) {
+        const helper = document.createElement("p");
+        helper.className = "field-help";
+        helper.textContent = "Tipp: Erkennbare Schreibweisen werden akzeptiert.";
+        grid.appendChild(helper);
+      }
+
+      optionsContainer.appendChild(grid);
+    }
+
+    function renderSliderQuestion(question) {
+      const wrap = document.createElement("div");
+      wrap.className = "slider-wrap";
+
+      const header = document.createElement("div");
+      header.className = "slider-header";
+
+      const label = document.createElement("span");
+      label.className = "field-label";
+      label.textContent = "Deine Auswahl";
+
+      const valueBadge = document.createElement("span");
+      valueBadge.className = "slider-value";
+      valueBadge.id = "slider-value";
+      valueBadge.textContent = currentResponse + " " + (question.unit || "");
+
+      const input = document.createElement("input");
+      input.type = "range";
+      input.className = "slider-field";
+      input.min = question.min;
+      input.max = question.max;
+      input.step = 1;
+      input.value = currentResponse;
+      input.addEventListener("input", (event) => {
+        currentResponse = event.target.value;
+        valueBadge.textContent = currentResponse + " " + (question.unit || "");
+        updateConfirmButtonState(question);
+      });
+
+      const scale = document.createElement("div");
+      scale.className = "slider-scale";
+      scale.innerHTML = "<span>" + question.min + " " + (question.unit || "") + "</span><span>" + question.max + " " + (question.unit || "") + "</span>";
+
+      header.appendChild(label);
+      header.appendChild(valueBadge);
+      wrap.appendChild(header);
+      wrap.appendChild(input);
+      wrap.appendChild(scale);
+
+      optionsContainer.appendChild(wrap);
+    }
+
+    function renderNumberDualQuestion(question) {
+      const grid = document.createElement("div");
+      grid.className = "number-grid";
+
+      question.fields.forEach((field, index) => {
+        const card = document.createElement("label");
+        card.className = "number-card";
+
+        const label = document.createElement("span");
+        label.className = "field-label";
+        label.textContent = field.label;
+
+        const input = document.createElement("input");
+        input.type = "number";
+        input.inputMode = "numeric";
+        input.min = "0";
+        input.className = "number-field";
+        input.placeholder = "0";
+        input.value = currentResponse[index];
+        input.dataset.index = index;
+        input.addEventListener("input", (event) => {
+          currentResponse[index] = event.target.value;
+          updateConfirmButtonState(question);
+        });
+
+        card.appendChild(label);
+        card.appendChild(input);
+        grid.appendChild(card);
+      });
+
+      optionsContainer.appendChild(grid);
+    }
+
+    function toggleSelection(index) {
+      if (answeredCurrentQuestion) {
+        return;
+      }
+
+      const question = quizQuestions[currentQuestionIndex];
+
+      if (question.type === "single") {
+        currentResponse = [index];
+      } else {
+        if (currentResponse.includes(index)) {
+          currentResponse = currentResponse.filter((answerIndex) => answerIndex !== index);
+        } else {
+          currentResponse = [...currentResponse, index];
+        }
+      }
+
+      updateOptionStyles();
+      updateConfirmButtonState(question);
+    }
+
+    function updateOptionStyles() {
+      const optionButtons = optionsContainer.querySelectorAll(".option");
+      optionButtons.forEach((button) => {
+        const optionIndex = Number(button.dataset.index);
+        const isSelected = currentResponse.includes(optionIndex);
+        button.classList.toggle("selected", isSelected);
+        button.setAttribute("aria-pressed", String(isSelected));
+      });
+    }
+
+    function updateConfirmButtonState(question) {
+      confirmButton.disabled = !isResponseComplete(question, currentResponse);
+    }
+
+    function isResponseComplete(question, response) {
+      if (question.type === "single" || question.type === "multiple") {
+        return Array.isArray(response) && response.length > 0;
+      }
+      if (question.type === "text-multi" || question.type === "number-dual") {
+        return response.every((value) => String(value).trim() !== "");
+      }
+      if (question.type === "slider") {
+        return response !== null && response !== "";
+      }
+      return false;
+    }
+
+    function isChoiceAnswerCorrect(question, answers) {
+      if (answers.length !== question.correctAnswers.length) {
+        return false;
+      }
+
+      const sortedAnswers = [...answers].sort((a, b) => a - b);
+      const sortedCorrect = [...question.correctAnswers].sort((a, b) => a - b);
+      return sortedAnswers.every((answer, index) => answer === sortedCorrect[index]);
+    }
+
+    function normalizeAnswer(value) {
+      return value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ß/g, "ss")
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function levenshteinDistance(a, b) {
+      const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i += 1) matrix[i][0] = i;
+      for (let j = 0; j <= b.length; j += 1) matrix[0][j] = j;
+
+      for (let i = 1; i <= a.length; i += 1) {
+        for (let j = 1; j <= b.length; j += 1) {
+          const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
+      }
+
+      return matrix[a.length][b.length];
+    }
+
+    function findAcceptedMatch(value, acceptedTerms) {
+      const normalizedValue = normalizeAnswer(value);
+      if (!normalizedValue) {
+        return null;
+      }
+
+      for (const term of acceptedTerms) {
+        const normalizedTerm = normalizeAnswer(term);
+        if (
+          normalizedValue === normalizedTerm ||
+          normalizedValue.includes(normalizedTerm) ||
+          normalizedTerm.includes(normalizedValue) ||
+          levenshteinDistance(normalizedValue, normalizedTerm) <= 2
+        ) {
+          return normalizedTerm;
+        }
+      }
+
+      return null;
+    }
+
+    function evaluateTextMulti(question, response) {
+      const matches = response.map((value) => findAcceptedMatch(value, question.acceptedTerms));
+      const uniqueMatches = [...new Set(matches.filter(Boolean))];
       return {
-        id: `${biome.name}-${variantIndex}`,
-        biome: biome.name,
-        display: `${biome.name} ${["Anmarsch", "Flimmerzone", "Kernriss"][variantIndex]}`,
-        accent: biome.accent,
-        skyTop: biome.skyTop,
-        skyBottom: biome.skyBottom,
-        description: biome.description,
-        lesson: biome.lesson,
-        timeLimit: MAX_LEVEL_TIME - variantIndex * 4,
-        gravityText: "g = 7.00 N/kg",
-        platforms: layout.platforms,
-        bottles: layout.bottles,
-        dirtyBottles: layout.dirtyBottles,
-        items: buildItems(layout.platforms, variantIndex),
-        enemies: buildEnemies(layout.platforms, biomeIndex, variantIndex),
-        rocket: { x: WORLD_WIDTH - 164, y: 384, w: 84, h: 112 }
+        correct: uniqueMatches.length >= question.minMatches,
+        matches
       };
     }
 
-    function extendLevel(layout, variantIndex) {
-      let previous = layout.platforms[layout.platforms.length - 1];
-      for (let i = 0; i < 3; i++) {
-        const width = 150 + ((i + variantIndex) % 2) * 20;
-        const gap = 94 + i * 18 + variantIndex * 6;
-        const rise = (i % 2 === 0 ? -1 : 1) * (26 + variantIndex * 10);
-        const y = clamp(previous.y + rise, 248, 438);
-        const x = previous.x + previous.w + gap;
-        layout.platforms.push({ x, y, w: width, h: 18 });
-        previous = layout.platforms[layout.platforms.length - 1];
-        if (i < 2) {
-          layout.bottles.push({ x: x + width / 2, y: y - 28, collected: false });
-        }
-      }
-      layout.platforms.push({ x: WORLD_WIDTH - 380, y: 470, w: 340, h: 60 });
+    function evaluateNumberDual(question, response) {
+      return response.every((value, index) => Number(value) === Number(question.fields[index].correct));
     }
 
-    function buildEnemies(platforms, biomeIndex, variantIndex) {
-      return platforms
-        .slice(1, -1)
-        .filter(platform => platform.w >= 145)
-        .flatMap((platform, index) => {
-          const amount = index % 2 === 0 ? 2 : 1;
-          return Array.from({ length: amount }, (_, subIndex) => ({
-            platformIndex: index + 1,
-            x: platform.x + 24 + subIndex * 52 + (index % 2) * 12,
-            y: platform.y - 30,
-            radius: 14 + ((biomeIndex + variantIndex + subIndex) % 2) * 3,
-            range: Math.min(92, platform.w - 48),
-            speed: 42 + index * 7 + variantIndex * 10,
-            dead: false,
-            direction: subIndex % 2 === 0 ? 1 : -1,
-            baseX: platform.x + 24 + subIndex * 52 + (index % 2) * 12,
-            jumpOffset: 0,
-            jumpVy: 0,
-            attached: false,
-            tier: 1,
-            hitsRemaining: 1,
-            drainTimer: 0,
-            alertCooldown: 0.4 + Math.random() * 0.6
-          }));
+    function evaluateSlider(question, response) {
+      return Number(response) === Number(question.correctValue);
+    }
+
+    function evaluateCurrentAnswer(question) {
+      if (question.type === "single" || question.type === "multiple") {
+        return { correct: isChoiceAnswerCorrect(question, currentResponse) };
+      }
+      if (question.type === "text-multi") {
+        return evaluateTextMulti(question, currentResponse);
+      }
+      if (question.type === "number-dual") {
+        return { correct: evaluateNumberDual(question, currentResponse) };
+      }
+      if (question.type === "slider") {
+        return { correct: evaluateSlider(question, currentResponse) };
+      }
+      return { correct: false };
+    }
+
+    function revealAnswerState(question, evaluation) {
+      if (question.type === "single" || question.type === "multiple") {
+        const optionButtons = optionsContainer.querySelectorAll(".option");
+
+        optionButtons.forEach((button) => {
+          const optionIndex = Number(button.dataset.index);
+          const isCorrect = question.correctAnswers.includes(optionIndex);
+          const isSelected = currentResponse.includes(optionIndex);
+
+          button.classList.add("disabled");
+          button.classList.remove("selected");
+
+          if (isCorrect) {
+            button.classList.add("correct");
+          } else if (isSelected && !isCorrect) {
+            button.classList.add("incorrect");
+          }
         });
+      }
+
+      if (question.type === "text-multi") {
+        const cards = optionsContainer.querySelectorAll(".input-card");
+        cards.forEach((card, index) => {
+          const matched = evaluation.matches[index];
+          if (evaluation.skipped) {
+            card.classList.add("disabled");
+          } else {
+            card.classList.add(matched ? "correct" : "incorrect");
+          }
+          const input = card.querySelector(".text-field");
+          input.disabled = true;
+        });
+      }
+
+      if (question.type === "number-dual") {
+        const cards = optionsContainer.querySelectorAll(".number-card");
+        cards.forEach((card, index) => {
+          const isCorrect = Number(currentResponse[index]) === Number(question.fields[index].correct);
+          card.classList.add(isCorrect ? "correct" : "incorrect");
+          card.querySelector(".number-field").disabled = true;
+        });
+      }
+
+      if (question.type === "slider") {
+        const wrap = optionsContainer.querySelector(".slider-wrap");
+        wrap.classList.add(evaluation.correct ? "correct" : "incorrect");
+        optionsContainer.querySelector(".slider-field").disabled = true;
+      }
+
+      feedbackState.className = "feedback-state " + (evaluation.skipped ? "skipped" : evaluation.correct ? "correct" : "incorrect");
+      feedbackState.textContent = evaluation.skipped ? "Übersprungen" : evaluation.correct ? "Richtig beantwortet" : "Noch nicht ganz";
+      feedbackText.textContent = question.explanation;
+      feedbackSolution.textContent = question.solutionText || "";
+      feedbackCard.classList.add("show");
     }
 
-    function tuneLevelDifficulty(level, levelIndex) {
-      level.display = `Level ${levelIndex + 1} · ${level.biome}`;
-      level.timeLimit = Math.max(34, 68 - levelIndex * 2);
-      level.bottles = level.bottles.map((bottle, index) => ({
-        ...bottle,
-        y: bottle.y - Math.min(42, Math.floor(levelIndex / 2) * (index % 2 === 0 ? 10 : 6))
-      }));
-      for (let i = 1; i < level.platforms.length - 2; i++) {
-        const previous = level.platforms[i - 1];
-        const platform = level.platforms[i];
-        const extraGap = Math.min(26, Math.floor(levelIndex / 2) * 4 + (i % 2) * 2);
-        platform.x += extraGap * i * 0.45;
-        if (platform.x < previous.x + previous.w + 74) {
-          platform.x = previous.x + previous.w + 74;
-        }
+    function submitAnswer() {
+      const question = quizQuestions[currentQuestionIndex];
+
+      if (!isResponseComplete(question, currentResponse) || answeredCurrentQuestion) {
+        return;
       }
-      level.enemies = level.enemies.map((enemy, index) => {
-        const tier = levelIndex >= 7 ? (index % 3) + 1 : levelIndex >= 3 ? (index % 2) + 1 : 1;
+
+      const evaluation = evaluateCurrentAnswer(question);
+      answeredCurrentQuestion = true;
+
+      if (evaluation.correct) {
+        score += 1;
+        updateScore();
+      }
+
+      confirmButton.disabled = true;
+      skipButton.disabled = true;
+      revealAnswerState(question, evaluation);
+    }
+
+    function skipQuestion() {
+      const question = quizQuestions[currentQuestionIndex];
+      if (answeredCurrentQuestion || question.type !== "text-multi") {
+        return;
+      }
+
+      answeredCurrentQuestion = true;
+      confirmButton.disabled = true;
+      skipButton.disabled = true;
+      revealAnswerState(question, {
+        correct: false,
+        skipped: true,
+        matches: Array(question.inputCount).fill(null)
+      });
+    }
+
+    function goToNextQuestion() {
+      currentQuestionIndex += 1;
+
+      if (currentQuestionIndex >= quizQuestions.length) {
+        showResults();
+        return;
+      }
+
+      renderQuestion();
+    }
+
+    function getMedalData(points) {
+      const ratio = points / quizQuestions.length;
+
+      if (ratio >= 0.9) {
         return {
-          ...enemy,
-          speed: enemy.speed + levelIndex * 5,
-          tier,
-          hitsRemaining: tier
+          key: "gold",
+          label: "Gold",
+          title: "Ozean-Meister",
+          letter: "G",
+          copy: "Herausragend. Du hast die Ausstellung mit viel Aufmerksamkeit erkundet und dir die Gold-Medaille verdient."
         };
-      });
-      if (levelIndex >= 4) {
-        const extra = level.enemies.slice(0, Math.min(3, 1 + Math.floor(levelIndex / 3))).map((enemy, idx) => ({
-          ...enemy,
-          x: enemy.x + 42 + idx * 18,
-          baseX: enemy.baseX + 42 + idx * 18,
-          speed: enemy.speed + 16,
-          tier: levelIndex >= 7 ? 3 : 2,
-          hitsRemaining: levelIndex >= 7 ? 3 : 2
-        }));
-        level.enemies.push(...extra);
       }
-      return level;
-    }
 
-    const levels = DESERT_BIOMES.flatMap((biome, biomeIndex) => [
-      buildLevel(biome, biomeIndex, 0),
-      buildLevel(biome, biomeIndex, 1),
-      buildLevel(biome, biomeIndex, 2)
-    ]).slice(0, 10).map((level, index) => tuneLevelDifficulty(level, index));
+      if (ratio >= 0.7) {
+        return {
+          key: "silver",
+          label: "Silber",
+          title: "Fluss-Forscher",
+          letter: "S",
+          copy: "Stark gemacht. Du hast viele Zusammenhänge entdeckt und dir eine Silber-Medaille gesichert."
+        };
+      }
 
-    const state = {
-      levelIndex: 0,
-      timeLeft: 0,
-      started: false,
-      gameWon: false,
-      totalRunTime: 0,
-      levelElapsed: 0,
-      cameraX: 0,
-      particles: [],
-      jumpTraces: [],
-      bloomPatches: [],
-      transition: null,
-      levelSummary: null,
-      worldEvent: null,
-      rescue: null,
-      message: "",
-      player: null,
-      introVisible: true
-    };
+      if (ratio >= 0.5) {
+        return {
+          key: "bronze",
+          label: "Bronze",
+          title: "Wasser-Entdecker",
+          letter: "B",
+          copy: "Gut gemacht. Du hast bereits viele Stationen aufmerksam erkundet und dir die Bronze-Medaille verdient."
+        };
+      }
 
-    const keys = { left: false, right: false, down: false, jumpHeld: false };
-
-    function createPlayer() {
       return {
-        x: 40,
-        y: 0,
-        w: PLAYER_WIDTH,
-        h: PLAYER_HEIGHT,
-        standHeight: PLAYER_HEIGHT,
-        crouchHeight: PLAYER_CROUCH_HEIGHT,
-        vx: 0,
-        vy: 0,
-        onGround: false,
-        crouching: false,
-        facing: 1,
-        jumpBuffer: 0,
-        coyoteTimer: 0,
-        invulnerable: 0,
-        water: MAX_WATER,
-        habitat: 60,
-        collected: 0,
-        hidden: false,
-        attachedEnemy: null,
-        rocketFuel: 0,
-        powerJumpReady: false,
-        seeds: 0,
-        restorationTimer: 0,
-        wobbleTimer: 0,
-        contaminationTimer: 0,
-        coolnessTimer: 0,
-        recentJumpLoss: 0,
-        shipHintCooldown: 0,
-        sweatPulse: 0,
-        respawnPoint: { x: 40, y: 0 }
+        key: "bronze",
+        label: "Noch keine Medaille",
+        title: "Versuch es noch einmal",
+        letter: "!",
+        copy: "Weniger als die Hälfte der Fragen war richtig. Versuch es am besten noch einmal und entdecke die Ausstellung weiter."
       };
     }
 
-    function getLevel(index = state.levelIndex) {
-      return levels[index];
-    }
-
-    function getSolids(level) {
-      return level.platforms;
-    }
-
-    function resetLevel(index, keepMessage = false) {
-      state.levelIndex = index;
-      state.timeLeft = 0;
-      state.levelElapsed = 0;
-      state.cameraX = 0;
-      state.transition = null;
-      state.levelSummary = null;
-      state.worldEvent = { type: "heat", timer: 7, duration: 0, active: false };
-      state.rescue = null;
-      state.player = createPlayer();
-      state.introVisible = true;
-      state.particles = [];
-      state.jumpTraces = [];
-      state.bloomPatches = [];
-
-      const level = getLevel(index);
-      level.bottles = level.bottles.map(bottle => ({ ...bottle, collected: false }));
-      level.dirtyBottles = level.dirtyBottles.map(bottle => ({ ...bottle, collected: false }));
-      level.items = level.items.map(item => ({ ...item, collected: false }));
-      level.enemies = level.enemies.map(enemy => ({
-        ...enemy,
-        dead: false,
-        attached: false,
-        drainTimer: 0,
-        jumpOffset: 0,
-        jumpVy: 0
-      }));
-
-      const spawnY = level.platforms[0].y - PLAYER_HEIGHT;
-      state.player.y = spawnY;
-      state.player.respawnPoint = { x: state.player.x, y: spawnY };
-
-      if (!keepMessage) {
-        state.message = `<strong>${level.display}</strong> ${level.description}`;
-      }
-      syncUi();
-    }
-
-    function syncUi() {
-      const level = getLevel();
-      const player = state.player;
-      const isMobileHud = window.matchMedia("(max-width: 940px), (hover: none) and (pointer: coarse)").matches;
-      const collected = level.bottles.filter(bottle => bottle.collected).length;
-      const missing = Math.max(0, level.bottles.length - collected);
-      const healthPercent = Math.round(clamp((player.water / MAX_WATER) * 100, 0, 100));
-      const drynessPercent = 100 - healthPercent;
-      if (isMobileHud) {
-        ui.labelOne.textContent = "Austrocknung";
-        ui.labelTwo.textContent = "Vitalitaet Lebensraum";
-        ui.labelThree.textContent = "Fehlen";
-        ui.levelName.textContent = `${drynessPercent}%`;
-        ui.timeLeft.textContent = `${Math.round(player.habitat)}%`;
-        ui.bottleCount.textContent = `${missing}`;
-        ui.gravityFactor.textContent = level.gravityText;
-        ui.waterText.textContent = `Swoppie ${healthPercent}% · Austrocknung ${drynessPercent}%`;
-      } else {
-        ui.labelOne.textContent = "Level";
-        ui.labelTwo.textContent = "Zeit";
-        ui.labelThree.textContent = "Fehlen";
-        ui.labelFour.textContent = "Gravitation";
-        ui.levelName.textContent = level.display;
-        ui.timeLeft.textContent = formatTime(state.levelElapsed);
-        ui.bottleCount.textContent = `${missing}`;
-        ui.gravityFactor.textContent = level.gravityText;
-        ui.waterText.textContent = `Swoppie ${healthPercent}% · Austrocknung ${drynessPercent}% · Vitalitaet des Lebensraums ${Math.round(player.habitat)}%`;
-      }
-      if (ui.itemStrip) {
-        const bottleIcons = Array.from({ length: collected }, () => `<span class="collect-icon bottle"></span>`).join("");
-        const seedIcons = Array.from({ length: player.seeds }, () => `<span class="collect-icon seed"></span>`).join("");
-        const groups = [];
-        if (collected > 0) {
-          groups.push(`<span class="collect-group">Flaschen <span class="collect-icons">${bottleIcons}</span></span>`);
-        }
-        if (player.seeds > 0) {
-          groups.push(`<span class="collect-group">Samen <span class="collect-icons">${seedIcons}</span></span>`);
-        }
-        if (player.rocketFuel > 0) {
-          groups.push(`<span class="collect-group">Jetpack ${player.rocketFuel.toFixed(1)}s</span>`);
-        }
-        if (player.powerJumpReady) {
-          groups.push(`<span class="collect-group">Powersprung</span>`);
-        }
-        ui.itemStrip.innerHTML = groups.join("");
-      }
-
-      const tags = [];
-      if (player.contaminationTimer > 0) {
-        tags.push("schwach");
-      }
-      if (player.coolnessTimer > 0) {
-        tags.push("gekuehlt");
-      }
-      if (player.restorationTimer > 0) {
-        tags.push("lebt auf");
-      }
-      if (state.worldEvent && state.worldEvent.active) {
-        tags.push(state.worldEvent.type === "heat" ? "heiss" : "smog");
-      }
-      ui.factText.textContent = "";
-      ui.messageBox.innerHTML = "";
-
-      if (state.transition) {
-        ui.statusBadge.textContent = "Flaschenrakete startet";
-      } else if (player.attachedEnemy) {
-        ui.statusBadge.textContent = "Wassersauger am Kopf";
-      } else if (player.contaminationTimer > 0) {
-        ui.statusBadge.textContent = "Verunreinigtes Wasser";
-      } else if (player.rocketFuel > 0) {
-        ui.statusBadge.textContent = "Jetpack geladen";
-      } else if (player.powerJumpReady) {
-        ui.statusBadge.textContent = "Powersprung bereit";
-      } else if (player.water < 25) {
-        ui.statusBadge.textContent = "Kritisch trocken";
-      } else if (collected === level.bottles.length) {
-        ui.statusBadge.textContent = "Rakete startklar";
-      } else {
-        ui.statusBadge.textContent = "Tropfen unterwegs";
-      }
-
-      ui.startButton.classList.toggle("hidden", state.started);
-    }
-
-    function ensureAudio() {
-      if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioContext.state === "suspended") {
-        audioContext.resume();
-      }
-    }
-
-    function playSound(kind) {
-      if (!audioContext) {
-        return;
-      }
-      const now = audioContext.currentTime;
-      const configs = {
-        jump: { type: "triangle", f1: 320, f2: 560, dur: 0.08, gain: 0.03 },
-        bottle: { type: "sine", f1: 500, f2: 760, dur: 0.09, gain: 0.04 },
-        bad: { type: "sawtooth", f1: 260, f2: 150, dur: 0.14, gain: 0.04 },
-        hit: { type: "square", f1: 180, f2: 100, dur: 0.12, gain: 0.045 },
-        start: { type: "sine", f1: 330, f2: 620, dur: 0.2, gain: 0.04 },
-        rocket: { type: "sawtooth", f1: 120, f2: 460, dur: 0.46, gain: 0.07 },
-        win: { type: "triangle", f1: 420, f2: 860, dur: 0.24, gain: 0.04 }
-      };
-      const config = configs[kind];
-      if (!config) {
-        return;
-      }
-      const osc = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      osc.type = config.type;
-      osc.frequency.setValueAtTime(config.f1, now);
-      osc.frequency.exponentialRampToValueAtTime(config.f2, now + config.dur);
-      gain.gain.setValueAtTime(config.gain, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + config.dur);
-      osc.connect(gain);
-      gain.connect(audioContext.destination);
-      osc.start(now);
-      osc.stop(now + config.dur);
-    }
-
-    function startGame() {
-      ensureAudio();
-      state.started = true;
-      state.totalRunTime = 0;
-      state.message = `<strong>${getLevel().display}</strong> Der Tropfen trocknet staendig aus. Sammle saubere Wasserflaschen und meide verunreinigte Attrappen.`;
-      playSound("start");
-      syncUi();
-    }
-
-    function update(dt) {
-      if (!state.started) {
-        syncUi();
-        return;
-      }
-
-      if (state.gameWon) {
-        updateParticles(dt);
-        syncUi();
-        return;
-      }
-
-      if (state.levelSummary) {
-        state.levelSummary.timer += dt;
-        updateParticles(dt);
-        if (state.levelSummary.timer >= state.levelSummary.duration) {
-          const summary = state.levelSummary;
-          state.levelSummary = null;
-          if (summary.final) {
-            state.gameWon = true;
-            state.message = "<strong>Gerettet!</strong> Der letzte Tropfen erinnert daran, wie kostbar sauberes Trinkwasser ist.";
-            playSound("win");
-          } else {
-            resetLevel(state.levelIndex + 1);
-          }
-        }
-        syncUi();
-        return;
-      }
-
-      const level = getLevel();
-      const player = state.player;
-
-      state.totalRunTime += dt;
-      state.levelElapsed += dt;
-      updateWorldEvent(dt);
-      player.jumpBuffer = Math.max(0, player.jumpBuffer - dt);
-      player.coyoteTimer = Math.max(0, player.coyoteTimer - dt);
-      player.invulnerable = Math.max(0, player.invulnerable - dt);
-      player.contaminationTimer = Math.max(0, player.contaminationTimer - dt);
-      player.coolnessTimer = Math.max(0, player.coolnessTimer - dt);
-      player.restorationTimer = Math.max(0, player.restorationTimer - dt);
-      player.wobbleTimer = Math.max(0, player.wobbleTimer - dt);
-      player.rocketFuel = Math.max(0, player.rocketFuel - dt);
-      player.shipHintCooldown = Math.max(0, player.shipHintCooldown - dt);
-      player.sweatPulse += dt * 9;
-
-      if (state.rescue) {
-        updateRescue(dt);
-        updateParticles(dt);
-        syncUi();
-        return;
-      }
-
-      if (state.transition) {
-        updateTransition(dt);
-        updateParticles(dt);
-        syncUi();
-        return;
-      }
-
-      const moveDir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-      if (moveDir !== 0) {
-        player.facing = moveDir;
-      }
-
-      updateCrouchState(level, player);
-
-      const moveSpeed = BASE_MOVE_SPEED * (player.contaminationTimer > 0 ? 0.8 : 1) * (player.rocketFuel > 0 ? 1.06 : 1) * (player.wobbleTimer > 0 ? 0.7 : 1);
-      if (!player.onGround) {
-        player.vy += BASE_GRAVITY * dt;
-      } else {
-        player.coyoteTimer = COYOTE_TIME;
-      }
-
-      if (player.rocketFuel > 0) {
-        if (keys.jumpHeld) {
-          player.vy -= 1180 * dt;
-        }
-        if (keys.left) {
-          player.vx -= 340 * dt;
-        }
-        if (keys.right) {
-          player.vx += 340 * dt;
-        }
-        if (keys.down) {
-          player.vy += 420 * dt;
-        }
-        if (keys.jumpHeld || keys.left || keys.right || keys.down) {
-          emitParticle(player.x + player.w / 2, player.y + player.h + 2, "#9cecff", 1, 26);
-        }
-      }
-
-      if (player.onGround) {
-        if (moveDir !== 0) {
-          player.vx = moveTowards(player.vx, moveDir * moveSpeed, GROUND_ACCEL * dt);
-        } else {
-          player.vx = moveTowards(player.vx, 0, GROUND_FRICTION * dt);
-        }
-      } else {
-        if (moveDir !== 0) {
-          player.vx = moveTowards(player.vx, moveDir * moveSpeed, AIR_ACCEL * dt);
-        } else {
-          player.vx = moveTowards(player.vx, 0, AIR_DRAG * dt);
-        }
-      }
-
-      updateEnemies(level, dt);
-
-      player.x += player.vx * dt;
-      resolveHorizontal(level, player);
-      player.y += player.vy * dt;
-      resolveVertical(level, player);
-
-      if (player.jumpBuffer > 0 && player.coyoteTimer > 0) {
-        jump();
-      }
-
-      applyWaterDrain(dt);
-      updateParticles(dt);
-
-      player.x = clamp(player.x, 0, WORLD_WIDTH - player.w);
-      state.cameraX = clamp(player.x - canvas.width * 0.4, 0, WORLD_WIDTH - canvas.width);
-
-      if (player.y > canvas.height + 140) {
-        spendWater(18);
-        triggerRescue();
-        return;
-      }
-
-      if (player.water <= 0) {
-        dryOut("Der Tropfen ist vollstaendig ausgetrocknet. Das Level beginnt neu.");
-        return;
-      }
-
-      handleEnemyCollisions(level);
-      collectBottles(level);
-      collectItems(level);
-      checkRocket(level);
-      syncUi();
-    }
-
-    function applyWaterDrain(dt) {
-      const player = state.player;
-      const speed = Math.abs(player.vx);
-      const baseDrain = player.contaminationTimer > 0 ? 6.8 : player.coolnessTimer > 0 ? 2.2 : 3.8;
-      let totalDrain = baseDrain * (player.restorationTimer > 0 ? 0.78 : 1) * dt;
-
-      if (state.worldEvent && state.worldEvent.active && state.worldEvent.type === "heat") {
-        totalDrain += 2.6 * dt;
-      }
-
-      if (speed > 245) {
-        totalDrain += ((speed - 245) / 120) * 4.4 * dt;
-        if (Math.random() > 0.6) {
-          emitParticle(player.x + player.w / 2, player.y + 12, "#c9f8ff", 2);
-        }
-      }
-
-      if (!player.onGround && player.vy < -560) {
-        totalDrain += 2.8 * dt;
-      }
-
-      if (player.attachedEnemy) {
-        totalDrain += 10 * dt;
-      }
-
-      spendWater(totalDrain);
-    }
-
-    function updateWorldEvent(dt) {
-      if (!state.worldEvent || state.transition || state.gameWon) {
-        return;
-      }
-
-      const event = state.worldEvent;
-      event.timer -= dt;
-      if (event.active) {
-        event.duration -= dt;
-        if (event.duration <= 0) {
-          event.active = false;
-          event.type = event.type === "heat" ? "pollution" : "heat";
-          event.timer = 7 + Math.random() * 4;
-        }
-      } else if (event.timer <= 0) {
-        event.active = true;
-        event.duration = event.type === "heat" ? 4.5 : 3.8;
-        if (event.type === "heat") {
-          state.message = "<strong>Hitzewelle!</strong> Klimawandel macht die Luft trockener. Dein Tropfen verdunstet jetzt schneller.";
-        } else {
-          state.message = "<strong>Verschmutzungswolke!</strong> Verdreckte Luft und belastete Quellen machen den Weg gefaehrlicher.";
-        }
-      }
-
-      if (event.active && event.type === "pollution") {
-        const push = Math.sin(state.levelElapsed * 2.5) * 18 * dt;
-        state.player.vx += push;
-        if (Math.random() > 0.7) {
-          emitParticle(state.player.x + state.player.w / 2, state.player.y + 20, "#8d7759", 1, 18);
-        }
-      }
-    }
-
-    function spendWater(amount) {
-      state.player.water = clamp(state.player.water - amount, 0, MAX_WATER);
-    }
-
-    function refillWater(amount) {
-      state.player.water = clamp(state.player.water + amount, 0, MAX_WATER);
-    }
-
-    function addBloomPatch(x, y, strength = 1, kind = "bloom") {
-      const existing = state.bloomPatches.find(patch => Math.abs(patch.x - x) < 44 && Math.abs(patch.y - y) < 24);
-      if (existing) {
-        existing.strength = clamp(existing.strength + strength * 0.35, 0.4, 1.8);
-        existing.life = Math.min(1, existing.life + 0.18);
-        existing.kind = kind === "sprout" ? "sprout" : existing.kind;
-        existing.age = existing.age || 0;
-        if (kind === "sprout" && typeof existing.growth !== "number") {
-          existing.growth = 0;
-        }
-      } else {
-        state.bloomPatches.push({
-          x,
-          y,
-          strength: clamp(strength, 0.5, 1.8),
-          life: 1,
-          kind,
-          age: 0,
-          growth: kind === "sprout" ? 0 : undefined
-        });
-      }
-      state.player.habitat = clamp(state.bloomPatches.length * 7, 0, 100);
-    }
-
-    function collectBottles(level) {
-      const player = state.player;
-
-      for (const bottle of level.bottles) {
-        if (bottle.collected) {
-          continue;
-        }
-        if (overlaps(player, { x: bottle.x - 12, y: bottle.y - 20, w: 24, h: 40 })) {
-          bottle.collected = true;
-          player.collected += 1;
-          refillWater(18);
-          player.coolnessTimer = Math.max(player.coolnessTimer, 4);
-          player.restorationTimer = Math.max(player.restorationTimer, 5);
-          addBloomPatch(bottle.x, bottle.y + 24, 1.6);
-          state.message = `<strong>Saubere Flasche!</strong> Deine Wasserreserve steigt und der Tropfen kuehlt sich kurz herunter.`;
-          emitParticle(bottle.x, bottle.y, "#8de3ff", 12);
-          emitParticle(bottle.x, bottle.y - 8, "#87d86d", 6);
-          playSound("bottle");
-        }
-      }
-
-      for (const bottle of level.dirtyBottles) {
-        if (bottle.collected) {
-          continue;
-        }
-        if (overlaps(player, { x: bottle.x - 12, y: bottle.y - 20, w: 24, h: 40 })) {
-          bottle.collected = true;
-          spendWater(14);
-          player.habitat = clamp(player.habitat - 5, 0, 100);
-          player.contaminationTimer = Math.max(player.contaminationTimer, 7);
-          player.vx *= 0.7;
-          state.message = `<strong>Verdreckte Flasche!</strong> Genau das zeigt das Spiel: Verschmutztes Wasser hilft nicht, sondern macht Menschen und Natur noch verletzlicher.`;
-          emitParticle(bottle.x, bottle.y, "#9e7e57", 12);
-          playSound("bad");
-        }
-      }
-    }
-
-    function collectItems(level) {
-      const player = state.player;
-      for (const item of level.items || []) {
-        if (item.collected) {
-          continue;
-        }
-        if (!overlaps(player, { x: item.x - 14, y: item.y - 14, w: 28, h: 28 })) {
-          continue;
-        }
-
-        item.collected = true;
-        if (item.type === "jetpack") {
-          player.rocketFuel = Math.max(player.rocketFuel, 10);
-          state.message = "<strong>Jetpack-Item!</strong> Du kannst jetzt frei fliegen: hoch, seitlich und auch kontrolliert wieder runter.";
-          emitParticle(item.x, item.y, "#9cecff", 14);
-        } else if (item.type === "powerJump") {
-          player.powerJumpReady = true;
-          state.message = "<strong>Powersprung!</strong> Dein naechster Sprung wird einmalig extra stark.";
-          emitParticle(item.x, item.y, "#ffe48c", 14);
-        } else {
-          player.seeds += 1;
-          player.restorationTimer = Math.max(player.restorationTimer, 2.5);
-          addBloomPatch(item.x, item.y + 18, 1.1, "sprout");
-          state.message = "<strong>Blumensamen!</strong> Nicht lebenswichtig, aber vielleicht bluht diese tote Welt ja doch noch einmal auf.";
-          emitParticle(item.x, item.y, "#a9e37d", 10);
-        }
-      }
-    }
-
-    function checkRocket(level) {
-      const player = state.player;
-      if (!overlaps(player, level.rocket)) {
-        return;
-      }
-
-      const allCollected = level.bottles.every(bottle => bottle.collected);
-      if (!allCollected) {
-        if (player.shipHintCooldown <= 0) {
-          const missing = level.bottles.filter(bottle => !bottle.collected).length;
-          state.message = `<strong>Die Flaschenrakete bleibt zu.</strong> Es fehlen noch ${missing} saubere Wasserflaschen.`;
-          player.shipHintCooldown = 0.8;
-        }
-        return;
-      }
-
-      state.transition = { timer: 0, duration: 3.6, soundPlayed: false, attached: false };
-      state.message = `<strong>Abflug!</strong> Der Tropfen steigt in die Flaschenrakete und schiesst weiter durch die Wuestenwelt.`;
-      player.vx = 0;
-      player.vy = 0;
-    }
-
-    function updateTransition(dt) {
-      const transition = state.transition;
-      const level = getLevel();
-      const player = state.player;
-      transition.timer += dt;
-
-      const rocketCenterX = level.rocket.x + level.rocket.w / 2 - player.w / 2;
-      const rocketSeatY = level.rocket.y + 46;
-      if (transition.timer < 0.85) {
-        player.hidden = false;
-        player.x += (rocketCenterX - player.x) * Math.min(1, dt * 4.2);
-        player.y += (rocketSeatY - player.y) * Math.min(1, dt * 5);
-      } else {
-        transition.attached = true;
-        player.hidden = true;
-      }
-
-      if (transition.timer > 0.45 && !transition.soundPlayed) {
-        playSound("rocket");
-        transition.soundPlayed = true;
-      }
-
-      if (Math.random() > 0.4) {
-        emitParticle(level.rocket.x + level.rocket.w / 2, level.rocket.y + level.rocket.h, "#ffd17a", 4, 90);
-      }
-
-      if (transition.timer >= transition.duration) {
-        state.transition = null;
-        player.hidden = false;
-        state.levelSummary = {
-          timer: 0,
-          duration: 2.8,
-          final: state.levelIndex === levels.length - 1,
-          levelName: level.display,
-          time: state.levelElapsed,
-          flowers: countPlantedFlowers(),
-          happySunflowers: countHappySunflowers(level),
-          score: calculateScore(state.levelElapsed, level)
-        };
-      }
-    }
-
-    function updateEnemies(level, dt) {
-      const player = state.player;
-
-      for (const enemy of level.enemies) {
-        if (enemy.dead) {
-          continue;
-        }
-
-        if (enemy.attached) {
-          enemy.drainTimer += dt;
-          enemy.x = player.x + player.w / 2 - enemy.radius;
-          enemy.y = player.y - enemy.radius * 0.45;
-          player.contaminationTimer = Math.min(10, player.contaminationTimer + dt * 0.75);
-          if (player.vy < -180 || player.onGround && Math.abs(player.vx) > 220) {
-            enemy.dead = true;
-            player.attachedEnemy = null;
-            state.message = "<strong>Abgeschuettelt!</strong> Die Giftflasche hat den Halt verloren.";
-            emitParticle(enemy.x + enemy.radius, enemy.y + enemy.radius, "#ffe2a8", 10);
-          }
-          continue;
-        }
-
-        const platform = level.platforms[enemy.platformIndex];
-        const minX = platform.x + 14;
-        const maxX = Math.min(platform.x + platform.w - enemy.radius * 2 - 14, enemy.baseX + enemy.range);
-        const lowX = Math.max(minX, enemy.baseX - enemy.range);
-
-        enemy.alertCooldown = Math.max(0, enemy.alertCooldown - dt);
-        enemy.x += enemy.direction * enemy.speed * dt;
-
-        if (enemy.x < lowX) {
-          enemy.x = lowX;
-          enemy.direction = 1;
-        }
-        if (enemy.x > maxX) {
-          enemy.x = maxX;
-          enemy.direction = -1;
-        }
-
-        const playerNear = Math.abs((player.x + player.w / 2) - (enemy.x + enemy.radius)) < 120 &&
-          Math.abs((player.y + player.h / 2) - (platform.y - enemy.radius)) < 110;
-
-        if (playerNear && enemy.jumpOffset === 0 && enemy.alertCooldown <= 0) {
-          enemy.jumpVy = -195;
-          enemy.direction = player.x < enemy.x ? -1 : 1;
-          enemy.alertCooldown = 1 + Math.random() * 0.6;
-        }
-
-        enemy.jumpVy += BASE_GRAVITY * 0.72 * dt;
-        enemy.jumpOffset += enemy.jumpVy * dt;
-        if (enemy.jumpOffset > 0) {
-          enemy.jumpOffset = 0;
-          enemy.jumpVy = 0;
-        }
-
-        enemy.y = platform.y - enemy.radius * 2 + enemy.jumpOffset;
-      }
-    }
-
-    function handleEnemyCollisions(level) {
-      const player = state.player;
-      const playerBox = { x: player.x, y: player.y, w: player.w, h: player.h };
-
-      for (const enemy of level.enemies) {
-        if (enemy.dead || enemy.attached) {
-          continue;
-        }
-
-        const enemyBox = { x: enemy.x, y: enemy.y, w: enemy.radius * 2, h: enemy.radius * 2 };
-        if (!overlaps(playerBox, enemyBox)) {
-          continue;
-        }
-
-        const stomp = player.vy > 120 && player.y + player.h - enemy.y < enemy.radius + 12;
-        if (stomp) {
-          player.vy = -300;
-          player.onGround = false;
-          enemy.hitsRemaining -= 1;
-          if (enemy.hitsRemaining <= 0) {
-            enemy.dead = true;
-            state.message = "<strong>Gelandet!</strong> Eine Giftflasche wurde vom Tropfen umgestossen.";
-            emitParticle(enemy.x + enemy.radius, enemy.y + enemy.radius, "#ffd17a", 12);
-          } else {
-            enemy.jumpVy = -160;
-            enemy.jumpOffset = -10;
-            state.message = `<strong>Treffer!</strong> Diese Giftflasche braucht noch ${enemy.hitsRemaining} Sprung${enemy.hitsRemaining > 1 ? "e" : ""}.`;
-            emitParticle(enemy.x + enemy.radius, enemy.y + enemy.radius, "#ffb45d", 8);
-          }
-        } else {
-          enemy.attached = true;
-          player.attachedEnemy = enemy;
-          spendWater(8);
-          player.contaminationTimer = Math.min(10, player.contaminationTimer + 2.2);
-          player.invulnerable = 0.3;
-          state.message = "<strong>Alarm!</strong> Eine giftige Flasche hat den Tropfen beruehrt. Er verfaerbt sich jetzt zunehmend.";
-          playSound("hit");
-        }
-        return;
-      }
-    }
-
-    function jump() {
-      const player = state.player;
-      if ((player.coyoteTimer <= 0 && !player.onGround) || state.transition || state.gameWon) {
-        return;
-      }
-
-      let jumpForce = BASE_JUMP * (player.contaminationTimer > 0 ? 0.88 : 1);
-      if (player.powerJumpReady) {
-        jumpForce *= 1.35;
-        player.powerJumpReady = false;
-        state.message = "<strong>Powersprung!</strong> Der Tropfen entlaedt seinen Extraschub.";
-      }
-      player.vy = -jumpForce;
-      player.onGround = false;
-      player.coyoteTimer = 0;
-      player.jumpBuffer = 0;
-      if (state.introVisible) {
-        state.introVisible = false;
-      }
-      playSound("jump");
-      emitParticle(player.x + player.w / 2, player.y + player.h - 8, "#8de3ff", 8);
-      startJumpTrace(player);
-
-      if (Math.abs(player.vx) > 210) {
-        spendWater(1.5);
-      }
-      if (Math.abs(player.vx) > 260) {
-        spendWater(1.8);
-        state.message = "<strong>Schwitzsprung!</strong> Der Tropfen war zu schnell und verliert dabei Wasser.";
-      }
-      if (Math.abs(player.vx) < 170) {
-        state.message = "<strong>Sprung!</strong> Halte deine Linie flach, dann bleibt mehr Wasser im Tropfen.";
-      }
-      syncUi();
-    }
-
-    function resolveHorizontal(level, player) {
-      for (const solid of getSolids(level)) {
-        if (!overlaps(player, solid)) {
-          continue;
-        }
-        if (player.vx > 0) {
-          player.x = solid.x - player.w;
-        } else if (player.vx < 0) {
-          player.x = solid.x + solid.w;
-        }
-      }
-    }
-
-    function resolveVertical(level, player) {
-      player.onGround = false;
-      for (const solid of getSolids(level)) {
-        if (!overlaps(player, solid)) {
-          continue;
-        }
-        if (player.vy > 0) {
-          player.y = solid.y - player.h;
-          if (!player.onGround && player.vy > 560) {
-            spendWater(2.2);
-            state.message = "<strong>Harte Landung!</strong> Der Tropfen spritzt auf und verliert Wasser.";
-          }
-          player.vy = 0;
-          player.onGround = true;
-          emitParticle(player.x + player.w / 2, solid.y + 2, "#8de3ff", 4, 18);
-          addBloomPatch(player.x + player.w / 2, solid.y + 8, 0.55);
-          const platformIndex = level.platforms.indexOf(solid);
-          if (platformIndex >= 0) {
-            player.respawnPoint = {
-              x: clamp(solid.x + Math.min(28, solid.w / 3), 0, WORLD_WIDTH - player.w),
-              y: solid.y - player.standHeight
-            };
-          }
-        } else if (player.vy < 0) {
-          player.y = solid.y + solid.h;
-          player.vy = 28;
-        }
-      }
-    }
-
-    function updateCrouchState(level, player) {
-      const wantsCrouch = keys.down && player.onGround;
-      if (wantsCrouch && !player.crouching) {
-        player.crouching = true;
-        player.y += player.standHeight - player.crouchHeight;
-        player.h = player.crouchHeight;
-      } else if (!wantsCrouch && player.crouching && canStandUp(level, player)) {
-        player.y -= player.standHeight - player.crouchHeight;
-        player.h = player.standHeight;
-        player.crouching = false;
-      }
-    }
-
-    function canStandUp(level, player) {
-      const testBox = {
-        x: player.x,
-        y: player.y - (player.standHeight - player.crouchHeight),
-        w: player.w,
-        h: player.standHeight
-      };
-      return !getSolids(level).some(solid => overlaps(testBox, solid));
-    }
-
-    function getSafeSpawnAt(level, worldX) {
-      const beforeHole = level.platforms
-        .filter(platform => platform.x + platform.w <= worldX + 8)
-        .sort((a, b) => (b.x + b.w) - (a.x + a.w))[0];
-      const platform = beforeHole || level.platforms[0];
-      return {
-        x: clamp(platform.x + platform.w - PLAYER_WIDTH - 16, platform.x + 10, platform.x + platform.w - PLAYER_WIDTH - 10),
-        y: platform.y - PLAYER_HEIGHT
-      };
-    }
-
-    function respawnPlayer(reason) {
-      const player = state.player;
-      player.x = player.respawnPoint.x;
-      player.y = player.respawnPoint.y;
-      player.vx = 0;
-      player.vy = 0;
-      player.onGround = true;
-      player.attachedEnemy = null;
-      state.message = `<strong>Zurueck auf festen Sand.</strong> ${reason}`;
-      syncUi();
-    }
-
-    function triggerRescue() {
-      if (state.rescue || state.transition || state.gameWon) {
-        return;
-      }
-
-      const level = getLevel();
-      const player = state.player;
-      player.vx = 0;
-      player.vy = 0;
-      player.onGround = false;
-      player.attachedEnemy = null;
-      player.hidden = true;
-      const fallX = clamp(player.x + player.w / 2, 56, WORLD_WIDTH - 56);
-      const safeSpawn = getSafeSpawnAt(level, fallX);
-      const targetX = safeSpawn.x;
-      const pipeX = clamp(targetX + player.w / 2, 56, WORLD_WIDTH - 56);
-      const targetY = Math.max(96, safeSpawn.y - 72);
-
-      state.rescue = {
-        x: pipeX,
-        y: -84,
-        pipeBottomY: targetY - 42,
-        dripY: targetY - 8,
-        targetX,
-        targetY: safeSpawn.y,
-        timer: 0,
-        phase: "fall",
-        fade: 1,
-        ghostY: player.y,
-        ghostX: player.x,
-        pipeLocked: false
-      };
-      state.message = "<strong>Rohr-Rettung!</strong> Ein gruenes Rohr faehrt direkt ueber der sicheren Plattform herunter und setzt den Tropfen dort wieder ab.";
-    }
-
-    function updateRescue(dt) {
-      const rescue = state.rescue;
-      const player = state.player;
-      if (!rescue) {
-        return;
-      }
-
-      rescue.timer += dt;
-      state.cameraX = clamp(rescue.x - canvas.width * 0.45, 0, WORLD_WIDTH - canvas.width);
-
-      if (rescue.phase === "fall") {
-        rescue.ghostY += 170 * dt;
-        rescue.fade = Math.max(0, rescue.fade - dt * 0.7);
-        if (rescue.timer >= 0.8) {
-          rescue.phase = "pipe";
-          rescue.timer = 0;
-        }
-        return;
-      }
-
-      if (rescue.phase === "pipe") {
-        if (rescue.y < rescue.pipeBottomY) {
-          rescue.y += 140 * dt;
-        } else {
-          rescue.pipeLocked = true;
-        }
-        if (Math.random() > 0.58) {
-          emitParticle(rescue.x + 12, rescue.pipeBottomY + 10, "#d9fbff", 1, 10);
-        }
-        if (rescue.timer >= 1.15) {
-          rescue.phase = "drop";
-          rescue.timer = 0;
-        }
-        return;
-      }
-
-      const releaseDelay = 0.2;
-      if (rescue.timer < releaseDelay) {
-        player.hidden = true;
-        player.x = rescue.targetX;
-        player.y = rescue.pipeBottomY + 22;
-        player.vx = 0;
-        player.vy = 0;
-        player.onGround = false;
-        return;
-      }
-
-      player.hidden = false;
-      player.x = rescue.targetX;
-      player.y = Math.min(rescue.targetY, rescue.pipeBottomY + 22 + (rescue.timer - releaseDelay) * 34);
-      player.vx = 0;
-      player.vy = 18;
-      player.onGround = false;
-
-      if (player.y >= rescue.targetY) {
-        player.y = rescue.targetY;
-        player.x = rescue.targetX;
-        player.vy = 0;
-        player.onGround = true;
-        player.hidden = false;
-        player.wobbleTimer = 0.9;
-        state.rescue = null;
-        state.message = "<strong>Zurueck im Spiel!</strong> Das Rohr hat den Tropfen wieder sauber auf einer Plattform abgesetzt.";
-      }
-    }
-
-    function dryOut(reason) {
-      state.message = `<strong>Ausgetrocknet!</strong> ${reason}`;
-      resetLevel(state.levelIndex, true);
-    }
-
-    function emitParticle(x, y, color, amount = 8, speedY = 40) {
-      for (let i = 0; i < amount; i++) {
-        const life = 0.35 + Math.random() * 0.3;
-        state.particles.push({
-          x: x + (Math.random() - 0.5) * 18,
-          y: y + (Math.random() - 0.5) * 14,
-          vx: (Math.random() - 0.5) * 50,
-          vy: (Math.random() - 0.5) * speedY,
-          life,
-          maxLife: life,
-          size: 3 + Math.random() * 4,
-          color
-        });
-      }
-    }
-
-    function startJumpTrace(player) {
-      state.jumpTraces.push({
-        life: JUMP_TRACE_LIFE,
-        maxLife: JUMP_TRACE_LIFE,
-        points: [{ x: player.x + player.w / 2, y: player.y + player.h * 0.72 }]
-      });
-    }
-
-    function updateJumpTraces(dt) {
-      if (!state.jumpTraces) {
-        return;
-      }
-      const active = state.jumpTraces[state.jumpTraces.length - 1];
-      if (active && !state.player.onGround && !state.rescue && !state.transition) {
-        active.points.push({ x: state.player.x + state.player.w / 2, y: state.player.y + state.player.h * 0.72 });
-        if (active.points.length > 26) {
-          active.points.shift();
-        }
-      }
-      state.jumpTraces = state.jumpTraces.filter(trace => {
-        if (trace !== active || state.player.onGround) {
-          trace.life -= dt;
-        }
-        return trace.life > 0;
-      });
-    }
-
-    function updateBloomPatches(dt) {
-      const playerCenter = state.player ? state.player.x + state.player.w / 2 : 0;
-      state.bloomPatches = state.bloomPatches.filter(patch => {
-        patch.age = (patch.age || 0) + dt;
-        const nearPlayer = Math.abs(patch.x - playerCenter) < 120;
-        const fadeRate = patch.kind === "sprout" ? 0.03 : 0.22;
-        patch.life = clamp(patch.life + (nearPlayer ? dt * 0.22 : -dt * fadeRate), 0, 1);
-        if (patch.kind === "sprout") {
-          patch.growth = clamp((patch.growth || 0) + dt * 0.55, 0, 1);
-        }
-        return patch.life > 0.04 || patch.kind === "sprout";
-      });
-      if (state.player) {
-        state.player.habitat = clamp(state.bloomPatches.reduce((sum, patch) => sum + patch.life * (patch.kind === "sprout" ? 9 : 5), 0, 100), 0, 100);
-      }
-    }
-
-    function updateParticles(dt) {
-      updateBloomPatches(dt);
-      updateJumpTraces(dt);
-      state.particles = state.particles.filter(particle => {
-        particle.life -= dt;
-        particle.x += particle.vx * dt;
-        particle.y += particle.vy * dt;
-        particle.vy += 35 * dt;
-        return particle.life > 0;
-      });
-    }
-
-    function draw() {
-      const level = getLevel();
-      drawSky(level);
-      drawSun(level);
-      drawParallax(level);
-      drawWorldEventOverlay();
-
-      ctx.save();
-      ctx.translate(-state.cameraX, 0);
-      drawDunes(level);
-      drawJumpTraces();
-      drawPlatforms(level);
-      drawBottles(level.bottles, false);
-      drawBottles(level.dirtyBottles, true);
-      drawItems(level);
-      drawEnemies(level);
-      drawRocket(level);
-      drawParticles();
-      drawRescue();
-      drawPlayer(state.player);
-      ctx.restore();
-
-      if (!state.started) {
-        drawStartOverlay();
-      } else if (state.gameWon) {
-        drawWinOverlay();
-      } else if (state.levelSummary) {
-        drawLevelSummaryOverlay();
-      }
-
-      if (state.introVisible && state.started && !state.gameWon) {
-        drawIntroCard(level);
-      }
-
-      drawMiniHud(level);
-    }
-
-    function drawSky(level) {
-      const habitatRatio = state.player ? state.player.habitat / 100 : 0.6;
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, habitatRatio > 0.55 ? lighten(level.skyTop, 0.12 * habitatRatio) : level.skyTop);
-      gradient.addColorStop(1, habitatRatio > 0.45 ? lighten(level.skyBottom, 0.05 * habitatRatio) : level.skyBottom);
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      if (habitatRatio > 0.6) {
-        ctx.fillStyle = `rgba(116, 208, 118, ${0.05 + habitatRatio * 0.08})`;
-        ctx.fillRect(0, canvas.height * 0.56, canvas.width, canvas.height * 0.22);
-      }
-    }
-
-    function drawSun(level) {
-      const sunX = canvas.width - 140;
-      const sunY = 108;
-      const halo = ctx.createRadialGradient(sunX, sunY, 18, sunX, sunY, 130);
-      halo.addColorStop(0, "rgba(255,255,220,0.92)");
-      halo.addColorStop(0.3, "rgba(255,218,140,0.5)");
-      halo.addColorStop(1, "rgba(255,190,90,0)");
-      ctx.fillStyle = halo;
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, 130, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#fff2bf";
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, 36, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawParallax(level) {
-      const habitatRatio = state.player ? state.player.habitat / 100 : 0.6;
-      const playerCenter = state.player ? state.player.x + state.player.w / 2 : 0;
-      const bands = [
-        { y: 318, speed: 0.18, alpha: 0.12 + habitatRatio * 0.08, amp: 18, color: habitatRatio > 0.55 ? "#8fcf7e" : lighten(level.accent, 0.1) },
-        { y: 368, speed: 0.34, alpha: 0.08 + habitatRatio * 0.06, amp: 22, color: habitatRatio > 0.52 ? "#95bf63" : "#f3ba72" },
-        { y: 430, speed: 0.55, alpha: 0.08 + habitatRatio * 0.03, amp: 28, color: habitatRatio > 0.48 ? "#6f8d3f" : "#a4582b" }
-      ];
-
-      for (const [index, band] of bands.entries()) {
-        ctx.fillStyle = hexToRgba(band.color, band.alpha);
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height);
-        for (let x = 0; x <= canvas.width; x += 22) {
-          const wave = Math.sin((x + state.cameraX * band.speed) * 0.01 + index) * band.amp;
-          ctx.lineTo(x, band.y + wave);
-        }
-        ctx.lineTo(canvas.width, canvas.height);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      const waterFeatures = [
-        { x: 360, y: 248, h: 128, poolY: 442, poolW: 70, poolH: 12 },
-        { x: 1240, y: 236, h: 150, poolY: 446, poolW: 78, poolH: 12 },
-        { x: 2080, y: 224, h: 162, poolY: 438, poolW: 88, poolH: 14 }
-      ];
-
-      for (const feature of waterFeatures) {
-        const localX = feature.x - state.cameraX;
-        const fill = clamp((playerCenter - feature.x + 140) / 220, 0, 1);
-        if (fill <= 0) {
-          ctx.strokeStyle = "rgba(99, 79, 56, 0.2)";
-          ctx.lineWidth = 10;
-          ctx.beginPath();
-          ctx.moveTo(localX, feature.y);
-          ctx.lineTo(localX, feature.y + feature.h);
-          ctx.stroke();
-          ctx.lineWidth = 3;
-          ctx.beginPath();
-          ctx.ellipse(localX, feature.poolY, feature.poolW / 2, feature.poolH / 2, 0, 0, Math.PI * 2);
-          ctx.stroke();
-          continue;
-        }
-
-        ctx.fillStyle = `rgba(108, 205, 255, ${0.14 + fill * 0.36})`;
-        ctx.strokeStyle = `rgba(205, 244, 255, ${0.24 + fill * 0.4})`;
-        ctx.lineWidth = 12;
-        ctx.beginPath();
-        ctx.moveTo(localX, feature.y);
-        ctx.lineTo(localX, feature.y + feature.h * fill);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.ellipse(localX, feature.poolY, (feature.poolW / 2) * fill, feature.poolH / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-
-    }
-
-    function drawSunflowers(level, habitatRatio) {
-      const platforms = level.platforms.filter(platform => platform.h >= 18).slice(0, 10);
-      let sunflowerIndex = 0;
-      for (const platform of platforms) {
-        const offsets = platform.w >= 220 ? [0.22, 0.5, 0.78] : platform.w >= 150 ? [0.3, 0.7] : [0.5];
-        for (const offset of offsets) {
-          const baseX = platform.x + platform.w * offset;
-          const y = platform.y - 22;
-          const i = sunflowerIndex++;
-        const cheerful = isSunflowerHappy(baseX);
-        ctx.strokeStyle = cheerful ? "rgba(104, 176, 82, 0.42)" : "rgba(120, 92, 44, 0.34)";
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(baseX, y + 18);
-        ctx.lineTo(baseX, platform.y + 4);
-        ctx.stroke();
-
-        ctx.fillStyle = cheerful ? "rgba(242, 208, 98, 0.78)" : "rgba(165, 128, 70, 0.52)";
-        for (let p = 0; p < 8; p++) {
-          ctx.beginPath();
-          ctx.ellipse(baseX + Math.cos((Math.PI * 2 * p) / 8) * 10, y + Math.sin((Math.PI * 2 * p) / 8) * 10, 5, 9, p * 0.3, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.fillStyle = cheerful ? "rgba(92, 60, 28, 0.9)" : "rgba(80, 58, 38, 0.76)";
-        ctx.beginPath();
-        ctx.arc(baseX, y, 9, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = cheerful ? "rgba(40, 24, 12, 0.9)" : "rgba(60, 40, 24, 0.8)";
-        ctx.lineWidth = 1.6;
-        ctx.beginPath();
-        if (cheerful) {
-          ctx.arc(baseX, y + 2, 4, 0.2, Math.PI - 0.2);
-        } else {
-          ctx.arc(baseX, y + 7, 4, Math.PI + 0.25, Math.PI * 2 - 0.25);
-        }
-        ctx.stroke();
-        }
-      }
-    }
-
-    function isSunflowerHappy(baseX) {
-      const playerCenter = state.player ? state.player.x + state.player.w / 2 : -9999;
-      if (Math.abs(baseX - playerCenter) < 170) {
-        return true;
-      }
-      return state.bloomPatches.some(patch => patch.life > 0.16 && Math.abs(patch.x - baseX) < 96);
-    }
-
-    function drawDunes(level) {
-      for (let i = 1; i < level.platforms.length; i++) {
-        const previous = level.platforms[i - 1];
-        const next = level.platforms[i];
-        const gapStart = previous.x + previous.w;
-        const gapWidth = next.x - gapStart;
-        if (gapWidth <= 0) {
-          continue;
-        }
-        const gradient = ctx.createLinearGradient(gapStart, Math.min(previous.y, next.y), gapStart, canvas.height);
-        gradient.addColorStop(0, "rgba(255, 214, 147, 0.08)");
-        gradient.addColorStop(1, "rgba(44, 16, 5, 0.82)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(gapStart, Math.min(previous.y, next.y) + 18, gapWidth, canvas.height);
-      }
-    }
-
-    function drawJumpTraces() {
-      for (const trace of state.jumpTraces || []) {
-        if (trace.points.length < 2) {
-          continue;
-        }
-        ctx.strokeStyle = `rgba(157, 236, 255, ${Math.max(0.18, trace.life / trace.maxLife)})`;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(trace.points[0].x, trace.points[0].y);
-        for (let i = 1; i < trace.points.length; i++) {
-          ctx.lineTo(trace.points[i].x, trace.points[i].y);
-        }
-        ctx.stroke();
-      }
-    }
-
-    function drawPlatforms(level) {
-      const habitatRatio = state.player ? state.player.habitat / 100 : 0.6;
-      for (const platform of level.platforms) {
-        const gradient = ctx.createLinearGradient(platform.x, platform.y, platform.x, platform.y + platform.h);
-        gradient.addColorStop(0, habitatRatio > 0.55 ? "#bfe18b" : "#f6cf8d");
-        gradient.addColorStop(1, habitatRatio > 0.55 ? "#7a8e43" : "#965128");
-        ctx.fillStyle = gradient;
-        roundRect(platform.x, platform.y, platform.w, platform.h, 12);
-        ctx.fill();
-
-        ctx.strokeStyle = "rgba(255,255,255,0.08)";
-        ctx.lineWidth = 2;
-        roundRect(platform.x, platform.y, platform.w, platform.h, 12);
-        ctx.stroke();
-
-        if (platform.h >= 40) {
-          ctx.fillStyle = habitatRatio > 0.55 ? "rgba(192, 240, 160, 0.34)" : "rgba(255, 239, 196, 0.28)";
-          for (let i = 0; i < 4; i++) {
-            ctx.fillRect(platform.x + 18 + i * 34, platform.y + 6, 22, 5);
-          }
-          if (habitatRatio > 0.58) {
-            ctx.fillStyle = `rgba(110, 185, 84, ${0.35 + habitatRatio * 0.3})`;
-            for (let i = 0; i < 3; i++) {
-              const x = platform.x + 22 + i * 26;
-              ctx.beginPath();
-              ctx.moveTo(x, platform.y + 2);
-              ctx.lineTo(x - 4, platform.y - 10);
-              ctx.lineTo(x + 4, platform.y - 6);
-              ctx.closePath();
-              ctx.fill();
-            }
-          }
-        }
-      }
-
-      drawSunflowers(level, habitatRatio);
-
-      for (const patch of state.bloomPatches) {
-        if (patch.kind === "sprout") {
-          const growth = patch.growth || 0;
-          const stemPhase = clamp(growth / 0.33, 0, 1);
-          const branchPhase = clamp((growth - 0.33) / 0.28, 0, 1);
-          const leafPhase = clamp((growth - 0.61) / 0.39, 0, 1);
-          ctx.strokeStyle = `rgba(84, 146, 66, ${0.54 + patch.strength * 0.16})`;
-          ctx.lineWidth = 2.4;
-          if (stemPhase > 0.03) {
-            const stemHeight = 4 + stemPhase * 22;
-            ctx.beginPath();
-            ctx.moveTo(patch.x, patch.y + 6);
-            ctx.lineTo(patch.x, patch.y + 6 - stemHeight);
-            ctx.stroke();
-          }
-          if (branchPhase > 0.04) {
-            const branchReach = 2 + branchPhase * 10;
-            const topY = patch.y - 12;
-            ctx.beginPath();
-            ctx.moveTo(patch.x, topY);
-            ctx.lineTo(patch.x - branchReach, topY - 4 - branchPhase * 2);
-            ctx.moveTo(patch.x, topY - 4);
-            ctx.lineTo(patch.x + branchReach + 1, topY - 8 - branchPhase * 2);
-            ctx.stroke();
-          }
-          if (leafPhase > 0.04) {
-            const leafAlpha = 0.24 + leafPhase * 0.46 + patch.strength * 0.08;
-            const leafScale = 0.35 + leafPhase * 0.75;
-            ctx.fillStyle = `rgba(125, 208, 92, ${leafAlpha})`;
-            ctx.beginPath();
-            ctx.ellipse(patch.x - 7, patch.y - 14, 4.5 * leafScale, 8.5 * leafScale, -0.7, 0, Math.PI * 2);
-            ctx.ellipse(patch.x + 8, patch.y - 18, 4.8 * leafScale, 9.2 * leafScale, 0.72, 0, Math.PI * 2);
-            ctx.ellipse(patch.x, patch.y - 8, 3.6 * leafScale, 6.3 * leafScale, 0.08, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        } else {
-          const spread = patch.life;
-          ctx.fillStyle = `rgba(111, 183, 86, ${(0.14 + patch.strength * 0.12) * spread})`;
-          ctx.beginPath();
-          ctx.ellipse(patch.x, patch.y + 2, (20 + patch.strength * 14) * spread, (6 + patch.strength * 3) * spread, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = `rgba(134, 212, 104, ${(0.18 + patch.strength * 0.16) * spread})`;
-          for (let i = 0; i < 4; i++) {
-            const x = patch.x - 20 + i * 12;
-            ctx.beginPath();
-            ctx.moveTo(x, patch.y + 2);
-            ctx.lineTo(x - 4 * spread, patch.y - (8 + (i % 2) * 3) * spread);
-            ctx.lineTo(x + 4 * spread, patch.y - (5 + (i % 2) * 2) * spread);
-            ctx.closePath();
-            ctx.fill();
-          }
-        }
-      }
-    }
-
-    function drawBottles(bottles, dirty) {
-      for (const bottle of bottles) {
-        if (bottle.collected) {
-          continue;
-        }
-        ctx.save();
-        ctx.translate(bottle.x, bottle.y);
-        ctx.rotate(Math.sin((state.levelElapsed + bottle.x) * 0.01) * 0.08);
-
-        ctx.fillStyle = dirty ? "#7a6246" : "#e9f8ff";
-        roundRect(-10, -18, 20, 34, 7);
-        ctx.fill();
-        ctx.fillStyle = dirty ? "#6d5841" : "#7dd8ff";
-        roundRect(-8, -8, 16, 20, 5);
-        ctx.fill();
-        ctx.fillStyle = dirty ? "#473523" : "#d8f6ff";
-        ctx.fillRect(-4, -24, 8, 8);
-
-        if (dirty) {
-          ctx.strokeStyle = "#3d2817";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(-6, -6);
-          ctx.lineTo(6, 8);
-          ctx.moveTo(6, -6);
-          ctx.lineTo(-6, 8);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-    }
-
-    function drawItems(level) {
-      for (const item of level.items || []) {
-        if (item.collected) {
-          continue;
-        }
-        ctx.save();
-        ctx.translate(item.x, item.y);
-        if (item.type === "jetpack") {
-          ctx.fillStyle = "#c9f5ff";
-          roundRect(-10, -14, 20, 28, 7);
-          ctx.fill();
-          ctx.fillStyle = "#66d3ff";
-          ctx.fillRect(-14, -6, 6, 14);
-          ctx.fillRect(8, -6, 6, 14);
-          ctx.fillStyle = "#ffd27c";
-          ctx.beginPath();
-          ctx.moveTo(-10, 14);
-          ctx.lineTo(-4, 24);
-          ctx.lineTo(0, 14);
-          ctx.fill();
-          ctx.beginPath();
-          ctx.moveTo(10, 14);
-          ctx.lineTo(4, 24);
-          ctx.lineTo(0, 14);
-          ctx.fill();
-        } else if (item.type === "powerJump") {
-          ctx.fillStyle = "#ffe28a";
-          ctx.beginPath();
-          ctx.arc(0, 0, 12, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#7b5414";
-          ctx.font = "bold 13px Trebuchet MS";
-          ctx.textAlign = "center";
-          ctx.fillText("P", 0, 4);
-          ctx.textAlign = "left";
-        } else {
-          ctx.fillStyle = "#7a5a31";
-          ctx.beginPath();
-          ctx.ellipse(0, 5, 6.5, 9.5, 0.22, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = "#5f4320";
-          ctx.beginPath();
-          ctx.ellipse(1, 4, 2.6, 6.5, 0.22, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-    }
-
-    function drawEnemies(level) {
-      for (const enemy of level.enemies) {
-        if (enemy.dead) {
-          continue;
-        }
-        const cx = enemy.x + enemy.radius;
-        const cy = enemy.y + enemy.radius;
-        const pulse = Math.sin(state.levelElapsed * 8 + enemy.x * 0.06) * 1.2;
-        const bodyW = enemy.radius * 1.45;
-        const bodyH = enemy.radius * 1.9;
-        const colors = {
-          1: { glass: "#f7d8d5", poison: "#de5548", limb: "#7c2f23" },
-          2: { glass: "#d9f5e5", poison: "#64b268", limb: "#35512f" },
-          3: { glass: "#76767d", poison: "#26282d", limb: "#16171a" }
-        };
-        const palette = colors[enemy.tier] || colors[1];
-
-        ctx.save();
-        ctx.translate(cx, cy);
-
-        ctx.strokeStyle = palette.limb;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-bodyW * 0.3, bodyH * 0.35);
-        ctx.lineTo(-bodyW * 0.72, bodyH * 0.82 + pulse);
-        ctx.moveTo(bodyW * 0.3, bodyH * 0.35);
-        ctx.lineTo(bodyW * 0.72, bodyH * 0.82 - pulse);
-        ctx.moveTo(-bodyW * 0.55, -2);
-        ctx.lineTo(-bodyW * 0.98, bodyH * 0.1);
-        ctx.moveTo(bodyW * 0.55, -2);
-        ctx.lineTo(bodyW * 0.98, bodyH * 0.1);
-        ctx.stroke();
-
-        ctx.fillStyle = palette.glass;
-        ctx.beginPath();
-        ctx.moveTo(-bodyW * 0.18, -bodyH * 0.92);
-        ctx.lineTo(bodyW * 0.18, -bodyH * 0.92);
-        ctx.lineTo(bodyW * 0.26, -bodyH * 0.42);
-        ctx.lineTo(bodyW * 0.64, bodyH * 0.32);
-        ctx.lineTo(-bodyW * 0.64, bodyH * 0.32);
-        ctx.lineTo(-bodyW * 0.26, -bodyH * 0.42);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = "#f3faf5";
-        roundRect(-bodyW * 0.15, -bodyH * 1.02, bodyW * 0.3, 10, 3);
-        ctx.fill();
-
-        ctx.fillStyle = palette.poison;
-        ctx.beginPath();
-        ctx.moveTo(-bodyW * 0.46, bodyH * 0.2);
-        ctx.lineTo(-bodyW * 0.24, -bodyH * 0.1);
-        ctx.lineTo(bodyW * 0.24, -bodyH * 0.1);
-        ctx.lineTo(bodyW * 0.46, bodyH * 0.2);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = "rgba(255,255,255,0.2)";
-        ctx.beginPath();
-        ctx.moveTo(-bodyW * 0.22, -bodyH * 0.56);
-        ctx.lineTo(-bodyW * 0.08, -bodyH * 0.24);
-        ctx.strokeStyle = "rgba(255,255,255,0.22)";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.strokeStyle = enemy.tier === 3 ? "#f1ece6" : "#2f2112";
-        ctx.lineWidth = 1.7;
-        if (enemy.tier === 1) {
-          ctx.beginPath();
-          ctx.arc(0, -bodyH * 0.02, 4.8, 0, Math.PI * 2);
-          ctx.moveTo(-2.7, -bodyH * 0.02);
-          ctx.lineTo(2.7, -bodyH * 0.02);
-          ctx.moveTo(0, -bodyH * 0.05);
-          ctx.lineTo(0, bodyH * 0.01);
-          ctx.moveTo(-3.3, bodyH * 0.05);
-          ctx.lineTo(3.3, bodyH * 0.05);
-          ctx.stroke();
-        } else {
-          const triY = -bodyH * 0.04;
-          ctx.beginPath();
-          ctx.moveTo(0, triY - 10);
-          ctx.lineTo(10, triY + 8);
-          ctx.lineTo(-10, triY + 8);
-          ctx.closePath();
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(-3, triY - 1);
-          ctx.lineTo(3, triY - 1);
-          ctx.moveTo(0, triY + 1);
-          ctx.lineTo(0, triY + 6);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.arc(0, triY + 11.5, 1.2, 0, Math.PI * 2);
-          ctx.fillStyle = enemy.tier === 3 ? "#f1ece6" : "#2f2112";
-          ctx.fill();
-        }
-
-        ctx.fillStyle = enemy.tier === 3 ? "#f1ece6" : "#14321e";
-        ctx.beginPath();
-        ctx.arc(-bodyW * 0.22, -bodyH * 0.36, 2.4, 0, Math.PI * 2);
-        ctx.arc(bodyW * 0.22, -bodyH * 0.36, 2.4, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = "#f3f2eb";
-        ctx.lineWidth = 1.4;
-        for (let i = 0; i < enemy.hitsRemaining; i++) {
-          ctx.beginPath();
-          ctx.arc(-bodyW * 0.34 + i * 8, bodyH * 0.48, 2.2, 0, Math.PI * 2);
-          ctx.stroke();
-        }
-
-        ctx.restore();
-      }
-    }
-
-    function drawRocket(level) {
-      const launchOffset = state.transition ? Math.max(0, state.transition.timer - 0.45) * 220 : 0;
-      const x = level.rocket.x;
-      const y = level.rocket.y - launchOffset * launchOffset * 0.35;
-      const ready = level.bottles.every(bottle => bottle.collected);
-
-      ctx.save();
-      ctx.translate(x, y);
-
-      ctx.fillStyle = ready ? "#ecfaff" : "#a6a197";
-      ctx.beginPath();
-      ctx.moveTo(level.rocket.w / 2, 0);
-      ctx.bezierCurveTo(level.rocket.w - 2, 16, level.rocket.w - 4, level.rocket.h - 20, level.rocket.w / 2, level.rocket.h);
-      ctx.bezierCurveTo(4, level.rocket.h - 20, 2, 16, level.rocket.w / 2, 0);
-      ctx.fill();
-
-      ctx.fillStyle = ready ? "#69d2ff" : "#706a62";
-      roundRect(24, 34, level.rocket.w - 48, 54, 16);
-      ctx.fill();
-
-      if (state.transition && state.transition.attached) {
-        ctx.fillStyle = "rgba(201, 245, 255, 0.9)";
-        ctx.beginPath();
-        ctx.moveTo(level.rocket.w / 2, 42);
-        ctx.bezierCurveTo(level.rocket.w / 2 + 9, 48, level.rocket.w / 2 + 7, 60, level.rocket.w / 2, 68);
-        ctx.bezierCurveTo(level.rocket.w / 2 - 7, 60, level.rocket.w / 2 - 9, 48, level.rocket.w / 2, 42);
-        ctx.fill();
-      }
-
-      ctx.fillStyle = ready ? "#eaf9ff" : "#938d84";
-      ctx.beginPath();
-      ctx.arc(level.rocket.w / 2, 16, 14, Math.PI, 0);
-      ctx.fill();
-
-      ctx.fillStyle = ready ? "#5fc7ff" : "#655f59";
-      ctx.beginPath();
-      ctx.moveTo(18, level.rocket.h - 18);
-      ctx.lineTo(0, level.rocket.h + 18);
-      ctx.lineTo(22, level.rocket.h - 4);
-      ctx.closePath();
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(level.rocket.w - 18, level.rocket.h - 18);
-      ctx.lineTo(level.rocket.w, level.rocket.h + 18);
-      ctx.lineTo(level.rocket.w - 22, level.rocket.h - 4);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = "rgba(255,255,255,0.72)";
-      ctx.fillRect(level.rocket.w / 2 - 4, 4, 8, 12);
-
-      if (ready) {
-        ctx.fillStyle = "rgba(141, 227, 255, 0.78)";
-        ctx.beginPath();
-        ctx.moveTo(28, level.rocket.h - 2);
-        ctx.lineTo(40, level.rocket.h - 2);
-        ctx.lineTo(34, level.rocket.h + 26 + Math.sin(state.levelElapsed * 12) * 5);
-        ctx.closePath();
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(level.rocket.w - 28, level.rocket.h - 2);
-        ctx.lineTo(level.rocket.w - 40, level.rocket.h - 2);
-        ctx.lineTo(level.rocket.w - 34, level.rocket.h + 26 + Math.sin(state.levelElapsed * 12) * 5);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      ctx.restore();
-    }
-
-    function drawPlayer(player) {
-      if (player.hidden) {
-        return;
-      }
-
-      if (player.invulnerable > 0 && Math.floor(player.invulnerable * 16) % 2 === 0) {
-        return;
-      }
-
-      ctx.save();
-      ctx.translate(player.x, player.y);
-      const waterRatio = clamp(player.water / MAX_WATER, 0.28, 1);
-      const poisonRatio = clamp(player.contaminationTimer / 10, 0, 1);
-      const shimmer = 0.75 + Math.sin(player.sweatPulse) * 0.08;
-      const wobble = player.wobbleTimer > 0 ? Math.sin((1 - player.wobbleTimer) * 24) * player.wobbleTimer * 6 : 0;
-      const bodyWidth = player.w * (0.74 + waterRatio * 0.26);
-      const centerX = player.w / 2;
-      const leftX = centerX - bodyWidth / 2;
-
-      ctx.translate(wobble, 0);
-
-      ctx.fillStyle = "rgba(74, 110, 130, 0.45)";
-      roundRect(-16, 14, 12, 30, 6);
-      ctx.fill();
-      for (let i = 0; i < MAX_SLOTS; i++) {
-        const slotY = 16 + i * 5.4;
-        ctx.strokeStyle = "rgba(230,245,255,0.5)";
-        ctx.lineWidth = 1;
-        roundRect(-14, slotY, 8, 4, 2);
-        ctx.stroke();
-        const slotFilled = player.water > (MAX_SLOTS - i - 1) * SLOT_WATER;
-        if (slotFilled) {
-          const slotWater = clamp(player.water - (MAX_SLOTS - i - 1) * SLOT_WATER, 0, SLOT_WATER);
-          ctx.fillStyle = `rgba(141, 227, 255, ${0.4 + (slotWater / SLOT_WATER) * 0.5})`;
-          roundRect(-13, slotY + 1, 6, 2, 1);
-          ctx.fill();
-        }
-      }
-
-      const red = Math.round(116 - poisonRatio * 24);
-      const green = Math.round(220 - poisonRatio * 88);
-      const blue = Math.round(255 - poisonRatio * 94);
-      ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${shimmer})`;
-      ctx.beginPath();
-      ctx.moveTo(centerX, 0);
-      ctx.bezierCurveTo(leftX + bodyWidth + 10, 18, leftX + bodyWidth + 2, player.h - 6, centerX, player.h * (0.9 + waterRatio * 0.1));
-      ctx.bezierCurveTo(leftX - 2, player.h - 6, leftX - 10, 18, centerX, 0);
-      ctx.fill();
-
-      ctx.fillStyle = `rgba(${223 - poisonRatio * 40}, ${252 - poisonRatio * 70}, ${255 - poisonRatio * 80}, 0.72)`;
-      ctx.beginPath();
-      ctx.ellipse(centerX - 6, 18, 7 + waterRatio * 2, 10 + waterRatio * 3, -0.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.arc(14, player.crouching ? 18 : 20, 4, 0, Math.PI * 2);
-      ctx.arc(player.w - 14, player.crouching ? 18 : 20, 4, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#14394d";
-      ctx.beginPath();
-      ctx.arc(14 + player.facing * 1.2, player.crouching ? 18 : 20, 2, 0, Math.PI * 2);
-      ctx.arc(player.w - 14 + player.facing * 1.2, player.crouching ? 18 : 20, 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = "#d6fbff";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(player.w / 2, player.crouching ? 30 : 34, 6, 0.2, Math.PI - 0.2);
-      ctx.stroke();
-
-      if (player.contaminationTimer > 0) {
-        ctx.strokeStyle = `rgba(94, ${90 + poisonRatio * 55}, 48, 0.92)`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(10, 28);
-        ctx.lineTo(18, 36);
-        ctx.lineTo(28, 26);
-        ctx.lineTo(34, 34);
-        ctx.stroke();
-
-        ctx.fillStyle = `rgba(114, ${130 + poisonRatio * 60}, 74, ${0.18 + poisonRatio * 0.22})`;
-        ctx.beginPath();
-        ctx.ellipse(centerX + 2, 26, 12, 18, -0.2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      if (player.attachedEnemy) {
-        ctx.strokeStyle = "rgba(255, 232, 186, 0.8)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(player.w / 2, 10, player.w / 2 + 6, Math.PI, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      ctx.restore();
-    }
-
-    function drawParticles() {
-      for (const particle of state.particles) {
-        const alpha = particle.life / particle.maxLife;
-        ctx.fillStyle = hexToRgba(particle.color, alpha);
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function drawRescue() {
-      const rescue = state.rescue;
-      if (!rescue) {
-        return;
-      }
-
-      ctx.save();
-      ctx.translate(rescue.x, 0);
-
-      if (rescue.phase === "fall") {
-        ctx.globalAlpha = rescue.fade;
-        ctx.fillStyle = "rgba(180, 236, 255, 0.75)";
-        ctx.beginPath();
-        ctx.moveTo(rescue.ghostX - rescue.x + 20, rescue.ghostY);
-        ctx.bezierCurveTo(rescue.ghostX - rescue.x + 32, rescue.ghostY + 12, rescue.ghostX - rescue.x + 28, rescue.ghostY + 28, rescue.ghostX - rescue.x + 20, rescue.ghostY + 36);
-        ctx.bezierCurveTo(rescue.ghostX - rescue.x + 12, rescue.ghostY + 28, rescue.ghostX - rescue.x + 8, rescue.ghostY + 12, rescue.ghostX - rescue.x + 20, rescue.ghostY);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
-
-      ctx.fillStyle = "#6fbf73";
-      roundRect(-14, -6, 28, rescue.y + 20, 8);
-      ctx.fill();
-      ctx.fillStyle = "#8bd48f";
-      roundRect(-20, rescue.y, 40, 20, 8);
-      ctx.fill();
-      ctx.fillStyle = "#4f9e57";
-      ctx.fillRect(4, rescue.y + 16, 18, 8);
-
-      ctx.fillStyle = "#c7f4ff";
-      ctx.beginPath();
-      ctx.moveTo(12, rescue.y + 24);
-      ctx.bezierCurveTo(19, rescue.y + 36, 19, rescue.y + 48, 12, rescue.y + 56);
-      ctx.bezierCurveTo(5, rescue.y + 48, 5, rescue.y + 36, 12, rescue.y + 24);
-      ctx.fill();
-
-      if (rescue.timer > 0.7) {
-        const dripSwing = Math.sin(rescue.timer * 10) * 1.4;
-        ctx.fillStyle = "rgba(222,252,255,0.82)";
-        ctx.beginPath();
-        ctx.moveTo(12, rescue.y + 24 + dripSwing);
-        ctx.bezierCurveTo(20, rescue.y + 44 + dripSwing, 18, rescue.y + 62 + dripSwing, 12, rescue.y + 76 + dripSwing);
-        ctx.bezierCurveTo(6, rescue.y + 62 + dripSwing, 4, rescue.y + 44 + dripSwing, 12, rescue.y + 24 + dripSwing);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-
-    function drawStartOverlay() {
-      ctx.fillStyle = "rgba(7, 10, 18, 0.65)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#fff5e2";
-      ctx.textAlign = "center";
-      ctx.font = "bold 36px Trebuchet MS";
-      ctx.fillText("Der letzte Tropfen", canvas.width / 2, 114);
-      ctx.font = "20px Trebuchet MS";
-      ctx.fillText("Swoppie ist auf Planet-A gelandet. Alles ist trocken, still und voller Risse.", canvas.width / 2, 160);
-      ctx.fillText("Mit jedem Sprung will er wieder Leben in die Bude bringen, aber der Kampf ist muehsam.", canvas.width / 2, 192);
-      ctx.fillText("Sauberes Wasser hilft ihm, Gift und Hitze machen alles schwerer, und jede Plattform zaehlt.", canvas.width / 2, 224);
-      ctx.fillText("Wenn Swoppie weiterkommt, koennen Pflanzen wachsen und sogar Fluesse, Seen und Wasserfaelle zurueckkehren.", canvas.width / 2, 256);
-      ctx.font = "bold 24px Trebuchet MS";
-      ctx.fillText("Bewegung: A/D oder Pfeile, Ducken: S, Sprung: Leertaste oder W", canvas.width / 2, 350);
-      ctx.fillText("Tippe auf 'Spiel Starten' oder druecke Leertaste/Enter", canvas.width / 2, 388);
-      ctx.textAlign = "left";
-    }
-
-    function drawIntroCard(level) {
-      ctx.save();
-      ctx.fillStyle = "rgba(9, 14, 25, 0.84)";
-      roundRect(18, 18, canvas.width - 36, 96, 18);
-      ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
-      ctx.lineWidth = 1.5;
-      roundRect(18, 18, canvas.width - 36, 96, 18);
-      ctx.stroke();
-      ctx.fillStyle = "#fff0d7";
-      ctx.font = "bold 20px Trebuchet MS";
-      ctx.fillText(level.display, 34, 48);
-      ctx.font = "14px Trebuchet MS";
-      ctx.fillText(`Gravitation: ${level.gravityText} · verschwindet nach dem ersten Sprung`, 34, 72);
-      drawWrappedText(`${level.description} ${level.lesson}`, 34, 94, canvas.width - 68, 18, 2);
-      ctx.restore();
-    }
-
-    function drawWorldEventOverlay() {
-      if (!state.worldEvent || !state.worldEvent.active) {
-        return;
-      }
-
-      ctx.save();
-      if (state.worldEvent.type === "heat") {
-        ctx.fillStyle = "rgba(255, 184, 84, 0.12)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < 6; i++) {
-          ctx.strokeStyle = `rgba(255, 231, 180, ${0.1 + i * 0.03})`;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          for (let x = 0; x <= canvas.width; x += 24) {
-            const y = 110 + i * 55 + Math.sin((x + state.levelElapsed * 150) * 0.02 + i) * 8;
-            if (x === 0) {
-              ctx.moveTo(x, y);
-            } else {
-              ctx.lineTo(x, y);
-            }
-          }
-          ctx.stroke();
-        }
-      } else {
-        ctx.fillStyle = "rgba(101, 78, 54, 0.08)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        for (let i = 0; i < 26; i++) {
-          const x = (i * 42 + state.levelElapsed * 120) % (canvas.width + 60) - 30;
-          const y = 120 + (i * 19) % 280;
-          ctx.fillStyle = "rgba(132, 110, 86, 0.18)";
-          ctx.fillRect(x, y, 18, 3);
-        }
-      }
-      ctx.restore();
-    }
-
-    function drawMiniHud(level) {
-      return;
-    }
-
-    function drawLevelSummaryOverlay() {
-      const summary = state.levelSummary;
-      if (!summary) {
-        return;
-      }
-      ctx.fillStyle = "rgba(4, 8, 15, 0.6)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#fff2d9";
-      ctx.textAlign = "center";
-      ctx.font = "bold 34px Trebuchet MS";
-      ctx.fillText(`${summary.levelName} geschafft`, canvas.width / 2, 190);
-      ctx.font = "20px Trebuchet MS";
-      ctx.fillText(`Zeit: ${formatTime(summary.time)}`, canvas.width / 2, 245);
-      ctx.fillText(`Gepflanzte Blumen: ${summary.flowers}`, canvas.width / 2, 280);
-      ctx.fillText(`Glueckliche Sonnenblumen: ${summary.happySunflowers}`, canvas.width / 2, 315);
-      ctx.fillText(`Score: ${summary.score}`, canvas.width / 2, 360);
-      ctx.textAlign = "left";
-    }
-
-    function drawWinOverlay() {
-      const summary = state.levelSummary;
-      ctx.fillStyle = "rgba(4, 8, 15, 0.62)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#fff2d9";
-      ctx.textAlign = "center";
-      ctx.font = "bold 36px Trebuchet MS";
-      ctx.fillText("Der Tropfen lebt noch!", canvas.width / 2, 190);
-      ctx.font = "20px Trebuchet MS";
-      ctx.fillText("Alle Wuestenabschnitte wurden ueberlebt und jede Flaschenrakete ist gestartet.", canvas.width / 2, 235);
-      if (summary) {
-        ctx.fillText(`Letzte Zeit: ${formatTime(summary.time)}`, canvas.width / 2, 270);
-        ctx.fillText(`Letzter Score: ${summary.score}`, canvas.width / 2, 305);
-      }
-      ctx.fillText("Druecke R fuer einen neuen Durchlauf.", canvas.width / 2, 360);
-      ctx.textAlign = "left";
-    }
-
-    function calculateScore(levelTime = state.levelElapsed, level = getLevel()) {
-      const player = state.player || createPlayer();
-      const timeBonus = Math.max(0, 4000 - Math.round(levelTime * 55));
-      const waterBonus = Math.round(player.water * 16);
-      const flowersBonus = countPlantedFlowers() * 180;
-      const sunflowerBonus = countHappySunflowers(level) * 120;
-      return timeBonus + waterBonus + flowersBonus + sunflowerBonus;
-    }
-
-    function countPlantedFlowers() {
-      return state.bloomPatches.filter(patch => patch.kind === "sprout" && (patch.growth || 0) > 0.95).length;
-    }
-
-    function countHappySunflowers(level) {
-      const platforms = level.platforms.filter(platform => platform.h >= 40).slice(0, 6);
-      return platforms.reduce((sum, platform, index) => {
-        const baseX = platform.x + 54 + (index % 2) * 28;
-        return sum + (isSunflowerHappy(baseX) ? 1 : 0);
-      }, 0);
-    }
-
-    function drawWrappedText(text, x, y, maxWidth, lineHeight, maxLines = 2) {
-      const words = text.split(" ");
-      let line = "";
-      let lineIndex = 0;
-      for (const word of words) {
-        const testLine = line ? `${line} ${word}` : word;
-        if (ctx.measureText(testLine).width > maxWidth && line) {
-          ctx.fillText(line, x, y + lineIndex * lineHeight);
-          line = word;
-          lineIndex += 1;
-          if (lineIndex >= maxLines - 1) {
-            break;
-          }
-        } else {
-          line = testLine;
-        }
-      }
-      if (lineIndex < maxLines) {
-        ctx.fillText(line, x, y + lineIndex * lineHeight);
-      }
-    }
-
-    function formatTime(seconds) {
-      const total = Math.max(0, Math.round(seconds * 10) / 10);
-      const minutes = Math.floor(total / 60);
-      const rest = (total - minutes * 60).toFixed(1).padStart(4, "0");
-      return `${minutes}:${rest}`;
-    }
-
-    function roundRect(x, y, w, h, r) {
-      ctx.beginPath();
-      ctx.moveTo(x + r, y);
-      ctx.lineTo(x + w - r, y);
-      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-      ctx.lineTo(x + w, y + h - r);
-      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-      ctx.lineTo(x + r, y + h);
-      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-      ctx.lineTo(x, y + r);
-      ctx.quadraticCurveTo(x, y, x + r, y);
-      ctx.closePath();
-    }
-
-    function hexToRgba(hex, alpha) {
-      const value = hex.replace("#", "");
-      const bigint = parseInt(value, 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
-
-    function lighten(hex, amount) {
-      const value = hex.replace("#", "");
-      const bigint = parseInt(value, 16);
-      let r = (bigint >> 16) & 255;
-      let g = (bigint >> 8) & 255;
-      let b = bigint & 255;
-      r = Math.round(r + (255 - r) * amount);
-      g = Math.round(g + (255 - g) * amount);
-      b = Math.round(b + (255 - b) * amount);
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-
-    function overlaps(a, b) {
-      return a.x < b.x + b.w &&
-        a.x + a.w > b.x &&
-        a.y < b.y + b.h &&
-        a.y + a.h > b.y;
-    }
-
-    function clamp(value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    }
-
-    function moveTowards(current, target, maxDelta) {
-      if (current < target) {
-        return Math.min(current + maxDelta, target);
-      }
-      if (current > target) {
-        return Math.max(current - maxDelta, target);
-      }
-      return current;
-    }
-
-    document.addEventListener("keydown", event => {
-      if (!state.started && (event.code === "Space" || event.code === "Enter")) {
-        event.preventDefault();
-        startGame();
-        return;
-      }
-
-      if (event.code === "ArrowLeft" || event.code === "KeyA") {
-        keys.left = true;
-      }
-      if (event.code === "ArrowRight" || event.code === "KeyD") {
-        keys.right = true;
-      }
-      if (event.code === "ArrowDown" || event.code === "KeyS") {
-        keys.down = true;
-      }
-      if (event.code === "Space" || event.code === "KeyW" || event.code === "ArrowUp") {
-        event.preventDefault();
-        keys.jumpHeld = true;
-        state.player.jumpBuffer = JUMP_BUFFER_TIME;
-        jump();
-      }
-      if (event.code === "KeyR") {
-        if (!state.started) {
-          startGame();
-        }
-        const restartIndex = state.gameWon ? 0 : state.levelIndex;
-        if (state.gameWon || state.levelIndex === 0) {
-          state.totalRunTime = 0;
-        }
-        state.gameWon = false;
-        resetLevel(restartIndex);
-      }
-    });
-
-    document.addEventListener("keyup", event => {
-      if (event.code === "ArrowLeft" || event.code === "KeyA") {
-        keys.left = false;
-      }
-      if (event.code === "ArrowRight" || event.code === "KeyD") {
-        keys.right = false;
-      }
-      if (event.code === "ArrowDown" || event.code === "KeyS") {
-        keys.down = false;
-      }
-      if (event.code === "Space" || event.code === "KeyW" || event.code === "ArrowUp") {
-        keys.jumpHeld = false;
-      }
-    });
-
-    function bindHoldButton(element, onStart, onEnd = onStart) {
-      if (!element) {
-        return;
-      }
-      const start = event => {
-        event.preventDefault();
-        ensureAudio();
-        onStart(true);
-      };
-      const end = event => {
-        event.preventDefault();
-        onEnd(false);
-      };
-      element.addEventListener("touchstart", start, { passive: false });
-      element.addEventListener("touchend", end, { passive: false });
-      element.addEventListener("touchcancel", end, { passive: false });
-      element.addEventListener("mousedown", start);
-      element.addEventListener("mouseup", end);
-      element.addEventListener("mouseleave", end);
-    }
-
-    function setupTouchControls() {
-      bindHoldButton(ui.touchLeft, pressed => { keys.left = pressed; });
-      bindHoldButton(ui.touchRight, pressed => { keys.right = pressed; });
-      bindHoldButton(ui.touchDown, pressed => { keys.down = pressed; });
-      bindHoldButton(ui.touchJump, pressed => {
-        keys.jumpHeld = pressed;
-        if (pressed) {
-          if (!state.started) {
-            startGame();
-          }
-          state.player.jumpBuffer = JUMP_BUFFER_TIME;
-          jump();
-        }
-      }, pressed => { keys.jumpHeld = pressed; });
-
-      ui.startButton.addEventListener("click", () => {
-        if (!state.started) {
-          startGame();
-        }
-      });
-    }
-
-    function dismissIntroCard() {
-      if (state.started && !state.gameWon) {
-        state.introVisible = false;
-      }
-    }
-
-    canvas.addEventListener("click", dismissIntroCard);
-    canvas.addEventListener("touchstart", dismissIntroCard, { passive: true });
-
-    let lastTime = performance.now();
-    function loop(now) {
-      const dt = Math.min((now - lastTime) / 1000, 0.033);
-      lastTime = now;
-      update(dt);
-      draw();
-      requestAnimationFrame(loop);
-    }
-
-    resetLevel(0);
-    setupTouchControls();
-    requestAnimationFrame(loop);
+    function showResults() {
+      const medalData = getMedalData(score);
+      const scorePercent = (score / quizQuestions.length) * 360;
+
+      medal.className = "medal " + medalData.key;
+      medalLetter.textContent = medalData.letter;
+      medalName.textContent = medalData.label;
+      finalScore.textContent = score + "/" + quizQuestions.length;
+      scoreRing.style.setProperty("--score-angle", scorePercent + "deg");
+      resultMedalText.textContent = medalData.label === "Noch keine Medaille" ? medalData.label : medalData.label + "-Medaille";
+      resultTitle.textContent = medalData.title;
+      resultCopy.textContent = medalData.copy;
+      resultNote.textContent = "Medaillen: Bronze ab 50 %, Silber ab 70 %, Gold ab 90 %.";
+
+      showScreen("result");
+    }
+
+    startButton.addEventListener("click", startQuiz);
+    confirmButton.addEventListener("click", submitAnswer);
+    skipButton.addEventListener("click", skipQuestion);
+    nextButton.addEventListener("click", goToNextQuestion);
+    restartButton.addEventListener("click", startQuiz);
   </script>
 </body>
 </html>
