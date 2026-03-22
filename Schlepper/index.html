@@ -175,8 +175,8 @@
 
     .force-overlay {
       position: absolute;
-      top: 14px;
-      left: 14px;
+      top: 0;
+      left: 0;
       z-index: 2;
       width: 170px;
       max-width: calc(100% - 72px);
@@ -209,6 +209,7 @@
       color: var(--accent);
       border: 1px solid rgba(15,97,116,0.12);
       box-shadow: 0 8px 18px rgba(16,66,88,0.12);
+      touch-action: manipulation;
     }
 
     canvas {
@@ -532,17 +533,18 @@
       }
 
       .scene-tools {
-        top: 8px;
-        right: 8px;
-        gap: 6px;
+        top: 6px;
+        right: 6px;
+        gap: 4px;
       }
 
       .tool-btn {
-        width: 34px;
-        height: 34px;
-        min-height: 34px;
-        border-radius: 11px;
-        font-size: 0.9rem;
+        width: 30px;
+        height: 30px;
+        min-height: 30px;
+        border-radius: 10px;
+        font-size: 0.82rem;
+        box-shadow: 0 5px 12px rgba(16,66,88,0.1);
       }
 
       .legend span {
@@ -758,6 +760,8 @@
         vx: 0,
         vy: 0
       },
+      smokeParticles: [],
+      shipSmokeParticles: [],
       target: createBasinGoal(),
       examTarget: createExamTarget()
     };
@@ -790,31 +794,48 @@
       };
     }
 
-    function createBasinGoal() {
+    function farEnoughFrom(previousGoal, nextGoal, minDistance) {
+      if (!previousGoal) return true;
+      return Math.hypot(previousGoal.x - nextGoal.x, previousGoal.y - nextGoal.y) >= minDistance;
+    }
+
+    function createBasinGoal(previousGoal = null) {
       const types = ["buoy", "dock", "harbor", "rig"];
-      const type = types[Math.floor(Math.random() * types.length)];
-      if (type === "dock" || type === "harbor") {
-        const side = Math.random() < 0.5 ? "left" : "right";
-        return {
-          type,
-          x: side === "left" ? basin.x + 42 : basin.x + basin.width - 42,
-          y: basin.y + 110 + Math.random() * (basin.height - 220),
-          radius: 34
-        };
+      for (let attempt = 0; attempt < 24; attempt++) {
+        const type = types[Math.floor(Math.random() * types.length)];
+        let goal;
+        if (type === "dock" || type === "harbor") {
+          const side = Math.random() < 0.5 ? "left" : "right";
+          goal = {
+            type,
+            x: side === "left" ? basin.x + 42 : basin.x + basin.width - 42,
+            y: basin.y + 110 + Math.random() * (basin.height - 220),
+            radius: 34
+          };
+        } else if (type === "rig") {
+          goal = {
+            type,
+            x: basin.x + 120 + Math.random() * (basin.width - 240),
+            y: basin.y + 120 + Math.random() * (basin.height - 240),
+            radius: 34
+          };
+        } else {
+          goal = {
+            type,
+            x: basin.x + 95 + Math.random() * (basin.width - 190),
+            y: basin.y + 95 + Math.random() * (basin.height - 190),
+            radius: 26
+          };
+        }
+
+        if (farEnoughFrom(previousGoal, goal, 170)) return goal;
       }
-      if (type === "rig") {
-        return {
-          type,
-          x: basin.x + 120 + Math.random() * (basin.width - 240),
-          y: basin.y + 120 + Math.random() * (basin.height - 240),
-          radius: 34
-        };
-      }
+
       return {
-        type,
-        x: basin.x + 95 + Math.random() * (basin.width - 190),
-        y: basin.y + 95 + Math.random() * (basin.height - 190),
-        radius: type === "buoy" ? 26 : 34
+        type: "buoy",
+        x: basin.x + 120 + Math.random() * (basin.width - 240),
+        y: basin.y + 120 + Math.random() * (basin.height - 240),
+        radius: 26
       };
     }
 
@@ -827,12 +848,12 @@
       };
     }
 
-    function createLevel2Target() {
+    function createLevel2Target(previousGoal = null) {
       const vec = toVector(state.examTarget.force, state.examTarget.angle);
       const length = Math.hypot(vec.x, vec.y) || 1;
       const ux = vec.x / length;
       const uy = vec.y / length;
-      const margin = 80;
+      const margin = 92;
 
       const maxDx = ux > 0
         ? (basin.x + basin.width - margin - state.ship.x) / ux
@@ -845,8 +866,23 @@
           ? (state.ship.y - (basin.y + basin.height - margin)) / uy
           : Infinity;
 
-      const maxDistance = Math.max(120, Math.min(260, maxDx, maxDy));
-      const distance = Number.isFinite(maxDistance) ? maxDistance : 180;
+      const limitDistance = Number.isFinite(Math.min(maxDx, maxDy)) ? Math.min(maxDx, maxDy) : 220;
+      let minDistance = 150;
+      let maxDistance = Math.min(280, limitDistance);
+
+      if (previousGoal) {
+        const projection = (previousGoal.x - state.ship.x) * ux + (state.ship.y - previousGoal.y) * uy;
+        if (projection > 0) {
+          minDistance = Math.max(minDistance, Math.min(projection + 120, maxDistance - 10));
+        }
+      }
+
+      if (maxDistance <= minDistance) {
+        minDistance = 120;
+        maxDistance = Math.max(160, limitDistance);
+      }
+
+      const distance = clamp((minDistance + maxDistance) / 2, 120, Math.max(140, maxDistance));
 
       return {
         type: "buoy",
@@ -932,11 +968,17 @@
 
     function updateForceOverlayPosition() {
       const tug = tugPosition(state.controls[state.selectedTug].angle, 140);
+      const overlayWidth = forceOverlay.offsetWidth || 170;
+      const overlayHeight = forceOverlay.offsetHeight || 112;
       const prefersLeft = tug.x > state.ship.x;
-      const x = prefersLeft
-        ? Math.max(12, tug.x - 194)
-        : Math.min(canvas.width - 180, tug.x + 24);
-      const y = Math.min(canvas.height - 112, Math.max(12, tug.y - 92));
+      let x = prefersLeft ? tug.x - overlayWidth - 14 : tug.x + 18;
+      let y = tug.y - overlayHeight / 2;
+
+      if (x < 8) x = tug.x + 18;
+      if (x + overlayWidth > canvas.width - 8) x = tug.x - overlayWidth - 14;
+      if (x < 8) x = canvas.width - overlayWidth - 8;
+
+      y = clamp(y, 8, canvas.height - overlayHeight - 8);
       forceOverlay.style.transform = `translate(${x}px, ${y}px)`;
     }
 
@@ -1004,7 +1046,10 @@
         nextButton.title = "Neuer Lauf";
       }
 
-      if (state.mode === "level1") actionButton.innerHTML = state.running ? "❚❚" : "▶";
+      if (state.mode === "level1") {
+        actionButton.innerHTML = state.running ? "❚❚" : "▶";
+        nextButton.innerHTML = "⤴";
+      }
       updateLevelLocks();
     }
 
@@ -1043,12 +1088,24 @@
       ctx.fillStyle = "rgba(235, 212, 158, 0.95)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       roundedRect(basin.x, basin.y, basin.width, basin.height, 30);
-      ctx.fillStyle = "#8fd7f7";
+      const basinFill = ctx.createLinearGradient(basin.x, basin.y, basin.x, basin.y + basin.height);
+      basinFill.addColorStop(0, "#9fe3fb");
+      basinFill.addColorStop(0.45, "#55abd7");
+      basinFill.addColorStop(1, "#246f9f");
+      ctx.fillStyle = basinFill;
       ctx.fill();
       ctx.strokeStyle = "rgba(15, 97, 116, 0.16)";
       ctx.lineWidth = 2;
       roundedRect(basin.x, basin.y, basin.width, basin.height, 30);
       ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.1)";
+      for (let i = 0; i < 18; i++) {
+        const x = basin.x + 28 + i * 38;
+        const y = basin.y + 24 + (i % 4) * 118;
+        ctx.beginPath();
+        ctx.ellipse(x, y, 34, 8, -0.18, 0, Math.PI * 2);
+        ctx.fill();
+      }
       for (let i = 0; i < 8; i++) {
         const y = basin.y + 40 + i * 58;
         ctx.strokeStyle = "rgba(255,255,255,0.18)";
@@ -1073,7 +1130,11 @@
       ctx.lineTo(river.x + river.width, river.y + river.height);
       ctx.lineTo(river.x + river.width, river.y);
       ctx.closePath();
-      ctx.fillStyle = "#8fd7f7";
+      const riverBack = ctx.createLinearGradient(river.x, river.y, river.x + river.width, river.y + river.height);
+      riverBack.addColorStop(0, "#8bdcf7");
+      riverBack.addColorStop(0.5, "#4197c6");
+      riverBack.addColorStop(1, "#245f88");
+      ctx.fillStyle = riverBack;
       ctx.fill();
 
       ctx.beginPath();
@@ -1083,7 +1144,10 @@
       ctx.bezierCurveTo(river.x + 530, river.y + 310, river.x + 390, river.y + 520, river.x + 690, river.y + river.height);
       ctx.lineTo(river.x, river.y + river.height);
       ctx.closePath();
-      ctx.fillStyle = "#63b9e1";
+      const riverFront = ctx.createLinearGradient(river.x, river.y, river.x + 140, river.y + river.height);
+      riverFront.addColorStop(0, "#7fd5f1");
+      riverFront.addColorStop(1, "#2f7daa");
+      ctx.fillStyle = riverFront;
       ctx.fill();
 
       for (let i = 0; i < 11; i++) {
@@ -1207,29 +1271,57 @@
 
       ctx.fillStyle = "rgba(20, 75, 99, 0.16)";
       ctx.beginPath();
-      ctx.ellipse(0, 28, 88, 16, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 26, 82, 12, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = getCss("--ship");
+      ctx.fillStyle = "#193848";
       ctx.beginPath();
-      ctx.moveTo(0, -54);
-      ctx.lineTo(36, -18);
-      ctx.lineTo(42, 22);
-      ctx.lineTo(26, 46);
-      ctx.lineTo(-26, 46);
-      ctx.lineTo(-42, 22);
-      ctx.lineTo(-36, -18);
+      ctx.moveTo(0, -78);
+      ctx.lineTo(22, -60);
+      ctx.lineTo(30, 34);
+      ctx.lineTo(18, 68);
+      ctx.lineTo(-18, 68);
+      ctx.lineTo(-30, 34);
+      ctx.lineTo(-22, -60);
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = "#ced7db";
-      ctx.fillRect(-18, -8, 36, 18);
-      ctx.fillStyle = "#90a4ae";
-      ctx.fillRect(-30, 4, 60, 12);
-      ctx.fillRect(-30, 20, 60, 10);
-      ctx.fillStyle = "#37474f";
-      ctx.fillRect(-6, -42, 12, 24);
-      ctx.fillRect(-14, -30, 28, 8);
+      ctx.fillStyle = "#7d5a9f";
+      ctx.beginPath();
+      ctx.moveTo(0, -68);
+      ctx.lineTo(16, -54);
+      ctx.lineTo(22, 28);
+      ctx.lineTo(14, 56);
+      ctx.lineTo(-14, 56);
+      ctx.lineTo(-22, 28);
+      ctx.lineTo(-16, -54);
+      ctx.closePath();
+      ctx.fill();
+
+      const containerColors = ["#cb5b4b", "#d97732", "#5886c4", "#9a596e", "#4c9d72", "#d4a638"];
+      for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 2; col++) {
+          ctx.fillStyle = containerColors[(row * 5 + col) % containerColors.length];
+          ctx.fillRect(-11 + col * 12, -26 + row * 16, 10, 12);
+        }
+      }
+
+      ctx.fillStyle = "#d7dee2";
+      ctx.fillRect(-8, 34, 16, 14);
+      ctx.fillStyle = "#b8c7ce";
+      ctx.fillRect(-6, 22, 12, 12);
+      ctx.fillStyle = "#5d7680";
+      ctx.fillRect(-5, 37, 3, 4);
+      ctx.fillRect(-1, 37, 3, 4);
+      ctx.fillRect(3, 37, 3, 4);
+
+      ctx.fillStyle = "#3f2a25";
+      ctx.fillRect(-4, 10, 8, 12);
+      ctx.fillStyle = "#a4b4bb";
+      ctx.fillRect(-14, 42, 28, 4);
+      ctx.fillStyle = "#e2a84e";
+      ctx.fillRect(-4, 44, 8, 4);
+      drawShipSmokeParticles();
       ctx.restore();
     }
 
@@ -1238,8 +1330,9 @@
       const tugB = tugPosition(state.controls.tug2.angle, 140);
       drawRope(tugA, getCss("--tug-a"));
       drawRope(tugB, getCss("--tug-b"));
-      drawTugBoat(tugA, getCss("--tug-a"), "A", state.selectedTug === "tug1");
-      drawTugBoat(tugB, getCss("--tug-b"), "B", state.selectedTug === "tug2");
+      drawSmokeParticles();
+      drawTugBoat(tugA, getCss("--tug-a"), "A", state.selectedTug === "tug1", state.controls.tug1.angle);
+      drawTugBoat(tugB, getCss("--tug-b"), "B", state.selectedTug === "tug2", state.controls.tug2.angle);
     }
 
     function drawRope(tug, color) {
@@ -1254,9 +1347,10 @@
       ctx.restore();
     }
 
-    function drawTugBoat(pos, color, label, selected) {
+    function drawTugBoat(pos, color, label, selected, angleDeg) {
       ctx.save();
       ctx.translate(pos.x, pos.y);
+      ctx.rotate(Math.PI / 2 - (angleDeg * Math.PI / 180));
       if (selected) {
         ctx.strokeStyle = "rgba(255,255,255,0.95)";
         ctx.lineWidth = 3;
@@ -1264,42 +1358,152 @@
         ctx.arc(0, 0, 24, 0, Math.PI * 2);
         ctx.stroke();
       }
-      ctx.fillStyle = color;
+
+      ctx.fillStyle = "rgba(18, 70, 94, 0.14)";
       ctx.beginPath();
-      ctx.moveTo(0, -16);
-      ctx.lineTo(18, -6);
-      ctx.lineTo(14, 14);
-      ctx.lineTo(-14, 14);
-      ctx.lineTo(-18, -6);
+      ctx.ellipse(0, 16, 21, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#173646";
+      ctx.beginPath();
+      ctx.moveTo(-18, 9);
+      ctx.lineTo(16, 9);
+      ctx.lineTo(10, 16);
+      ctx.lineTo(-12, 16);
       ctx.closePath();
       ctx.fill();
-      ctx.fillStyle = "#fff8f0";
-      ctx.fillRect(-6, -7, 12, 10);
+
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(0, -18);
+      ctx.quadraticCurveTo(17, -10, 18, 1);
+      ctx.lineTo(15, 8);
+      ctx.lineTo(-15, 8);
+      ctx.lineTo(-18, 1);
+      ctx.quadraticCurveTo(-17, -10, 0, -18);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#eef4f6";
+      ctx.fillRect(-9, -5, 18, 11);
+      ctx.fillStyle = "#c1d2d9";
+      ctx.fillRect(-7, -11, 14, 7);
+      ctx.fillStyle = "#6a8791";
+      ctx.fillRect(-7, -4, 4, 4);
+      ctx.fillRect(-1, -4, 4, 4);
+      ctx.fillRect(5, -4, 2, 4);
+
       ctx.fillStyle = "#4e342e";
-      ctx.fillRect(4, -18, 5, 10);
-      drawSmoke(7, -18, state.controls[label === "A" ? "tug1" : "tug2"].force);
+      ctx.fillRect(6, -17, 4, 10);
+      ctx.fillStyle = "#ffd166";
+      ctx.fillRect(-14, 3, 6, 3);
+      ctx.fillRect(8, 3, 5, 3);
+
+      ctx.rotate(-(Math.PI / 2 - (angleDeg * Math.PI / 180)));
       ctx.fillStyle = "#163646";
-      ctx.font = "bold 15px Avenir Next, Trebuchet MS, sans-serif";
-      ctx.fillText(label, -5, 30);
+      ctx.font = "bold 13px Avenir Next, Trebuchet MS, sans-serif";
+      ctx.fillText(label, -4, 28);
       ctx.restore();
     }
 
-    function drawSmoke(x, y, forceValue) {
-      const t = Date.now() / 220;
+    function emitSmokeForTug(tugKey) {
+      if (!state.running) return;
+      const tug = tugPosition(state.controls[tugKey].angle, 140);
+      const forceValue = state.controls[tugKey].force;
+      if (forceValue < 8) return;
+
+      const dirX = tug.x - state.ship.x;
+      const dirY = tug.y - state.ship.y;
+      const len = Math.hypot(dirX, dirY) || 1;
+      const ux = dirX / len;
+      const uy = dirY / len;
+      const intensity = 1 + Math.floor(forceValue / 55);
+
+      for (let i = 0; i < intensity; i++) {
+        state.smokeParticles.push({
+          x: tug.x + ux * 16 + (Math.random() - 0.5) * 5,
+          y: tug.y + uy * 16 - 10 + (Math.random() - 0.5) * 5,
+          vx: ux * (0.35 + Math.random() * 0.4) + state.ship.vx * 0.06,
+          vy: uy * (0.18 + Math.random() * 0.28) - 0.16 - Math.random() * 0.08,
+          radius: 2 + Math.random() * 4 + forceValue / 70,
+          life: 1.8 + Math.random() * 0.4,
+          age: 0,
+          color: "238, 244, 247"
+        });
+      }
+    }
+
+    function emitShipSmoke() {
       const speed = Math.hypot(state.ship.vx, state.ship.vy);
-      const opacity = Math.min(0.38, 0.08 + forceValue / 420 + speed / 60);
-      const length = 10 + forceValue / 14;
+      const moving = speed > 0.05;
+      const dir = Math.atan2(state.ship.vy, state.ship.vx || 0.0001);
+      const driftX = moving ? Math.cos(dir + Math.PI) : -0.18;
+      const driftY = moving ? Math.sin(dir + Math.PI) : -0.42;
+      const stackX = state.ship.x;
+      const stackY = state.ship.y + 12;
+      const intensity = moving ? 2 + Math.floor(speed * 2.2) : 1;
+
+      for (let i = 0; i < intensity; i++) {
+        state.shipSmokeParticles.push({
+          x: stackX + (Math.random() - 0.5) * 6,
+          y: stackY + (Math.random() - 0.5) * 6,
+          vx: driftX * (0.34 + Math.random() * 0.4) + state.ship.vx * 0.18,
+          vy: driftY * (0.26 + Math.random() * 0.34) - 0.05 + state.ship.vy * 0.06,
+          radius: 4 + Math.random() * 4 + speed * 1.1,
+          life: moving ? 2.4 + Math.random() * 0.5 : 2.1 + Math.random() * 0.5,
+          age: 0,
+          color: "86, 92, 98"
+        });
+      }
+    }
+
+    function updateSmoke(dt) {
+      emitSmokeForTug("tug1");
+      emitSmokeForTug("tug2");
+      emitShipSmoke();
+      state.smokeParticles = state.smokeParticles
+        .map((particle) => ({
+          ...particle,
+          x: particle.x + particle.vx * 60 * dt,
+          y: particle.y + particle.vy * 60 * dt,
+          radius: particle.radius + dt * 4,
+          age: particle.age + dt
+        }))
+        .filter((particle) => particle.age < particle.life)
+        .slice(-120);
+      state.shipSmokeParticles = state.shipSmokeParticles
+        .map((particle) => ({
+          ...particle,
+          x: particle.x + particle.vx * 60 * dt,
+          y: particle.y + particle.vy * 60 * dt,
+          radius: particle.radius + dt * 5.5,
+          age: particle.age + dt
+        }))
+        .filter((particle) => particle.age < particle.life)
+        .slice(-160);
+    }
+
+    function drawSmokeParticles() {
       ctx.save();
-      ctx.fillStyle = `rgba(235,240,245,${opacity})`;
-      ctx.beginPath();
-      ctx.arc(x + 6 + Math.sin(t) * 1.5, y - 10, 5, 0, Math.PI * 2);
-      ctx.arc(x + 12 + Math.cos(t * 0.8) * 2, y - 17, 7, 0, Math.PI * 2);
-      ctx.arc(x + 2 + Math.sin(t * 1.2) * 1.5, y - 20, 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = `rgba(215,225,235,${opacity * 0.55})`;
-      ctx.beginPath();
-      ctx.ellipse(x + 18 + Math.cos(t * 0.6) * 2, y - 18 + Math.sin(t * 0.7) * 2, length, 7, -0.25, 0, Math.PI * 2);
-      ctx.fill();
+      for (const particle of state.smokeParticles) {
+        const fade = 1 - particle.age / particle.life;
+        ctx.fillStyle = `rgba(${particle.color || "238, 244, 247"}, ${fade * 0.34})`;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawShipSmokeParticles() {
+      ctx.save();
+      for (const particle of state.shipSmokeParticles) {
+        const fade = 1 - particle.age / particle.life;
+        ctx.fillStyle = `rgba(${particle.color || "86, 92, 98"}, ${fade * 0.28})`;
+        ctx.beginPath();
+        ctx.arc(particle.x - state.ship.x, particle.y - state.ship.y, particle.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     }
 
@@ -1378,36 +1582,39 @@
     }
 
     function step(timestamp) {
-      if (!state.running) return;
       if (!state.lastTime) state.lastTime = timestamp;
       const dt = Math.min((timestamp - state.lastTime) / 1000, 0.03);
       state.lastTime = timestamp;
 
-      const res = resultant();
-      const accelScale = state.mode === "level4" ? 0.027 : 0.021;
-      state.ship.vx += res.x * accelScale * dt;
-      state.ship.vy -= res.y * accelScale * dt;
+      updateSmoke(dt);
 
-      if (state.mode === "level4") {
-        const current = getRiverCurrent(state.ship.y);
-        state.ship.vx += current.x * dt * 0.36;
-        state.ship.vy += current.y * dt * 0.36;
-      }
+      if (state.running) {
+        const res = resultant();
+        const accelScale = state.mode === "level4" ? 0.011 : 0.008;
+        state.ship.vx += res.x * accelScale * dt;
+        state.ship.vy -= res.y * accelScale * dt;
 
-      state.ship.vx *= 0.955;
-      state.ship.vy *= 0.955;
-      state.ship.x += state.ship.vx;
-      state.ship.y += state.ship.vy;
+        if (state.mode === "level4") {
+          const current = getRiverCurrent(state.ship.y);
+          state.ship.vx += current.x * dt * 0.18;
+          state.ship.vy += current.y * dt * 0.18;
+        }
 
-      if (state.mode === "level4") {
-        confineToRiver();
-        checkRiverTarget();
-      } else if (state.mode === "level2") {
-        confineToBasin();
-        checkLevel2Target();
-      } else {
-        confineToBasin();
-        checkBasinTarget();
+        state.ship.vx *= 0.92;
+        state.ship.vy *= 0.92;
+        state.ship.x += state.ship.vx;
+        state.ship.y += state.ship.vy;
+
+        if (state.mode === "level4") {
+          confineToRiver();
+          checkRiverTarget();
+        } else if (state.mode === "level2") {
+          confineToBasin();
+          checkLevel2Target();
+        } else {
+          confineToBasin();
+          checkBasinTarget();
+        }
       }
 
       updateSummary();
@@ -1460,7 +1667,7 @@
           state.unlockedLevel = Math.max(state.unlockedLevel, 4);
           setFeedback("Level 3 geschafft", "Alle 5 Ziele wurden sicher angefahren. Jetzt könnt ihr mit Level 4 in den Fluss wechseln.");
         } else {
-          state.target = createBasinGoal();
+          state.target = createBasinGoal(state.target);
           setFeedback("Ziel erreicht", `Sehr gut. ${state.level2Hits} von 5 Zielen sind geschafft.`);
         }
       }
@@ -1480,7 +1687,7 @@
           setFeedback("Level 2 geschafft", "5 Sollkurse wurden sicher geprueft und angefahren. Level 3 ist jetzt freigeschaltet.");
         } else {
           state.examTarget = createExamTarget();
-          state.target = createLevel2Target();
+          state.target = createLevel2Target(state.target);
           setFeedback("Ziel erreicht", `Sehr gut. ${state.level3Correct} von 5 Sollkursen sind geschafft.`);
         }
       }
@@ -1518,15 +1725,11 @@
     function startMotion() {
       if (state.running) return;
       state.running = true;
-      state.lastTime = 0;
-      state.animationId = requestAnimationFrame(step);
       updateSummary();
     }
 
     function stopMotion() {
       state.running = false;
-      if (state.animationId) cancelAnimationFrame(state.animationId);
-      state.animationId = null;
       updateSummary();
     }
 
@@ -1543,6 +1746,8 @@
       }
       state.ship.vx = 0;
       state.ship.vy = 0;
+      state.smokeParticles = [];
+      state.shipSmokeParticles = [];
       updateSummary();
       draw();
     }
@@ -1698,15 +1903,24 @@
       }
     }
 
+    function handleReset() {
+      resetShip();
+      if (state.mode === "level1") {
+        setFeedback("Zurückgesetzt", "Das Schiff steht wieder in der Mitte. Jetzt kannst du die beiden Schlepper neu ausprobieren.");
+      } else {
+        setFeedback("Zurückgesetzt", "Das Schiff ist wieder an der Startposition. Jetzt kann eine neue Kombination ausprobiert werden.");
+      }
+    }
+
     function handleNext() {
       if (state.mode === "level2") {
         state.examTarget = createExamTarget();
         state.level2Approved = false;
         resetShip();
-        state.target = createLevel2Target();
+        state.target = createLevel2Target(state.target);
         setFeedback("Neuer Sollkurs", `Die neue Sollkraft liegt bei ${state.examTarget.force} N und ${state.examTarget.angle}°.`);
       } else if (state.mode === "level3") {
-        state.target = createBasinGoal();
+        state.target = createBasinGoal(state.target);
         state.goalIndex += 1;
         resetShip();
         setFeedback("Neues Ziel", "Stelle die Schlepper jetzt anders ein und steuere das Schiff zum nächsten Ziel.");
@@ -1727,6 +1941,19 @@
     }
 
     function attachEvents() {
+      function bindToolButton(button, handler) {
+        button.addEventListener("pointerup", (event) => {
+          event.preventDefault();
+          handler();
+        });
+        button.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            handler();
+          }
+        });
+      }
+
       function startFromIntro() {
         introOverlay.classList.add("hide");
         introOverlay.style.display = "none";
@@ -1735,16 +1962,12 @@
       }
 
       introStartButton.addEventListener("click", startFromIntro);
-      introStartButton.addEventListener("pointerup", startFromIntro);
       forceMenu.addEventListener("input", syncForceMenu);
       showParallelogram.addEventListener("change", draw);
       showHints.addEventListener("change", draw);
-      actionButton.addEventListener("click", handleAction);
-      resetButton.addEventListener("click", () => {
-        resetShip();
-        setFeedback("Zurückgesetzt", "Das Schiff ist wieder an der Startposition. Jetzt kann eine neue Kombination ausprobiert werden.");
-      });
-      nextButton.addEventListener("click", handleNext);
+      bindToolButton(actionButton, handleAction);
+      bindToolButton(resetButton, handleReset);
+      bindToolButton(nextButton, handleNext);
       tabs.forEach((tab) => tab.addEventListener("click", () => switchMode(tab.dataset.mode)));
 
       canvas.addEventListener("pointerdown", (event) => {
@@ -1777,6 +2000,7 @@
     attachEvents();
     switchMode("level1");
     updateLevelLocks();
+    state.animationId = requestAnimationFrame(step);
   </script>
 </body>
 </html>
