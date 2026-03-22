@@ -1,1 +1,1329 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prisma im Schrägbild</title>
+  <style>
+    :root {
+      --bg: #f6f1e6;
+      --card: #fffdf8;
+      --ink: #25211b;
+      --muted: #6d665c;
+      --line: #e2d8c7;
+      --blue: #187ec9;
+      --orange: #d98508;
+      --red: #d94b63;
+      --green: #5d9328;
+      --soft-blue: #f5fbff;
+      --soft-yellow: #fff8df;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #efe7d5 0%, var(--bg) 100%);
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px 16px 32px;
+    }
+
+    .frame {
+      background: var(--card);
+      border: 2px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(72, 54, 29, 0.12);
+      overflow: hidden;
+    }
+
+    .setup {
+      padding: 22px;
+    }
+
+    .setup.hidden,
+    .construct.hidden {
+      display: none;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(2rem, 4vw, 2.7rem);
+      line-height: 1.05;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .mini {
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px solid #dce7ef;
+      background: var(--soft-blue);
+    }
+
+    .step-panel {
+      display: none;
+    }
+
+    .step-panel.show {
+      display: block;
+    }
+
+    .shape-picker {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .shape-card {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      padding: 12px;
+      border-radius: 16px;
+      border: 2px solid #d7e2ea;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .shape-card.active {
+      border-color: var(--blue);
+      background: #eef7ff;
+    }
+
+    .shape-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: #f7fbff;
+      border: 1px solid #d9e8f4;
+      display: grid;
+      place-items: center;
+      padding: 4px;
+    }
+
+    .shape-copy strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+
+    .shape-copy span {
+      display: block;
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.25;
+    }
+
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #d7d1c6;
+      border-radius: 12px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .info-row {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #e9edf0;
+      color: var(--ink);
+    }
+
+    .construct {
+      background: #fbfaf6;
+    }
+
+    .canvas-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .progress-wrap {
+      flex: 0 0 260px;
+      max-width: 260px;
+    }
+
+    .progress-label {
+      text-align: right;
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e6edf3;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--blue), #58b5ff);
+      transition: width 0.2s ease;
+    }
+
+    .construct-main {
+      padding: 18px;
+    }
+
+    .task-box {
+      padding: 18px;
+      border-radius: 18px;
+      border: 2px solid #d9eaf8;
+      background: #f7fbff;
+      margin-bottom: 14px;
+    }
+
+    .task-label {
+      margin-bottom: 8px;
+      color: var(--blue);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .task-text {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .hint {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--soft-yellow);
+      border: 1px solid #ecd88c;
+      color: #5e511f;
+      margin-bottom: 14px;
+    }
+
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .tool-card {
+      border: 1px solid #d8dee8;
+      border-radius: 16px;
+      background: #fff;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .tool-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 6px;
+      position: relative;
+    }
+
+    .tool-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .tool-status {
+      position: absolute;
+      right: -2px;
+      top: -4px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .canvas-box {
+      border: 1px solid #d7dee8;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      shape-rendering: crispEdges;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .icon-btn {
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid #d9d4cb;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .icon-btn.primary {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .icon-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .finish-actions {
+      display: none;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 18px;
+    }
+
+    .finish-actions.show {
+      display: flex;
+    }
+
+    .footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.98rem;
+      background: var(--card);
+    }
+
+    @media (max-width: 840px) {
+      .shape-picker,
+      .config-grid,
+      .tools {
+        grid-template-columns: 1fr;
+      }
+
+      .canvas-head {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .progress-wrap {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="frame">
+      <section class="setup" id="setup">
+        <h1>Prisma im Schrägbild</h1>
+        <p class="mini" id="introText">Wähle zuerst die Grundfläche. Danach stellst du die Maße ein. Erst dann startet die Konstruktion.</p>
+
+        <div class="panel">
+          <div class="step-panel show" id="shapeStep">
+            <div class="field full">
+              <label>1. Grundfläche wählen</label>
+              <div class="shape-picker" id="shapePicker">
+                <button type="button" class="shape-card active" data-shape="right">
+                  <span class="shape-icon">
+                    <svg viewBox="0 0 52 52" aria-hidden="true">
+                      <path d="M8 40 L8 14 L40 40 Z" fill="rgba(24,126,201,0.12)" stroke="#187ec9" stroke-width="3"/>
+                      <path d="M8 32 L16 32 L16 40" fill="none" stroke="#d94b63" stroke-width="2"/>
+                    </svg>
+                  </span>
+                  <span class="shape-copy"><strong>A Rechtwinklig</strong><span>mit Grundseite und Höhe</span></span>
+                </button>
+                <button type="button" class="shape-card" data-shape="isosceles">
+                  <span class="shape-icon">
+                    <svg viewBox="0 0 52 52" aria-hidden="true">
+                      <path d="M10 38 L26 12 L42 38 Z" fill="rgba(24,126,201,0.12)" stroke="#187ec9" stroke-width="3"/>
+                      <path d="M26 12 L26 38" fill="none" stroke="#d94b63" stroke-width="2" stroke-dasharray="3 3"/>
+                    </svg>
+                  </span>
+                  <span class="shape-copy"><strong>C Gleichschenklig</strong><span>mit Grundseite und Höhe</span></span>
+                </button>
+                <button type="button" class="shape-card" data-shape="scalene">
+                  <span class="shape-icon">
+                    <svg viewBox="0 0 52 52" aria-hidden="true">
+                      <path d="M8 38 L41 38 L20 12 Z" fill="rgba(24,126,201,0.12)" stroke="#187ec9" stroke-width="3"/>
+                    </svg>
+                  </span>
+                  <span class="shape-copy"><strong>D Gewöhnlich</strong><span>mit drei Seitenlängen</span></span>
+                </button>
+              </div>
+            </div>
+            <div class="button-row">
+              <button class="primary" id="toValuesBtn">Weiter</button>
+            </div>
+          </div>
+
+          <div class="step-panel" id="valuesStep">
+            <div class="field full">
+              <label>2. Maße einstellen</label>
+            </div>
+            <div class="config-grid" id="shapeInputs"></div>
+            <div class="info-row" id="shapeInfo"></div>
+            <div class="button-row">
+              <button class="secondary" id="backToShapesBtn">Zurück</button>
+              <button class="secondary" id="randomBtn">Zufall</button>
+              <button class="primary" id="applyBtn">Konstruktion starten</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="construct hidden" id="construct">
+        <div class="canvas-head">
+          <div class="badge" id="stepBadge">Schritt 1</div>
+          <div class="progress-wrap">
+            <div class="progress-label" id="progressLabel">1 von 1</div>
+            <div class="progress" aria-hidden="true">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="construct-main">
+          <div class="task-box">
+            <div class="task-label">Jetzt machen</div>
+            <div class="task-text" id="taskText"></div>
+          </div>
+
+          <div class="hint" id="hintText"></div>
+          <div class="tools" id="toolsBox"></div>
+
+          <div class="canvas-box">
+            <svg id="stepSvg" viewBox="0 0 420 420" aria-label="Zeichnung auf Kästchenpapier"></svg>
+          </div>
+
+          <div class="nav">
+            <button class="icon-btn secondary" id="closeBtn" aria-label="Zum Ausgangsmenü">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+            </button>
+            <button class="icon-btn secondary" id="prevBtn" aria-label="Zurück">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="icon-btn ghost" id="restartBtn" aria-label="Neu starten">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12a6 6 0 1 0 2-4.47" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M6 4v4h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="icon-btn primary" id="nextBtn" aria-label="Weiter">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+          <div class="finish-actions" id="finishActions">
+            <button class="primary" id="restartSameBtn">Neustart</button>
+            <button class="secondary" id="newPrismBtn">Neues Prisma konstruieren</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer" id="footerText">Zuerst die Grundfläche wählen, dann die Maße einstellen.</div>
+    </div>
+  </div>
+
+  <script>
+    const OFFSET_ANGLE = Math.PI / 4;
+
+    const setup = document.getElementById("setup");
+    const construct = document.getElementById("construct");
+    const shapeStep = document.getElementById("shapeStep");
+    const valuesStep = document.getElementById("valuesStep");
+    const introText = document.getElementById("introText");
+    const shapePicker = document.getElementById("shapePicker");
+    const shapeInputs = document.getElementById("shapeInputs");
+    const shapeInfo = document.getElementById("shapeInfo");
+    const toValuesBtn = document.getElementById("toValuesBtn");
+    const backToShapesBtn = document.getElementById("backToShapesBtn");
+    const applyBtn = document.getElementById("applyBtn");
+    const randomBtn = document.getElementById("randomBtn");
+    const stepBadge = document.getElementById("stepBadge");
+    const progressLabel = document.getElementById("progressLabel");
+    const progressBar = document.getElementById("progressBar");
+    const taskText = document.getElementById("taskText");
+    const hintText = document.getElementById("hintText");
+    const toolsBox = document.getElementById("toolsBox");
+    const footerText = document.getElementById("footerText");
+    const svg = document.getElementById("stepSvg");
+    const closeBtn = document.getElementById("closeBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const finishActions = document.getElementById("finishActions");
+    const restartSameBtn = document.getElementById("restartSameBtn");
+    const newPrismBtn = document.getElementById("newPrismBtn");
+
+    let shapeType = "right";
+    let currentStep = 0;
+    let scene = null;
+    let canvasState = { scale: 30, originX: 60, baselineY: 320, width: 420, height: 420, grid: 15 };
+
+    const defaults = {
+      right: { base: 4, height: 3, bodyHeight: 6 },
+      isosceles: { base: 4, leg: 5, bodyHeight: 6 },
+      scalene: { base: 5, sideAC: 4, sideBC: 6, bodyHeight: 6 }
+    };
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function roundWhole(value) {
+      return Math.round(value);
+    }
+
+    function cm(value) {
+      const rounded = Math.round(value);
+      if (Math.abs(value - rounded) < 0.05) {
+        return `${rounded} cm`;
+      }
+      return `${value.toFixed(1).replace(".", ",")} cm`;
+    }
+
+    function showShapeStep() {
+      shapeStep.classList.add("show");
+      valuesStep.classList.remove("show");
+      introText.textContent = "Wähle zuerst die Grundfläche. Danach stellst du die Maße ein. Erst dann startet die Konstruktion.";
+      footerText.textContent = "Im Kästchenpapier gelten 2 Kästchen = 1 cm.";
+    }
+
+    function showValuesStep() {
+      shapeStep.classList.remove("show");
+      valuesStep.classList.add("show");
+      introText.textContent = "Stelle jetzt die Maße für die gewählte Grundfläche ein.";
+      renderInputs();
+    }
+
+    function showSetup() {
+      setup.classList.remove("hidden");
+      construct.classList.add("hidden");
+      showShapeStep();
+      drawGrid();
+    }
+
+    function showConstruction() {
+      setup.classList.add("hidden");
+      construct.classList.remove("hidden");
+    }
+
+    function renderInputs() {
+      let html = `
+        <div class="field">
+          <label for="bodyHeight">Körperhöhe hK</label>
+          <input id="bodyHeight" type="number" min="2" max="8" step="1" value="${defaults[shapeType].bodyHeight}">
+        </div>
+      `;
+
+      if (shapeType === "right") {
+        html += `
+          <div class="field">
+            <label for="base">Grundseite c</label>
+            <input id="base" type="number" min="2" max="9" step="1" value="${defaults.right.base}">
+          </div>
+          <div class="field">
+            <label for="height">Höhe h zur Grundseite</label>
+            <input id="height" type="number" min="2" max="7" step="1" value="${defaults.right.height}">
+          </div>
+        `;
+      }
+
+      if (shapeType === "isosceles") {
+        html += `
+          <div class="field">
+            <label for="base">Grundseite c</label>
+            <input id="base" type="number" min="2" max="8" step="1" value="${defaults.isosceles.base}">
+          </div>
+          <div class="field">
+            <label for="leg">Schenkellänge a</label>
+            <input id="leg" type="number" min="2" max="8" step="1" value="${defaults.isosceles.leg}">
+          </div>
+        `;
+      }
+
+      if (shapeType === "scalene") {
+        html += `
+          <div class="field">
+            <label for="base">Grundseite c</label>
+            <input id="base" type="number" min="3" max="8" step="1" value="${defaults.scalene.base}">
+          </div>
+          <div class="field">
+            <label for="sideAC">Seite b = AC</label>
+            <input id="sideAC" type="number" min="3" max="8" step="1" value="${defaults.scalene.sideAC}">
+          </div>
+          <div class="field">
+            <label for="sideBC">Seite a = BC</label>
+            <input id="sideBC" type="number" min="3" max="8" step="1" value="${defaults.scalene.sideBC}">
+          </div>
+        `;
+      }
+
+      shapeInputs.innerHTML = html;
+      shapeInputs.querySelectorAll("input").forEach((input) => input.addEventListener("input", updateShapeInfo));
+      updateShapeInfo();
+    }
+
+    function readNumber(id, fallback) {
+      const input = document.getElementById(id);
+      return input ? Number(input.value) || fallback : fallback;
+    }
+
+    function updateShapeInfo() {
+      if (shapeType === "isosceles") {
+        const base = clamp(readNumber("base", defaults.isosceles.base), 2, 8);
+        const leg = clamp(readNumber("leg", defaults.isosceles.leg), 2, 8);
+        if (leg * 2 <= base) {
+          shapeInfo.textContent = "Die Schenkel müssen zusammen länger sein als die Grundseite.";
+          return;
+        }
+        const height = Math.sqrt(Math.max(leg * leg - (base / 2) * (base / 2), 0));
+        shapeInfo.textContent = `Beim gleichschenkligen Dreieck entsteht C durch zwei Kreisbögen mit Radius ${cm(leg)}. Die Höhe der Grundfläche ist dann ${cm(height)}.`;
+        return;
+      }
+
+      if (shapeType === "scalene") {
+        const base = clamp(readNumber("base", defaults.scalene.base), 3, 8);
+        const sideAC = clamp(readNumber("sideAC", defaults.scalene.sideAC), 3, 8);
+        const sideBC = clamp(readNumber("sideBC", defaults.scalene.sideBC), 3, 8);
+        const valid = sideAC + sideBC > base && sideAC + base > sideBC && sideBC + base > sideAC;
+        if (valid) {
+          const angles = calcScaleneAngles(base, sideAC, sideBC);
+          shapeInfo.textContent = `Basiswinkel: alpha = ${angles.alpha.toFixed(1).replace(".", ",")}° und beta = ${angles.beta.toFixed(1).replace(".", ",")}°.`;
+        } else {
+          shapeInfo.textContent = "Diese drei Seiten ergeben noch kein Dreieck.";
+        }
+        return;
+      }
+
+      shapeInfo.textContent = "Alle Eingaben sind ganze Zentimeter.";
+    }
+
+    function randomValue(min, max) {
+      return min + Math.floor(Math.random() * (max - min + 1));
+    }
+
+    function randomize() {
+      const types = ["right", "isosceles", "scalene"];
+      shapeType = types[Math.floor(Math.random() * types.length)];
+      syncShapePicker();
+
+      if (shapeType === "right") {
+        defaults.right = { base: randomValue(3, 7), height: randomValue(3, 6), bodyHeight: randomValue(4, 8) };
+      }
+      if (shapeType === "isosceles") {
+        const base = randomValue(3, 7);
+        let leg = randomValue(3, 8);
+        while (leg * 2 <= base) {
+          leg = randomValue(3, 8);
+        }
+        defaults.isosceles = { base, leg, bodyHeight: randomValue(4, 8) };
+      }
+      if (shapeType === "scalene") {
+        const base = randomValue(4, 7);
+        let sideAC = randomValue(3, 8);
+        let sideBC = randomValue(3, 8);
+        while (!(sideAC + sideBC > base && sideAC + base > sideBC && sideBC + base > sideAC)) {
+          sideAC = randomValue(3, 8);
+          sideBC = randomValue(3, 8);
+        }
+        defaults.scalene = { base, sideAC, sideBC, bodyHeight: randomValue(4, 8) };
+      }
+
+      renderInputs();
+    }
+
+    function getConfig() {
+      const bodyHeight = clamp(Math.round(readNumber("bodyHeight", defaults[shapeType].bodyHeight)), 2, 8);
+
+      if (shapeType === "right") {
+        return {
+          type: shapeType,
+          base: clamp(Math.round(readNumber("base", defaults.right.base)), 2, 9),
+          height: clamp(Math.round(readNumber("height", defaults.right.height)), 2, 7),
+          bodyHeight
+        };
+      }
+
+      if (shapeType === "isosceles") {
+        const base = clamp(Math.round(readNumber("base", defaults.isosceles.base)), 2, 8);
+        const leg = clamp(Math.round(readNumber("leg", defaults.isosceles.leg)), 2, 8);
+        if (leg * 2 <= base) {
+          return null;
+        }
+        return {
+          type: shapeType,
+          base,
+          leg,
+          height: Math.sqrt(Math.max(leg * leg - (base / 2) * (base / 2), 0)),
+          bodyHeight
+        };
+      }
+
+      const base = clamp(Math.round(readNumber("base", defaults.scalene.base)), 3, 8);
+      const sideAC = clamp(Math.round(readNumber("sideAC", defaults.scalene.sideAC)), 3, 8);
+      const sideBC = clamp(Math.round(readNumber("sideBC", defaults.scalene.sideBC)), 3, 8);
+      if (!(sideAC + sideBC > base && sideAC + base > sideBC && sideBC + base > sideAC)) {
+        return null;
+      }
+      return { type: shapeType, base, sideAC, sideBC, bodyHeight };
+    }
+
+    function calcScaleneAngles(base, sideAC, sideBC) {
+      const alpha = Math.acos((sideAC * sideAC + base * base - sideBC * sideBC) / (2 * sideAC * base)) * 180 / Math.PI;
+      const beta = Math.acos((sideBC * sideBC + base * base - sideAC * sideAC) / (2 * sideBC * base)) * 180 / Math.PI;
+      return { alpha, beta };
+    }
+
+    function buildGeometry(config) {
+      const A = { x: 0, y: 0 };
+      const B = { x: config.base, y: 0 };
+      let C = null;
+      let meta = {};
+
+      if (config.type === "right") {
+        C = { x: 0, y: config.height };
+        meta.heightFoot = { x: 0, y: 0 };
+        meta.baseLabel = "c";
+        meta.leftLabel = "b";
+        meta.rightLabel = "a";
+      }
+
+      if (config.type === "isosceles") {
+        C = { x: config.base / 2, y: config.height };
+        meta.mid = { x: config.base / 2, y: 0 };
+        meta.heightFoot = { x: config.base / 2, y: 0 };
+        meta.baseLabel = "c";
+        meta.leftLabel = "a";
+        meta.rightLabel = "a";
+      }
+
+      if (config.type === "scalene") {
+        const x = (config.sideAC * config.sideAC - config.sideBC * config.sideBC + config.base * config.base) / (2 * config.base);
+        const y = Math.sqrt(Math.max(config.sideAC * config.sideAC - x * x, 0));
+        C = { x, y };
+        meta.baseLabel = "c";
+        meta.leftLabel = "b";
+        meta.rightLabel = "a";
+        meta.angles = calcScaleneAngles(config.base, config.sideAC, config.sideBC);
+      }
+
+      const offsetLen = config.bodyHeight / 2;
+      const dx = Math.cos(OFFSET_ANGLE) * offsetLen;
+      const dy = Math.sin(OFFSET_ANGLE) * offsetLen;
+      const A2 = { x: A.x + dx, y: A.y + dy };
+      const B2 = { x: B.x + dx, y: B.y + dy };
+      const C2 = { x: C.x + dx, y: C.y + dy };
+      return { A, B, C, A2, B2, C2, meta };
+    }
+
+    function updateCanvasState(geometry) {
+      const points = [geometry.A, geometry.B, geometry.C, geometry.A2, geometry.B2, geometry.C2];
+      const xs = points.map((p) => p.x);
+      const ys = points.map((p) => p.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const width = 420;
+      const height = 420;
+      const margin = 1.8;
+      const rawScale = clamp(Math.min((width - 70) / (Math.max(maxX - minX, 1) + margin * 2), (height - 70) / (Math.max(maxY - minY, 1) + margin * 2)), 24, 44);
+      const scale = Math.max(24, Math.floor(rawScale / 2) * 2);
+      canvasState = {
+        scale,
+        originX: Math.round((35 + (margin - minX) * scale) / scale) * scale,
+        baselineY: Math.round((height - 35 - (margin - minY) * scale) / scale) * scale,
+        width,
+        height,
+        grid: scale / 2
+      };
+    }
+
+    function worldToScreen(point) {
+      return {
+        x: canvasState.originX + point.x * canvasState.scale,
+        y: canvasState.baselineY - point.y * canvasState.scale
+      };
+    }
+
+    function segmentMid(p1, p2) {
+      return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    }
+
+    function distance(p1, p2) {
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function addLine(x1, y1, x2, y2, color, width, dash = "") {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      line.setAttribute("stroke", color);
+      line.setAttribute("stroke-width", width);
+      line.setAttribute("stroke-linecap", "round");
+      if (dash) line.setAttribute("stroke-dasharray", dash);
+      svg.appendChild(line);
+    }
+
+    function addText(text, x, y, color = "#25211b", size = 15, weight = 700, anchor = "start") {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      node.textContent = text;
+      node.setAttribute("x", x);
+      node.setAttribute("y", y);
+      node.setAttribute("fill", color);
+      node.setAttribute("font-size", size);
+      node.setAttribute("font-weight", weight);
+      node.setAttribute("text-anchor", anchor);
+      node.setAttribute("font-family", "Avenir Next, Trebuchet MS, sans-serif");
+      svg.appendChild(node);
+    }
+
+    function addPolygon(points, fill, stroke, width, dash = "") {
+      const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      poly.setAttribute("points", points);
+      poly.setAttribute("fill", fill);
+      poly.setAttribute("stroke", stroke);
+      poly.setAttribute("stroke-width", width);
+      if (dash) poly.setAttribute("stroke-dasharray", dash);
+      svg.appendChild(poly);
+    }
+
+    function addArc(cx, cy, r, startAngle, endAngle, color, width) {
+      const start = { x: cx + r * Math.cos(startAngle), y: cy + r * Math.sin(startAngle) };
+      const end = { x: cx + r * Math.cos(endAngle), y: cy + r * Math.sin(endAngle) };
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", `M ${start.x} ${start.y} A ${r} ${r} 0 0 1 ${end.x} ${end.y}`);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", color);
+      path.setAttribute("stroke-width", width);
+      svg.appendChild(path);
+    }
+
+    function addArcToPoint(center, throughPoint, nearPoint, color, width) {
+      const c = worldToScreen(center);
+      const p = worldToScreen(throughPoint);
+      const n = worldToScreen(nearPoint);
+      const radius = Math.hypot(p.x - c.x, p.y - c.y);
+      const angleP = Math.atan2(p.y - c.y, p.x - c.x);
+      const angleN = Math.atan2(n.y - c.y, n.x - c.x);
+      const delta = 0.48;
+      let start = angleN - delta;
+      let end = angleN + delta;
+      if (start > angleP) {
+        start = angleP - delta;
+      }
+      if (end < angleP) {
+        end = angleP + delta;
+      }
+      addArc(c.x, c.y, radius, start, end, color, width);
+    }
+
+    function drawGrid() {
+      svg.innerHTML = "";
+      for (let i = 0; i <= canvasState.width; i += canvasState.grid) {
+        addLine(i, 0, i, canvasState.height, "rgba(88,102,120,0.34)", 1);
+        addLine(0, i, canvasState.width, i, "rgba(88,102,120,0.34)", 1);
+      }
+    }
+
+    function drawX(point, color = "#0c5f9d", size = 4) {
+      const p = worldToScreen(point);
+      addLine(p.x - size, p.y - size, p.x + size, p.y + size, color, 2.2);
+      addLine(p.x - size, p.y + size, p.x + size, p.y - size, color, 2.2);
+    }
+
+    function pointLabel(point, label, dx = 0, dy = 0, color = "#25211b") {
+      const p = worldToScreen(point);
+      addText(label, p.x + dx, p.y + dy, color, 15, 800);
+    }
+
+    function drawSegment(p1, p2, color = "#1783d1", width = 3.5, dash = "") {
+      const a = worldToScreen(p1);
+      const b = worldToScreen(p2);
+      addLine(a.x, a.y, b.x, b.y, color, width, dash);
+    }
+
+    function labelSegment(p1, p2, text, color = "#1783d1", dx = 0, dy = 0) {
+      const mid = worldToScreen(segmentMid(p1, p2));
+      addText(text, mid.x + dx, mid.y + dy, color, 14, 800, "middle");
+    }
+
+    function drawHeightLine(from, to, labelText) {
+      drawSegment(from, to, "#d94b63", 3, "6 6");
+      labelSegment(from, to, labelText, "#d94b63", 0, -8);
+    }
+
+    function drawPerpendicularBisector(midPoint, lengthCm = 2.2) {
+      const top = { x: midPoint.x, y: midPoint.y + lengthCm };
+      const bottom = { x: midPoint.x, y: midPoint.y - lengthCm * 0.6 };
+      drawSegment(bottom, top, "#d94b63", 2.5, "5 5");
+    }
+
+    function drawTriangleBase(sceneData, fill = "rgba(24,126,201,0.15)") {
+      const A = worldToScreen(sceneData.A);
+      const B = worldToScreen(sceneData.B);
+      const C = worldToScreen(sceneData.C);
+      addPolygon(`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`, fill, "#1783d1", 3.5);
+    }
+
+    function drawFullBase(sceneData) {
+      drawTriangleBase(sceneData);
+      drawSegment(sceneData.A, sceneData.B);
+      drawSegment(sceneData.B, sceneData.C);
+      drawSegment(sceneData.C, sceneData.A);
+    }
+
+    function drawCommonLabels(sceneData, config) {
+      pointLabel(sceneData.A, "A", -18, 20);
+      pointLabel(sceneData.B, "B", 8, 20);
+      pointLabel(sceneData.C, "C", -10, -10);
+      labelSegment(sceneData.A, sceneData.B, `${sceneData.meta.baseLabel} = ${cm(config.base)}`, "#1783d1", 0, 26);
+
+      if (config.type === "scalene") {
+        labelSegment(sceneData.A, sceneData.C, `b = ${cm(config.sideAC)}`, "#1783d1", -30, -12);
+        labelSegment(sceneData.B, sceneData.C, `a = ${cm(config.sideBC)}`, "#1783d1", 30, -18);
+      } else if (config.type === "right") {
+        labelSegment(sceneData.A, sceneData.C, `${sceneData.meta.leftLabel} = ${cm(distance(sceneData.A, sceneData.C))}`, "#1783d1", -34, 0);
+        labelSegment(sceneData.B, sceneData.C, `${sceneData.meta.rightLabel} = ${cm(distance(sceneData.B, sceneData.C))}`, "#1783d1", 28, -16);
+      } else {
+        labelSegment(sceneData.A, sceneData.C, `${sceneData.meta.leftLabel} = ${cm(distance(sceneData.A, sceneData.C))}`, "#1783d1", -28, -14);
+        labelSegment(sceneData.B, sceneData.C, `${sceneData.meta.rightLabel} = ${cm(distance(sceneData.B, sceneData.C))}`, "#1783d1", 28, -14);
+      }
+    }
+
+    function drawBaseConstructionSteps(sceneData, config) {
+      const steps = [];
+
+      steps.push({
+        task: "Zeichne zuerst die Grundkante AB der Grundfläche.",
+        hint: `Die Grundkante ist ${sceneData.meta.baseLabel} = ${cm(config.base)} lang.`,
+        footer: "Schritt: Die Grundfläche beginnt mit der Grundkante AB.",
+        tools: { pencil: true, triangle: true, compass: false },
+        draw() {
+          drawGrid();
+          drawSegment(sceneData.A, sceneData.B);
+          drawX(sceneData.A);
+          drawX(sceneData.B);
+          pointLabel(sceneData.A, "A", -18, 20);
+          pointLabel(sceneData.B, "B", 8, 20);
+          labelSegment(sceneData.A, sceneData.B, `${sceneData.meta.baseLabel} = ${cm(config.base)}`, "#1783d1", 0, 22);
+        }
+      });
+
+      if (config.type === "right") {
+        steps.push({
+          task: "Trage in A die Höhe der Grundfläche senkrecht nach oben ab.",
+          hint: `Die Höhe der Grundfläche ist h = ${cm(config.height)}.`,
+          footer: "Schritt: Jetzt entsteht der dritte Eckpunkt C der Grundfläche.",
+          tools: { pencil: true, triangle: true, compass: false },
+          draw() {
+            drawGrid();
+            drawSegment(sceneData.A, sceneData.B);
+            drawSegment(sceneData.A, sceneData.C, "#d94b63", 3.5);
+            drawX(sceneData.A);
+            drawX(sceneData.B);
+            drawX(sceneData.C, "#d94b63");
+            pointLabel(sceneData.A, "A", -18, 20);
+            pointLabel(sceneData.B, "B", 8, 20);
+            pointLabel(sceneData.C, "C", -10, -10, "#d94b63");
+            labelSegment(sceneData.A, sceneData.C, `h = ${cm(config.height)}`, "#d94b63", -24, 0);
+          }
+        });
+      }
+
+      if (config.type === "isosceles") {
+        const As = worldToScreen(sceneData.A);
+        const Bs = worldToScreen(sceneData.B);
+        const radius = config.leg * canvasState.scale;
+        const radiusLabel = `a = ${cm(config.leg)}`;
+
+        steps.push({
+          task: "Zeichne einen Kreisbogen um A mit dem Radius der Schenkellänge.",
+          hint: `Der Radius ist ${radiusLabel}. Punkt C liegt auf diesem Kreisbogen.`,
+          footer: "Schritt: Jetzt entsteht der erste Kreisbogen für Punkt C.",
+          tools: { pencil: true, triangle: false, compass: true },
+          draw() {
+            drawGrid();
+            drawSegment(sceneData.A, sceneData.B);
+            drawX(sceneData.A);
+            drawX(sceneData.B);
+            pointLabel(sceneData.A, "A", -18, 20);
+            pointLabel(sceneData.B, "B", 8, 20);
+            labelSegment(sceneData.A, sceneData.B, `${sceneData.meta.baseLabel} = ${cm(config.base)}`, "#1783d1", 0, 22);
+            addArc(As.x, As.y, radius, -1.25, -0.1, "#d94b63", 3);
+            addText(radiusLabel, As.x + 34, As.y - radius + 16, "#d94b63", 14, 800);
+          }
+        });
+
+        steps.push({
+          task: "Zeichne einen zweiten Kreisbogen um B mit demselben Radius. Der Schnittpunkt ist C.",
+          hint: "Beim gleichschenkligen Dreieck wird C mit zwei Kreisbögen konstruiert.",
+          footer: "Schritt: Der Schnittpunkt der beiden Kreisbögen ist Punkt C.",
+          tools: { pencil: true, triangle: false, compass: true },
+          draw() {
+            drawGrid();
+            drawSegment(sceneData.A, sceneData.B);
+            drawX(sceneData.A);
+            drawX(sceneData.B);
+            addArc(As.x, As.y, radius, -1.25, -0.1, "#d94b63", 3);
+            addArc(Bs.x, Bs.y, radius, -3.05, -1.9, "#db8400", 3);
+            drawX(sceneData.C, "#d94b63");
+            pointLabel(sceneData.C, "C", -10, -10, "#d94b63");
+            addText(radiusLabel, Bs.x - 52, Bs.y - radius + 16, "#db8400", 14, 800);
+          }
+        });
+      }
+
+      if (config.type === "scalene") {
+        const As = worldToScreen(sceneData.A);
+        const Bs = worldToScreen(sceneData.B);
+        const radiusAC = config.sideAC * canvasState.scale;
+        const radiusBC = config.sideBC * canvasState.scale;
+
+        steps.push({
+          task: "Zeichne einen Kreisbogen um A mit Radius b = AC.",
+          hint: `Hier ist b = ${cm(config.sideAC)}.`,
+          footer: "Schritt: C liegt auf diesem ersten Kreisbogen.",
+          tools: { pencil: true, triangle: false, compass: true },
+          draw() {
+            drawGrid();
+            drawSegment(sceneData.A, sceneData.B);
+            drawX(sceneData.A);
+            drawX(sceneData.B);
+            pointLabel(sceneData.A, "A", -18, 20);
+            pointLabel(sceneData.B, "B", 8, 20);
+            labelSegment(sceneData.A, sceneData.B, `c = ${cm(config.base)}`, "#1783d1", 0, 22);
+            addArcToPoint(sceneData.A, sceneData.C, { x: sceneData.C.x - 0.4, y: sceneData.C.y + 0.15 }, "#d94b63", 3);
+            addText(`b = ${cm(config.sideAC)}`, As.x + 34, As.y - radiusAC + 16, "#d94b63", 14, 800);
+          }
+        });
+
+        steps.push({
+          task: "Zeichne einen zweiten Kreisbogen um B mit Radius a = BC.",
+          hint: "Der Schnittpunkt der beiden Kreisbögen ist C.",
+          footer: "Schritt: Am Schnittpunkt liegt der Eckpunkt C.",
+          tools: { pencil: true, triangle: false, compass: true },
+          draw() {
+            drawGrid();
+            drawSegment(sceneData.A, sceneData.B);
+            drawX(sceneData.A);
+            drawX(sceneData.B);
+            addArcToPoint(sceneData.A, sceneData.C, { x: sceneData.C.x - 0.4, y: sceneData.C.y + 0.15 }, "#d94b63", 3);
+            addArcToPoint(sceneData.B, sceneData.C, { x: sceneData.C.x + 0.4, y: sceneData.C.y + 0.15 }, "#db8400", 3);
+            drawX(sceneData.C, "#d94b63");
+            pointLabel(sceneData.C, "C", -10, -10, "#d94b63");
+            addText(`a = ${cm(config.sideBC)}`, Bs.x - 70, Bs.y - radiusBC + 18, "#db8400", 14, 800);
+          }
+        });
+      }
+
+      steps.push({
+        task: "Verbinde jetzt die Punkte A, B und C zur Grundfläche.",
+        hint: "Die vordere Dreiecksfläche heißt Grundfläche.",
+        footer: "Schritt: Die Grundfläche ABC ist jetzt fertig.",
+        tools: { pencil: true, triangle: true, compass: false },
+        draw() {
+          drawGrid();
+          drawFullBase(sceneData);
+          drawCommonLabels(sceneData, config);
+          drawX(sceneData.A);
+          drawX(sceneData.B);
+          drawX(sceneData.C);
+          if (config.type !== "scalene") {
+            drawHeightLine(sceneData.meta.heightFoot, sceneData.C, `h = ${cm(config.height)}`);
+          }
+          addText("Grundfläche", worldToScreen(segmentMid(sceneData.A, sceneData.C)).x - 10, worldToScreen(segmentMid(sceneData.A, sceneData.C)).y + 40, "#1783d1", 15, 800);
+        }
+      });
+
+      return steps;
+    }
+
+    function drawPrismSteps(sceneData, config) {
+      return [
+        {
+          task: "Zeichne von A, B und C die Seitenkanten im 45°-Winkel nach hinten.",
+          hint: `Jede Seitenkante ist nur halb so lang: ${cm(config.bodyHeight / 2)}.`,
+          footer: "Schritt: Die Seitenkanten verbinden Grundfläche und Deckfläche.",
+          tools: { pencil: true, triangle: true, compass: false },
+          draw() {
+            drawGrid();
+            drawFullBase(sceneData);
+            drawCommonLabels(sceneData, config);
+            drawSegment(sceneData.A, sceneData.A2, "#db8400", 3.5, "7 7");
+            drawSegment(sceneData.B, sceneData.B2, "#db8400", 3.5);
+            drawSegment(sceneData.C, sceneData.C2, "#db8400", 3.5);
+            drawX(sceneData.A);
+            drawX(sceneData.B);
+            drawX(sceneData.C);
+            drawX(sceneData.A2, "#db8400");
+            drawX(sceneData.B2, "#db8400");
+            drawX(sceneData.C2, "#db8400");
+            pointLabel(sceneData.A2, "A'", -12, 18, "#db8400");
+            pointLabel(sceneData.B2, "B'", 6, 18, "#db8400");
+            pointLabel(sceneData.C2, "C'", 0, -8, "#db8400");
+            labelSegment(sceneData.A, sceneData.A2, `hK/2 = ${cm(config.bodyHeight / 2)}`, "#db8400", -10, -12);
+          }
+        },
+        {
+          task: "Verbinde zuerst die sichtbare Kante der Deckfläche.",
+          hint: "Die hintere Dreiecksfläche heißt Deckfläche.",
+          footer: "Schritt: Die Deckfläche wird aufgebaut.",
+          tools: { pencil: true, triangle: true, compass: false },
+          draw() {
+            drawGrid();
+            drawFullBase(sceneData);
+            drawCommonLabels(sceneData, config);
+            drawSegment(sceneData.A, sceneData.A2, "#db8400", 3.5, "7 7");
+            drawSegment(sceneData.B, sceneData.B2, "#db8400", 3.5);
+            drawSegment(sceneData.C, sceneData.C2, "#db8400", 3.5);
+            drawSegment(sceneData.B2, sceneData.C2, "#1783d1", 3.5);
+            drawX(sceneData.A2, "#db8400");
+            drawX(sceneData.B2, "#db8400");
+            drawX(sceneData.C2, "#db8400");
+            pointLabel(sceneData.A2, "A'", -12, 18, "#db8400");
+            pointLabel(sceneData.B2, "B'", 6, 18, "#db8400");
+            pointLabel(sceneData.C2, "C'", 0, -8, "#db8400");
+            addText("Deckfläche", worldToScreen(segmentMid(sceneData.B2, sceneData.C2)).x - 10, worldToScreen(segmentMid(sceneData.B2, sceneData.C2)).y - 20, "#1783d1", 15, 800);
+          }
+        },
+        {
+          task: "Zeichne die restlichen Kanten der Deckfläche gestrichelt ein.",
+          hint: "Verdeckte Kanten werden gestrichelt gezeichnet.",
+          footer: "Fertig: Grundfläche vorne, Deckfläche hinten.",
+          tools: { pencil: true, triangle: true, compass: false },
+          draw() {
+            drawGrid();
+            drawFullBase(sceneData);
+            drawCommonLabels(sceneData, config);
+            drawSegment(sceneData.A, sceneData.A2, "#db8400", 3.5, "7 7");
+            drawSegment(sceneData.B, sceneData.B2, "#db8400", 3.5);
+            drawSegment(sceneData.C, sceneData.C2, "#db8400", 3.5);
+            drawSegment(sceneData.B2, sceneData.C2, "#1783d1", 3.5);
+            drawSegment(sceneData.A2, sceneData.B2, "#1783d1", 3.5, "7 7");
+            drawSegment(sceneData.A2, sceneData.C2, "#1783d1", 3.5, "7 7");
+            drawX(sceneData.A2);
+            drawX(sceneData.B2);
+            drawX(sceneData.C2);
+            pointLabel(sceneData.A2, "A'", -12, 18);
+            pointLabel(sceneData.B2, "B'", 6, 18);
+            pointLabel(sceneData.C2, "C'", 0, -8);
+            addText("Grundfläche", worldToScreen(segmentMid(sceneData.A, sceneData.C)).x - 10, worldToScreen(segmentMid(sceneData.A, sceneData.C)).y + 40, "#1783d1", 15, 800);
+            addText("Deckfläche", worldToScreen(segmentMid(sceneData.B2, sceneData.C2)).x - 10, worldToScreen(segmentMid(sceneData.B2, sceneData.C2)).y - 20, "#1783d1", 15, 800);
+          }
+        }
+      ];
+    }
+
+    function buildScene(config) {
+      const geometry = buildGeometry(config);
+      updateCanvasState(geometry);
+      return {
+        config,
+        geometry,
+        steps: [...drawBaseConstructionSteps(geometry, config), ...drawPrismSteps(geometry, config)]
+      };
+    }
+
+    function renderTools(tools) {
+      const toolItems = [
+        {
+          key: "pencil",
+          label: "Bleistift",
+          icon: `<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 36 L31 17 L36 22 L17 41 L10 42 Z" fill="#f0c35a" stroke="#8a6a23" stroke-width="2"/><path d="M31 17 L37 11 L42 16 L36 22 Z" fill="#f3a3a3" stroke="#8d5555" stroke-width="2"/><path d="M10 42 L17 41 L12 36 Z" fill="#333" stroke="#333" stroke-width="1"/></svg>`
+        },
+        {
+          key: "triangle",
+          label: "Geodreieck",
+          icon: `<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 40 L16 14 L44 40 Z" fill="rgba(24,126,201,0.1)" stroke="#187ec9" stroke-width="2.5"/><path d="M18 34 L22 22 L34 34 Z" fill="#fff" stroke="#187ec9" stroke-width="2"/></svg>`
+        },
+        {
+          key: "compass",
+          label: "Zirkel",
+          icon: `<svg viewBox="0 0 52 52" aria-hidden="true"><path d="M23 10 L20 26 L14 42" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round"/><path d="M29 10 L32 26 L38 42" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round"/><circle cx="26" cy="10" r="4" fill="#d94b63"/></svg>`
+        }
+      ];
+
+      toolsBox.innerHTML = toolItems.map((tool) => {
+        const active = Boolean(tools[tool.key]);
+        const status = active
+          ? `<svg class="tool-status" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#5d9328"/><path d="M5 10 L8.5 13.5 L15 6.5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+          : `<svg class="tool-status" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#d94b63"/><path d="M6 6 L14 14 M14 6 L6 14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+        return `<div class="tool-card"><div class="tool-icon">${tool.icon}${status}</div><div class="tool-name">${tool.label}</div></div>`;
+      }).join("");
+    }
+
+    function renderStep() {
+      const step = scene.steps[currentStep];
+      stepBadge.textContent = `Schritt ${currentStep + 1}`;
+      progressLabel.textContent = `${currentStep + 1} von ${scene.steps.length}`;
+      progressBar.style.width = `${((currentStep + 1) / scene.steps.length) * 100}%`;
+      taskText.textContent = step.task;
+      hintText.textContent = step.hint;
+      footerText.textContent = step.footer;
+      renderTools(step.tools);
+      step.draw();
+      prevBtn.disabled = currentStep === 0;
+      prevBtn.style.opacity = currentStep === 0 ? "0.45" : "1";
+      const finished = currentStep === scene.steps.length - 1;
+      nextBtn.style.display = finished ? "none" : "inline-grid";
+      restartBtn.style.display = finished ? "none" : "inline-grid";
+      finishActions.classList.toggle("show", finished);
+    }
+
+    function startConstruction() {
+      const config = getConfig();
+      if (!config) {
+        shapeInfo.textContent = "Diese Werte ergeben noch kein Dreieck.";
+        return;
+      }
+      scene = buildScene(config);
+      currentStep = 0;
+      showConstruction();
+      renderStep();
+    }
+
+    function syncShapePicker() {
+      shapePicker.querySelectorAll(".shape-card").forEach((card) => {
+        card.classList.toggle("active", card.dataset.shape === shapeType);
+      });
+    }
+
+    shapePicker.addEventListener("click", (event) => {
+      const card = event.target.closest(".shape-card");
+      if (!card) return;
+      shapeType = card.dataset.shape;
+      syncShapePicker();
+    });
+
+    toValuesBtn.addEventListener("click", showValuesStep);
+    backToShapesBtn.addEventListener("click", showShapeStep);
+    randomBtn.addEventListener("click", randomize);
+    applyBtn.addEventListener("click", startConstruction);
+
+    prevBtn.addEventListener("click", () => {
+      if (!scene || currentStep === 0) return;
+      currentStep -= 1;
+      renderStep();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!scene || currentStep >= scene.steps.length - 1) return;
+      currentStep += 1;
+      renderStep();
+    });
+
+    restartBtn.addEventListener("click", () => {
+      if (!scene) return;
+      currentStep = 0;
+      renderStep();
+    });
+
+    restartSameBtn.addEventListener("click", () => {
+      if (!scene) return;
+      currentStep = 0;
+      renderStep();
+    });
+
+    newPrismBtn.addEventListener("click", showSetup);
+    closeBtn.addEventListener("click", showSetup);
+
+    syncShapePicker();
+    showSetup();
+  </script>
+</body>
+</html>
