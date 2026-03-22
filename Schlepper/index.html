@@ -48,12 +48,11 @@
     }
 
     .app {
-      width: min(1180px, 100%);
+      width: min(1120px, 100%);
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1.2fr 0.92fr;
-      gap: 14px;
-      align-items: start;
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
 
     .panel {
@@ -69,9 +68,9 @@
     }
 
     .side-panel {
-      padding: 14px;
+      padding: 12px;
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .eyebrow {
@@ -97,7 +96,6 @@
 
     .mode-tabs,
     .summary-grid,
-    .control-grid,
     .button-grid,
     .toggle-row,
     .legend {
@@ -128,15 +126,22 @@
       box-shadow: 0 10px 24px rgba(15, 97, 116, 0.24);
     }
 
+    .mode-tab:disabled,
+    .mode-tab.locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
     .summary-grid {
-      grid-template-columns: 1.1fr 1fr 1fr;
+      grid-template-columns: 1.2fr 1fr 1fr;
       margin-bottom: 12px;
     }
 
     .card,
-    .control-card,
     .feedback,
-    .note {
+    .note,
+    .tug-menu {
       border-radius: 20px;
       padding: 14px;
       background: rgba(255, 255, 255, 0.74);
@@ -144,7 +149,7 @@
     }
 
     .card strong,
-    .control-card strong {
+    .tug-menu strong {
       display: block;
       font-size: 1rem;
       margin-bottom: 4px;
@@ -166,11 +171,48 @@
         linear-gradient(180deg, var(--water-1), var(--water-2) 50%, var(--water-3));
     }
 
+    .force-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 2;
+      width: 170px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(22,54,70,0.12);
+      box-shadow: 0 10px 20px rgba(16,66,88,0.14);
+    }
+
+    .scene-tools {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      display: grid;
+      gap: 8px;
+    }
+
+    .tool-btn {
+      width: 44px;
+      height: 44px;
+      min-height: 44px;
+      padding: 0;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      background: rgba(255,255,255,0.9);
+      color: var(--accent);
+      border: 1px solid rgba(15,97,116,0.12);
+      box-shadow: 0 8px 18px rgba(16,66,88,0.12);
+    }
+
     canvas {
       display: block;
       width: 100%;
       height: auto;
-      touch-action: manipulation;
+      touch-action: none;
     }
 
     .legend {
@@ -198,10 +240,6 @@
       border-radius: 50%;
       display: inline-block;
       flex: 0 0 auto;
-    }
-
-    .control-grid {
-      grid-template-columns: 1fr 1fr;
     }
 
     label {
@@ -248,6 +286,36 @@
 
     .button-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .compact-bar {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+    }
+
+    .tug-menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tug-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid var(--line);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .tug-help {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.4;
     }
 
     button {
@@ -307,10 +375,32 @@
       display: none;
     }
 
-    @media (max-width: 980px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: rgba(10, 39, 52, 0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    .intro-card {
+      width: min(760px, 100%);
+      background: rgba(255, 251, 244, 0.96);
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     @media (max-width: 700px) {
@@ -325,10 +415,10 @@
 
       .mode-tabs,
       .summary-grid,
-      .control-grid,
       .button-grid,
       .toggle-row,
-      .legend {
+      .legend,
+      .compact-bar {
         grid-template-columns: 1fr;
       }
 
@@ -338,9 +428,9 @@
       }
 
       .card,
-      .control-card,
       .feedback,
-      .note {
+      .note,
+      .tug-menu {
         padding: 12px;
         border-radius: 18px;
       }
@@ -364,6 +454,32 @@
   </style>
 </head>
 <body>
+  <div class="intro-overlay" id="introOverlay">
+    <div class="intro-card">
+      <div class="eyebrow">Einmal kurz erklaert</div>
+      <h1 style="font-size: clamp(1.5rem, 3vw, 2.2rem);">So bedienst du das Spiel</h1>
+      <p class="lead">Der Fokus liegt auf Wasserflaeche und Schiff. Du steuerst die Schlepper direkt im Bild.</p>
+      <div class="intro-grid">
+        <div class="card">
+          <strong>Schlepper drehen</strong>
+          <div class="mini">Tippe auf einen Schlepper und ziehe ihn auf seiner Kreisbahn. So aenderst du nur die Richtung, nicht die Seillaenge.</div>
+        </div>
+        <div class="card">
+          <strong>Zugkraft</strong>
+          <div class="mini">Beim ausgewaehlten Schlepper erscheint ein kleiner Kraftregler im Wasserfenster. Damit stellst du die Groesse der Kraft ein.</div>
+        </div>
+        <div class="card">
+          <strong>Knopfbedeutung</strong>
+          <div class="mini">`▶` startet oder pausiert. `↺` setzt zurueck. `◎` erzeugt eine neue Aufgabe oder ein neues Ziel.</div>
+        </div>
+        <div class="card">
+          <strong>Level-Fortschritt</strong>
+          <div class="mini">Das naechste Level wird erst freigeschaltet, wenn das aktuelle geschafft ist.</div>
+        </div>
+      </div>
+      <button class="primary" id="introStartButton" type="button">Spiel starten</button>
+    </div>
+  </div>
   <main class="app">
     <section class="panel scene-panel">
       <div class="eyebrow">Kräfte verstehen durch Steuern</div>
@@ -396,6 +512,18 @@
 
       <div class="harbor-wrap">
         <canvas id="scene" width="860" height="640" aria-label="Schlepper-Simulation"></canvas>
+        <div class="force-overlay" id="forceOverlay">
+          <strong id="tugMenuTitle">Schlepper A steuern</strong>
+          <div class="tug-chip"><i class="dot" id="selectedTugDot" style="background: var(--tug-a)"></i><span id="selectedTugLabel">Ausgewählt: A</span></div>
+          <label for="forceMenu" style="margin-top: 8px;">Groesse der Kraft</label>
+          <input id="forceMenu" type="range" min="0" max="120" step="1" value="60">
+          <div class="value" id="forceMenuText">60 N · 150°</div>
+        </div>
+        <div class="scene-tools">
+          <button class="tool-btn" id="actionButton" title="Start / Pause" aria-label="Start / Pause">▶</button>
+          <button class="tool-btn" id="resetButton" title="Zurücksetzen" aria-label="Zurücksetzen">↺</button>
+          <button class="tool-btn" id="nextButton" title="Nächste Aufgabe" aria-label="Nächste Aufgabe">◎</button>
+        </div>
       </div>
 
       <div class="legend">
@@ -407,25 +535,15 @@
     </section>
 
     <aside class="panel side-panel">
-      <div class="control-grid">
-        <div class="control-card">
-          <strong>Schlepper A</strong>
-          <label for="force1">Zugkraft</label>
-          <input id="force1" type="range" min="0" max="120" step="1" value="60">
-          <div class="value" id="force1Text">60 N</div>
-          <label for="angle1" style="margin-top: 10px;">Richtung</label>
-          <input id="angle1" type="range" min="-180" max="180" step="1" value="150">
-          <div class="value" id="angle1Text">150°</div>
+      <div class="compact-bar">
+        <div class="tug-menu">
+          <strong>Direkte Steuerung</strong>
+          <div class="tug-help">Tippe auf einen Schlepper und drehe ihn direkt im Wasserbecken. Der Kraftregler erscheint als kleines Overlay direkt daneben.</div>
         </div>
 
-        <div class="control-card">
-          <strong>Schlepper B</strong>
-          <label for="force2">Zugkraft</label>
-          <input id="force2" type="range" min="0" max="120" step="1" value="60">
-          <div class="value" id="force2Text">60 N</div>
-          <label for="angle2" style="margin-top: 10px;">Richtung</label>
-          <input id="angle2" type="range" min="-180" max="180" step="1" value="30">
-          <div class="value" id="angle2Text">30°</div>
+        <div class="feedback" id="feedbackBox">
+          <h2>Direkte Steuerung</h2>
+          <p>Die Schlepper werden jetzt direkt angetippt und auf ihrer Kreisbahn gedreht. Unten stellst du nur noch die Zugkraft des ausgewählten Schleppers ein.</p>
         </div>
       </div>
 
@@ -440,17 +558,6 @@
         </label>
       </div>
 
-      <div class="button-grid">
-        <button class="primary" id="actionButton">Fahrt starten</button>
-        <button class="secondary" id="resetButton">Zurücksetzen</button>
-        <button class="secondary" id="nextButton">Neues Ziel</button>
-      </div>
-
-      <div class="feedback" id="feedbackBox">
-        <h2>So startest du</h2>
-        <p>Level 1 ist ein freies Probierfeld. Danach werden die Aufgaben Schritt für Schritt anspruchsvoller, bis im letzten Level im Fluss nachgeregelt werden muss.</p>
-      </div>
-
       <div class="note" id="noteText">
         Die vier Levels steigern die Schwierigkeit: erst beobachten, dann steuern, dann gezielt einstellen und am Ende dynamisch im Fluss nachregeln.
       </div>
@@ -460,11 +567,11 @@
   <script>
     const canvas = document.getElementById("scene");
     const ctx = canvas.getContext("2d");
+    const introOverlay = document.getElementById("introOverlay");
+    const introStartButton = document.getElementById("introStartButton");
 
-    const force1 = document.getElementById("force1");
-    const angle1 = document.getElementById("angle1");
-    const force2 = document.getElementById("force2");
-    const angle2 = document.getElementById("angle2");
+    const forceMenu = document.getElementById("forceMenu");
+    const forceOverlay = document.getElementById("forceOverlay");
     const showParallelogram = document.getElementById("showParallelogram");
     const showHints = document.getElementById("showHints");
     const actionButton = document.getElementById("actionButton");
@@ -478,10 +585,10 @@
     const resultAngleText = document.getElementById("resultAngleText");
     const statusText = document.getElementById("statusText");
     const statusSubText = document.getElementById("statusSubText");
-    const force1Text = document.getElementById("force1Text");
-    const angle1Text = document.getElementById("angle1Text");
-    const force2Text = document.getElementById("force2Text");
-    const angle2Text = document.getElementById("angle2Text");
+    const tugMenuTitle = document.getElementById("tugMenuTitle");
+    const selectedTugLabel = document.getElementById("selectedTugLabel");
+    const selectedTugDot = document.getElementById("selectedTugDot");
+    const forceMenuText = document.getElementById("forceMenuText");
     const noteText = document.getElementById("noteText");
     const tabs = Array.from(document.querySelectorAll(".mode-tab"));
 
@@ -495,9 +602,18 @@
       running: false,
       animationId: null,
       lastTime: 0,
+      level1TimerId: null,
+      level1EndsAt: 0,
       score: 0,
       goalIndex: 1,
       riverCheckpoint: 1,
+      level2Hits: 0,
+      level3Correct: 0,
+      level4Hits: 0,
+      unlockedLevel: 1,
+      level2Approved: false,
+      selectedTug: "tug1",
+      draggingTug: null,
       controls: {
         tug1: { force: 60, angle: 150 },
         tug2: { force: 60, angle: 30 }
@@ -541,10 +657,30 @@
     }
 
     function createBasinGoal() {
+      const types = ["buoy", "dock", "harbor", "rig"];
+      const type = types[Math.floor(Math.random() * types.length)];
+      if (type === "dock" || type === "harbor") {
+        const side = Math.random() < 0.5 ? "left" : "right";
+        return {
+          type,
+          x: side === "left" ? basin.x + 42 : basin.x + basin.width - 42,
+          y: basin.y + 110 + Math.random() * (basin.height - 220),
+          radius: 34
+        };
+      }
+      if (type === "rig") {
+        return {
+          type,
+          x: basin.x + 120 + Math.random() * (basin.width - 240),
+          y: basin.y + 120 + Math.random() * (basin.height - 240),
+          radius: 34
+        };
+      }
       return {
-        x: basin.x + 85 + Math.random() * (basin.width - 170),
-        y: basin.y + 85 + Math.random() * (basin.height - 170),
-        radius: 34
+        type,
+        x: basin.x + 95 + Math.random() * (basin.width - 190),
+        y: basin.y + 95 + Math.random() * (basin.height - 190),
+        radius: type === "buoy" ? 26 : 34
       };
     }
 
@@ -557,19 +693,83 @@
       };
     }
 
+    function createLevel2Target() {
+      const vec = toVector(state.examTarget.force, state.examTarget.angle);
+      const length = Math.hypot(vec.x, vec.y) || 1;
+      const ux = vec.x / length;
+      const uy = vec.y / length;
+      const margin = 80;
+
+      const maxDx = ux > 0
+        ? (basin.x + basin.width - margin - state.ship.x) / ux
+        : ux < 0
+          ? (basin.x + margin - state.ship.x) / ux
+          : Infinity;
+      const maxDy = uy > 0
+        ? (state.ship.y - (basin.y + margin)) / uy
+        : uy < 0
+          ? (state.ship.y - (basin.y + basin.height - margin)) / uy
+          : Infinity;
+
+      const maxDistance = Math.max(120, Math.min(260, maxDx, maxDy));
+      const distance = Number.isFinite(maxDistance) ? maxDistance : 180;
+
+      return {
+        type: "buoy",
+        x: state.ship.x + ux * distance,
+        y: state.ship.y - uy * distance,
+        radius: 30
+      };
+    }
+
     function clamp(value, min, max) {
       return Math.max(min, Math.min(max, value));
+    }
+
+    function getLevelNumber(mode) {
+      return Number(mode.replace("level", ""));
+    }
+
+    function updateLevelLocks() {
+      tabs.forEach((tab) => {
+        const locked = getLevelNumber(tab.dataset.mode) > state.unlockedLevel;
+        tab.disabled = locked;
+        tab.classList.toggle("locked", locked);
+      });
     }
 
     function setFeedback(title, text) {
       feedbackBox.innerHTML = `<h2>${title}</h2><p>${text}</p>`;
     }
 
+    function clearLevel1Timer() {
+      if (state.level1TimerId) {
+        clearInterval(state.level1TimerId);
+        state.level1TimerId = null;
+      }
+      state.level1EndsAt = 0;
+    }
+
+    function startLevel1Timer() {
+      clearLevel1Timer();
+      state.level1EndsAt = Date.now() + 5 * 60 * 1000;
+      state.level1TimerId = setInterval(() => {
+        if (state.mode !== "level1") return;
+        if (Date.now() >= state.level1EndsAt) {
+          clearLevel1Timer();
+          switchMode("level2");
+          setFeedback("Level 1 beendet", "Die 5 Minuten Erkundungszeit sind vorbei. Jetzt geht es in Level 2: Richte die Resultierende auf den Sollkurs aus.");
+          return;
+        }
+        updateSummary();
+      }, 1000);
+    }
+
     function currentDistance() {
       if (state.mode === "level4") {
         return Math.hypot(state.target.x - state.ship.x, state.target.y - state.ship.y) / 9.5;
       }
-      if (state.mode === "level3") {
+      if (state.mode === "level2") {
         const res = resultant();
         const forceDiff = Math.abs(res.force - state.examTarget.force);
         const angleDiff = smallestAngleDifference(res.angle, state.examTarget.angle);
@@ -584,10 +784,26 @@
     }
 
     function updateControlLabels() {
-      force1Text.textContent = `${state.controls.tug1.force} N`;
-      angle1Text.textContent = `${state.controls.tug1.angle}°`;
-      force2Text.textContent = `${state.controls.tug2.force} N`;
-      angle2Text.textContent = `${state.controls.tug2.angle}°`;
+      const key = state.selectedTug;
+      const tug = state.controls[key];
+      const label = key === "tug1" ? "Schlepper A" : "Schlepper B";
+      const color = key === "tug1" ? "var(--tug-a)" : "var(--tug-b)";
+      tugMenuTitle.textContent = `${label} steuern`;
+      selectedTugLabel.textContent = `Ausgewählt: ${key === "tug1" ? "A" : "B"}`;
+      selectedTugDot.style.background = color;
+      forceMenu.value = tug.force;
+      forceMenuText.textContent = `${tug.force} N · ${tug.angle}°`;
+      updateForceOverlayPosition();
+    }
+
+    function updateForceOverlayPosition() {
+      const tug = tugPosition(state.controls[state.selectedTug].angle, 140);
+      const prefersLeft = tug.x > state.ship.x;
+      const x = prefersLeft
+        ? Math.max(12, tug.x - 194)
+        : Math.min(canvas.width - 180, tug.x + 24);
+      const y = Math.min(canvas.height - 112, Math.max(12, tug.y - 92));
+      forceOverlay.style.transform = `translate(${x}px, ${y}px)`;
     }
 
     function updateSummary() {
@@ -598,42 +814,64 @@
       if (state.mode === "level1") {
         missionTitle.textContent = "Level 1 · Erkunden";
         missionText.textContent = "Verändere beide Schlepper und beobachte nur die grüne resultierende Kraft.";
-        statusText.textContent = `Geschwindigkeit: ruhig`;
-        statusSubText.textContent = "Noch kein Ziel, nur ausprobieren";
+        const remainingMs = Math.max(0, state.level1EndsAt - Date.now());
+        const totalSec = Math.ceil(remainingMs / 1000);
+        const min = Math.floor(totalSec / 60);
+        const sec = String(totalSec % 60).padStart(2, "0");
+        statusText.textContent = `Zeit: ${min}:${sec}`;
+        statusSubText.textContent = "5 Minuten frei erkunden, dann automatisch weiter";
         leadText.textContent = "Im ersten Level geht es nur darum, die Wirkung der beiden Kräfte zu verstehen. Das Schiff fährt bewusst langsam.";
         noteText.textContent = "Gleiche Richtungen verstärken sich, große Winkel ändern die Richtung der Resultierenden deutlich.";
-        nextButton.textContent = "Ziel setzen";
+        nextButton.textContent = "Level 1 beenden";
         actionButton.textContent = state.running ? "Fahrt pausieren" : "Fahrt starten";
+        actionButton.title = state.running ? "Pause" : "Start";
+        resetButton.title = "Zurücksetzen";
+        nextButton.title = "Level 1 beenden";
       } else if (state.mode === "level2") {
-        missionTitle.textContent = `Level 2 · Ziel ${state.goalIndex}`;
+        missionTitle.textContent = "Level 2 · Sollkurs";
+        missionText.textContent = `Richte die grüne Kraft auf den orangefarbenen Sollpfeil aus: ${state.examTarget.force} N bei ${state.examTarget.angle}°.`;
+        const forceDiff = Math.abs(res.force - state.examTarget.force).toFixed(1).replace(".", ",");
+        const angleDiff = smallestAngleDifference(res.angle, state.examTarget.angle).toFixed(1).replace(".", ",");
+        statusText.textContent = `Abweichung: ${forceDiff} N / ${angleDiff}°`;
+        statusSubText.textContent = `${state.level3Correct} von 5 Sollkursen geschafft`;
+        leadText.textContent = "Im zweiten Level pruefst du mit dem Haken, ob die grüne Resultierende gut genug auf den Sollpfeil ausgerichtet ist. Wenn es innerhalb der Toleranz passt, faehrt das Schiff zum Ziel.";
+        noteText.textContent = "Hier gilt eine deutliche Toleranz: etwa bis 20 N und 20 Grad Abweichung. Erst pruefen, dann Ziel anfahren.";
+        nextButton.textContent = "Neuer Sollkurs";
+        actionButton.textContent = "Prüfen";
+        actionButton.innerHTML = "✓";
+        actionButton.title = "Prüfen";
+        resetButton.title = "Zurücksetzen";
+        nextButton.title = "Neuer Sollkurs";
+      } else if (state.mode === "level3") {
+        missionTitle.textContent = `Level 3 · Ziel ${state.goalIndex}`;
         missionText.textContent = "Steuere das Schiff im Becken mit den beiden Schleppern in den Zielkreis.";
         statusText.textContent = `Distanz: ${currentDistance().toFixed(1).replace(".", ",")} m`;
-        statusSubText.textContent = `${state.score} Treffer insgesamt`;
+        statusSubText.textContent = `${state.level2Hits} von 5 Zielen sicher erreicht`;
         leadText.textContent = "Jetzt wird die Resultierende nicht nur beobachtet, sondern gezielt genutzt, um das Schiff zu steuern.";
         noteText.textContent = "Hier verbinden die Lernenden die grüne Resultierende direkt mit einer Bewegungsaufgabe.";
         nextButton.textContent = "Neues Ziel";
         actionButton.textContent = state.running ? "Fahrt pausieren" : "Fahrt starten";
-      } else if (state.mode === "level3") {
-        missionTitle.textContent = "Level 3 · Prüfung";
-        missionText.textContent = `Gesucht ist eine Resultierende von ${state.examTarget.force} N bei ${state.examTarget.angle}°.`;
-        const forceDiff = Math.abs(res.force - state.examTarget.force).toFixed(1).replace(".", ",");
-        const angleDiff = smallestAngleDifference(res.angle, state.examTarget.angle).toFixed(1).replace(".", ",");
-        statusText.textContent = `Abweichung: ${forceDiff} N / ${angleDiff}°`;
-        statusSubText.textContent = "Stelle beide Schlepper so ein, dass FR stimmt.";
-        leadText.textContent = "Jetzt ist die resultierende Kraft vorgegeben. Die Schlepperkräfte müssen passend gewählt werden.";
-        noteText.textContent = "Das ist die Umkehrung der bisherigen Denkweise: Von der Resultierenden zurück auf die Einzelkräfte.";
-        nextButton.textContent = "Neue Prüfung";
-        actionButton.textContent = "Prüfen";
+        actionButton.innerHTML = state.running ? "❚❚" : "▶";
+        actionButton.title = state.running ? "Pause" : "Start";
+        resetButton.title = "Zurücksetzen";
+        nextButton.title = "Neues Ziel";
       } else {
         missionTitle.textContent = `Level 4 · Fluss ${state.riverCheckpoint}`;
         missionText.textContent = "Reguliere die Schlepper während der Fahrt, damit das Schiff im Fluss die nächsten Markierungen erreicht.";
         statusText.textContent = `Restweg: ${currentDistance().toFixed(1).replace(".", ",")} m`;
-        statusSubText.textContent = `${state.score} gemeisterte Ziele`;
-        leadText.textContent = "Im vierten Level wirkt zusätzlich eine Strömung. Während der Fahrt musst du die Schlepper dynamisch nachregeln.";
-        noteText.textContent = "Dieser Modus bleibt länger spannend, weil die Schlepper während der Bewegung immer wieder neu eingestellt werden müssen.";
+        statusSubText.textContent = `${state.level4Hits} von 5 Flusszielen erreicht`;
+        leadText.textContent = "Im vierten Level wirkt deutlich sichtbar eine Strömung von links nach rechts. Während der Fahrt musst du die Schlepper dynamisch nachregeln.";
+        noteText.textContent = "Die Strömung ist hier der zusätzliche Störfaktor. Das Level bleibt schaffbar, wenn früh gegengesteuert und während der Fahrt nachgeregelt wird.";
         nextButton.textContent = "Neuer Lauf";
         actionButton.textContent = state.running ? "Fahrt pausieren" : "Fahrt starten";
+        actionButton.innerHTML = state.running ? "❚❚" : "▶";
+        actionButton.title = state.running ? "Pause" : "Start";
+        resetButton.title = "Zurücksetzen";
+        nextButton.title = "Neuer Lauf";
       }
+
+      if (state.mode === "level1") actionButton.innerHTML = state.running ? "❚❚" : "▶";
+      updateLevelLocks();
     }
 
     function tugPosition(angle, distance) {
@@ -663,6 +901,7 @@
       drawForceArrow(state.controls.tug2, getCss("--tug-b"), "F2");
       drawResultantArrow();
       if (showHints.checked) drawHintBox();
+      updateForceOverlayPosition();
     }
 
     function drawBasinScene() {
@@ -728,20 +967,22 @@
       ctx.fillText("Strömung", river.x + 38, river.y + 40);
       ctx.strokeStyle = "rgba(255,255,255,0.75)";
       ctx.lineWidth = 4;
-      for (let i = 0; i < 3; i++) {
-        const startX = river.x + 118 + i * 52;
-        const startY = river.y + 44;
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(startX + 34, startY);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(startX + 34, startY);
-        ctx.lineTo(startX + 24, startY - 7);
-        ctx.lineTo(startX + 24, startY + 7);
-        ctx.closePath();
-        ctx.fillStyle = "rgba(255,255,255,0.75)";
-        ctx.fill();
+      for (let row = 0; row < 4; row++) {
+        for (let i = 0; i < 4; i++) {
+          const startX = river.x + 118 + i * 120;
+          const startY = river.y + 44 + row * 120;
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(startX + 42, startY);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(startX + 42, startY);
+          ctx.lineTo(startX + 30, startY - 8);
+          ctx.lineTo(startX + 30, startY + 8);
+          ctx.closePath();
+          ctx.fillStyle = "rgba(255,255,255,0.75)";
+          ctx.fill();
+        }
       }
       ctx.restore();
     }
@@ -757,14 +998,24 @@
     }
 
     function drawGoalOrExamTarget() {
-      if (state.mode === "level3") {
-        const centerX = canvas.width - 108;
-        const centerY = 106;
+      if (state.mode === "level2") {
         const targetVector = toVector(state.examTarget.force, state.examTarget.angle);
         ctx.save();
-        ctx.fillStyle = "rgba(255,255,255,0.78)";
-        ctx.fillRect(centerX - 86, centerY - 70, 170, 146);
-        drawArrow(centerX, centerY + 28, centerX + targetVector.x * 1.15, centerY + 28 - targetVector.y * 1.15, getCss("--target"), 7, "FR soll");
+        ctx.fillStyle = "rgba(255,255,255,0.82)";
+        ctx.fillRect(state.ship.x - 94, state.ship.y - 104, 188, 70);
+        drawArrow(state.ship.x, state.ship.y, state.ship.x + targetVector.x * 1.2, state.ship.y - targetVector.y * 1.2, getCss("--target"), 7, "FR soll");
+        if (state.target) {
+          ctx.fillStyle = "rgba(255,183,3,0.22)";
+          ctx.beginPath();
+          ctx.arc(state.target.x, state.target.y, state.target.radius + 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = getCss("--goal");
+          ctx.beginPath();
+          ctx.arc(state.target.x, state.target.y, state.target.radius - 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#fff8df";
+          ctx.fillRect(state.target.x - 4, state.target.y - 22, 8, 18);
+        }
         ctx.restore();
         return;
       }
@@ -772,18 +1023,47 @@
       if (state.mode === "level1") return;
 
       ctx.save();
-      ctx.fillStyle = "rgba(255,183,3,0.22)";
-      ctx.beginPath();
-      ctx.arc(state.target.x, state.target.y, state.target.radius + 12, 0, Math.PI * 2);
-      ctx.fill();
+      if (state.target.type === "buoy") {
+        ctx.fillStyle = "rgba(255,183,3,0.22)";
+        ctx.beginPath();
+        ctx.arc(state.target.x, state.target.y, state.target.radius + 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = getCss("--goal");
+        ctx.beginPath();
+        ctx.arc(state.target.x, state.target.y, state.target.radius - 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff8df";
+        ctx.fillRect(state.target.x - 4, state.target.y - 22, 8, 18);
+      } else if (state.target.type === "dock") {
+        ctx.fillStyle = "#8f6c4b";
+        ctx.fillRect(state.target.x - 24, state.target.y - 16, 48, 32);
+        ctx.fillStyle = "#ffcc4d";
+        ctx.fillRect(state.target.x - 18, state.target.y - 10, 36, 20);
+      } else if (state.target.type === "harbor") {
+        ctx.fillStyle = "#cfd8dc";
+        ctx.fillRect(state.target.x - 30, state.target.y - 20, 60, 40);
+        ctx.fillStyle = "#607d8b";
+        ctx.fillRect(state.target.x - 20, state.target.y - 14, 14, 28);
+        ctx.fillRect(state.target.x + 6, state.target.y - 14, 14, 28);
+      } else {
+        ctx.strokeStyle = "#5f6b73";
+        ctx.lineWidth = 5;
+        ctx.strokeRect(state.target.x - 22, state.target.y - 22, 44, 44);
+        ctx.beginPath();
+        ctx.moveTo(state.target.x, state.target.y - 30);
+        ctx.lineTo(state.target.x, state.target.y + 30);
+        ctx.moveTo(state.target.x - 30, state.target.y);
+        ctx.lineTo(state.target.x + 30, state.target.y);
+        ctx.stroke();
+      }
       ctx.strokeStyle = getCss("--goal");
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(state.target.x, state.target.y, state.target.radius, 0, Math.PI * 2);
       ctx.stroke();
       ctx.fillStyle = "#7a5900";
-      ctx.font = "bold 18px Avenir Next, Trebuchet MS, sans-serif";
-      ctx.fillText("Ziel", state.target.x - 18, state.target.y + 6);
+      ctx.font = "bold 16px Avenir Next, Trebuchet MS, sans-serif";
+      ctx.fillText("Ziel", state.target.x - 16, state.target.y + state.target.radius + 22);
       ctx.restore();
     }
 
@@ -793,30 +1073,29 @@
 
       ctx.fillStyle = "rgba(20, 75, 99, 0.16)";
       ctx.beginPath();
-      ctx.ellipse(0, 31, 52, 14, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 28, 88, 16, 0, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = getCss("--ship");
       ctx.beginPath();
-      ctx.moveTo(0, -42);
-      ctx.lineTo(30, -10);
-      ctx.lineTo(21, 34);
-      ctx.lineTo(-21, 34);
-      ctx.lineTo(-30, -10);
+      ctx.moveTo(0, -54);
+      ctx.lineTo(36, -18);
+      ctx.lineTo(42, 22);
+      ctx.lineTo(26, 46);
+      ctx.lineTo(-26, 46);
+      ctx.lineTo(-42, 22);
+      ctx.lineTo(-36, -18);
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = "#f4ead6";
-      ctx.fillRect(-9, -16, 18, 28);
-      ctx.fillStyle = "#264653";
-      ctx.fillRect(-2, -42, 4, 30);
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.moveTo(2, -38);
-      ctx.lineTo(2, -15);
-      ctx.lineTo(22, -25);
-      ctx.closePath();
-      ctx.fill();
+      ctx.fillStyle = "#ced7db";
+      ctx.fillRect(-18, -8, 36, 18);
+      ctx.fillStyle = "#90a4ae";
+      ctx.fillRect(-30, 4, 60, 12);
+      ctx.fillRect(-30, 20, 60, 10);
+      ctx.fillStyle = "#37474f";
+      ctx.fillRect(-6, -42, 12, 24);
+      ctx.fillRect(-14, -30, 28, 8);
       ctx.restore();
     }
 
@@ -825,8 +1104,8 @@
       const tugB = tugPosition(state.controls.tug2.angle, 140);
       drawRope(tugA, getCss("--tug-a"));
       drawRope(tugB, getCss("--tug-b"));
-      drawTugBoat(tugA, getCss("--tug-a"), "A");
-      drawTugBoat(tugB, getCss("--tug-b"), "B");
+      drawTugBoat(tugA, getCss("--tug-a"), "A", state.selectedTug === "tug1");
+      drawTugBoat(tugB, getCss("--tug-b"), "B", state.selectedTug === "tug2");
     }
 
     function drawRope(tug, color) {
@@ -841,23 +1120,52 @@
       ctx.restore();
     }
 
-    function drawTugBoat(pos, color, label) {
+    function drawTugBoat(pos, color, label, selected) {
       ctx.save();
       ctx.translate(pos.x, pos.y);
+      if (selected) {
+        ctx.strokeStyle = "rgba(255,255,255,0.95)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 24, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.fillStyle = color;
       ctx.beginPath();
-      ctx.moveTo(0, -18);
-      ctx.lineTo(17, -4);
-      ctx.lineTo(13, 16);
-      ctx.lineTo(-13, 16);
-      ctx.lineTo(-17, -4);
+      ctx.moveTo(0, -16);
+      ctx.lineTo(18, -6);
+      ctx.lineTo(14, 14);
+      ctx.lineTo(-14, 14);
+      ctx.lineTo(-18, -6);
       ctx.closePath();
       ctx.fill();
       ctx.fillStyle = "#fff8f0";
-      ctx.fillRect(-5, -5, 10, 9);
+      ctx.fillRect(-6, -7, 12, 10);
+      ctx.fillStyle = "#4e342e";
+      ctx.fillRect(4, -18, 5, 10);
+      drawSmoke(7, -18, state.controls[label === "A" ? "tug1" : "tug2"].force);
       ctx.fillStyle = "#163646";
       ctx.font = "bold 15px Avenir Next, Trebuchet MS, sans-serif";
       ctx.fillText(label, -5, 30);
+      ctx.restore();
+    }
+
+    function drawSmoke(x, y, forceValue) {
+      const t = Date.now() / 220;
+      const speed = Math.hypot(state.ship.vx, state.ship.vy);
+      const opacity = Math.min(0.38, 0.08 + forceValue / 420 + speed / 60);
+      const length = 10 + forceValue / 14;
+      ctx.save();
+      ctx.fillStyle = `rgba(235,240,245,${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x + 6 + Math.sin(t) * 1.5, y - 10, 5, 0, Math.PI * 2);
+      ctx.arc(x + 12 + Math.cos(t * 0.8) * 2, y - 17, 7, 0, Math.PI * 2);
+      ctx.arc(x + 2 + Math.sin(t * 1.2) * 1.5, y - 20, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = `rgba(215,225,235,${opacity * 0.55})`;
+      ctx.beginPath();
+      ctx.ellipse(x + 18 + Math.cos(t * 0.6) * 2, y - 18 + Math.sin(t * 0.7) * 2, length, 7, -0.25, 0, Math.PI * 2);
+      ctx.fill();
       ctx.restore();
     }
 
@@ -923,11 +1231,11 @@
       ctx.font = "bold 16px Avenir Next, Trebuchet MS, sans-serif";
       ctx.fillText("Gemeinsamer Angriffspunkt", 40, 48);
       ctx.font = "14px Avenir Next, Trebuchet MS, sans-serif";
-      if (state.mode === "level3") {
+      if (state.mode === "level2") {
         ctx.fillText("Stelle F1 und F2 so ein, dass FR passt.", 40, 68);
       } else if (state.mode === "level4") {
         ctx.fillText("Strömung beachten und ständig nachregeln.", 40, 68);
-      } else if (state.mode === "level2") {
+      } else if (state.mode === "level3") {
         ctx.fillText("Nutze FR, um das Ziel zu treffen.", 40, 68);
       } else {
         ctx.fillText("Erst beobachten, dann bewusst verändern.", 40, 68);
@@ -942,24 +1250,27 @@
       state.lastTime = timestamp;
 
       const res = resultant();
-      const accelScale = state.mode === "level4" ? 0.04 : 0.03;
+      const accelScale = state.mode === "level4" ? 0.027 : 0.021;
       state.ship.vx += res.x * accelScale * dt;
       state.ship.vy -= res.y * accelScale * dt;
 
       if (state.mode === "level4") {
         const current = getRiverCurrent(state.ship.y);
-        state.ship.vx += current.x * dt * 0.55;
-        state.ship.vy += current.y * dt * 0.55;
+        state.ship.vx += current.x * dt * 0.36;
+        state.ship.vy += current.y * dt * 0.36;
       }
 
-      state.ship.vx *= 0.972;
-      state.ship.vy *= 0.972;
+      state.ship.vx *= 0.955;
+      state.ship.vy *= 0.955;
       state.ship.x += state.ship.vx;
       state.ship.y += state.ship.vy;
 
       if (state.mode === "level4") {
         confineToRiver();
         checkRiverTarget();
+      } else if (state.mode === "level2") {
+        confineToBasin();
+        checkLevel2Target();
       } else {
         confineToBasin();
         checkBasinTarget();
@@ -971,8 +1282,8 @@
     }
 
     function getRiverCurrent(y) {
-      const strength = 11 + (y - river.y) / 110;
-      return { x: strength, y: Math.sin(y / 46) * 0.24 };
+      const strength = 8 + (y - river.y) / 150;
+      return { x: strength, y: Math.sin(y / 58) * 0.16 };
     }
 
     function confineToBasin() {
@@ -997,22 +1308,47 @@
       if (state.ship.x === left) state.ship.vx = Math.max(0, state.ship.vx);
       if (state.ship.x === right) {
         state.ship.vx *= -0.2;
-        setFeedback("Zu weit abgetrieben", "Die Strömung war stärker als deine Regelung. Versuche, früher mit den Schleppern gegenzusteuern.");
+        setFeedback("Zu weit abgetrieben", "Die Strömung hat das Schiff seitlich mitgenommen. Versuche, früher gegenzusteuern und während der Fahrt fein nachzuregeln.");
         stopMotion();
       }
     }
 
     function checkBasinTarget() {
-      if (state.mode !== "level2") return;
+      if (state.mode !== "level3") return;
       const d = Math.hypot(state.ship.x - state.target.x, state.ship.y - state.target.y);
       if (d <= state.target.radius) {
-        state.score += 1;
+        state.level2Hits += 1;
         state.goalIndex += 1;
-        state.target = createBasinGoal();
         state.ship.vx = 0;
         state.ship.vy = 0;
         stopMotion();
-        setFeedback("Ziel erreicht", "Sehr gut. Jetzt kann die Klasse eine neue Kombination der Schlepper ausprobieren.");
+        if (state.level2Hits >= 5) {
+          state.unlockedLevel = Math.max(state.unlockedLevel, 4);
+          setFeedback("Level 3 geschafft", "Alle 5 Ziele wurden sicher angefahren. Jetzt könnt ihr mit Level 4 in den Fluss wechseln.");
+        } else {
+          state.target = createBasinGoal();
+          setFeedback("Ziel erreicht", `Sehr gut. ${state.level2Hits} von 5 Zielen sind geschafft.`);
+        }
+      }
+    }
+
+    function checkLevel2Target() {
+      if (state.mode !== "level2" || !state.level2Approved) return;
+      const d = Math.hypot(state.ship.x - state.target.x, state.ship.y - state.target.y);
+      if (d <= state.target.radius) {
+        state.level2Approved = false;
+        state.level3Correct += 1;
+        stopMotion();
+        state.ship.vx = 0;
+        state.ship.vy = 0;
+        if (state.level3Correct >= 5) {
+          state.unlockedLevel = Math.max(state.unlockedLevel, 3);
+          setFeedback("Level 2 geschafft", "5 Sollkurse wurden sicher geprueft und angefahren. Level 3 ist jetzt freigeschaltet.");
+        } else {
+          state.examTarget = createExamTarget();
+          state.target = createLevel2Target();
+          setFeedback("Ziel erreicht", `Sehr gut. ${state.level3Correct} von 5 Sollkursen sind geschafft.`);
+        }
       }
     }
 
@@ -1020,26 +1356,27 @@
       if (state.mode !== "level4") return;
       const d = Math.hypot(state.ship.x - state.target.x, state.ship.y - state.target.y);
       if (d <= state.target.radius) {
-        state.score += 1;
+        state.level4Hits += 1;
         state.riverCheckpoint += 1;
-        if (state.riverCheckpoint > 4) {
+        if (state.level4Hits >= 5) {
           stopMotion();
-          setFeedback("Fluss-Level geschafft", "Das Schiff hat alle Markierungen im Fluss erreicht. Hier mussten die Schlepper während der Fahrt immer wieder neu eingestellt werden.");
+          setFeedback("Level 4 geschafft", "Alle 5 Flussziele wurden erreicht. Trotz Strömung konnte das Schiff sicher gesteuert werden.");
           state.riverCheckpoint = 1;
           state.target = createRiverTarget(1);
           return;
         }
         state.target = createRiverTarget(state.riverCheckpoint);
-        setFeedback("Markierung erreicht", "Weiter geht es. Im Fluss ist Nachregeln wichtig, weil die Strömung das Schiff ständig verändert.");
+        setFeedback("Markierung erreicht", `Gut geregelt. ${state.level4Hits} von 5 Flusszielen sind geschafft.`);
       }
     }
 
     function createRiverTarget(index) {
       const points = [
-        { x: river.x + 225, y: river.y + 145, radius: 28 },
-        { x: river.x + 365, y: river.y + 278, radius: 28 },
-        { x: river.x + 505, y: river.y + 388, radius: 28 },
-        { x: river.x + 628, y: river.y + 500, radius: 28 }
+        { type: "buoy", x: river.x + 200, y: river.y + 135, radius: 30 },
+        { type: "harbor", x: river.x + 310, y: river.y + 228, radius: 34 },
+        { type: "dock", x: river.x + 430, y: river.y + 315, radius: 34 },
+        { type: "rig", x: river.x + 550, y: river.y + 410, radius: 34 },
+        { type: "buoy", x: river.x + 650, y: river.y + 490, radius: 30 }
       ];
       return points[index - 1];
     }
@@ -1061,6 +1398,7 @@
 
     function resetShip() {
       stopMotion();
+      state.level2Approved = false;
       if (state.mode === "level4") {
         state.ship.x = riverStart.x;
         state.ship.y = riverStart.y;
@@ -1075,11 +1413,14 @@
       draw();
     }
 
+    function syncForceMenu() {
+      state.controls[state.selectedTug].force = Number(forceMenu.value);
+      updateControlLabels();
+      updateSummary();
+      draw();
+    }
+
     function syncControls() {
-      state.controls.tug1.force = Number(force1.value);
-      state.controls.tug1.angle = Number(angle1.value);
-      state.controls.tug2.force = Number(force2.value);
-      state.controls.tug2.angle = Number(angle2.value);
       updateControlLabels();
       updateSummary();
       draw();
@@ -1087,40 +1428,65 @@
 
     function resetControlsToDefault() {
       if (state.mode === "level4") {
-        force1.value = 55;
-        angle1.value = 25;
-        force2.value = 72;
-        angle2.value = -20;
-      } else if (state.mode === "level3") {
-        force1.value = 55;
-        angle1.value = 145;
-        force2.value = 55;
-        angle2.value = 35;
+        state.controls.tug1.force = 55;
+        state.controls.tug1.angle = 25;
+        state.controls.tug2.force = 72;
+        state.controls.tug2.angle = -20;
+      } else if (state.mode === "level2") {
+        state.controls.tug1.force = 55;
+        state.controls.tug1.angle = 145;
+        state.controls.tug2.force = 55;
+        state.controls.tug2.angle = 35;
       } else {
-        force1.value = 60;
-        angle1.value = 150;
-        force2.value = 60;
-        angle2.value = 30;
+        state.controls.tug1.force = 60;
+        state.controls.tug1.angle = 150;
+        state.controls.tug2.force = 60;
+        state.controls.tug2.angle = 30;
       }
       syncControls();
     }
 
-    function checkExam() {
+    function getCanvasPoint(event) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (event.clientX - rect.left) * (canvas.width / rect.width),
+        y: (event.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function distance(a, b) {
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }
+
+    function selectTug(key) {
+      state.selectedTug = key;
+      updateControlLabels();
+      draw();
+    }
+
+    function updateDraggedTug(point) {
+      if (!state.draggingTug) return;
+      const dx = point.x - state.ship.x;
+      const dy = state.ship.y - point.y;
+      state.controls[state.draggingTug].angle = Math.round(normalizeAngle(Math.atan2(dy, dx) * 180 / Math.PI));
+      updateControlLabels();
+      updateSummary();
+      draw();
+    }
+
+    function checkLevel3Alignment() {
+      if (state.mode !== "level2") return;
       const res = resultant();
       const forceError = Math.abs(res.force - state.examTarget.force);
       const angleError = smallestAngleDifference(res.angle, state.examTarget.angle);
 
-      if (forceError <= 8 && angleError <= 8) {
-        state.score += 3;
-        setFeedback("Fast perfekt", `Sehr gut. Die eingestellte Resultierende liegt sehr nah an ${state.examTarget.force} N und ${state.examTarget.angle}°.`);
-      } else if (forceError <= 16 && angleError <= 16) {
-        state.score += 2;
-        setFeedback("Gute Lösung", `Das passt schon gut. Kontrolliere noch einmal Winkel und Betrag der Schlepperkräfte.`);
-      } else if (forceError <= 24 && angleError <= 24) {
-        state.score += 1;
-        setFeedback("Teilweise passend", `Die Richtung oder der Betrag stimmen schon teilweise. Vergleiche F1, F2 und das Kräfteparallelogramm noch einmal.`);
+      if (forceError <= 20 && angleError <= 20) {
+        state.level2Approved = true;
+        setFeedback("Passt gut", "Der Vektor liegt innerhalb der Toleranz. Jetzt faehrt das Schiff zum Ziel.");
+        startMotion();
       } else {
-        setFeedback("Noch nicht passend", `Die Resultierende weicht noch deutlich ab. Ziel ist ${state.examTarget.force} N bei ${state.examTarget.angle}°.`);
+        state.level2Approved = false;
+        setFeedback("Noch nicht passend", "Die grüne Resultierende weicht noch zu stark ab. Drehe oder verstaerke die Schlepper weiter und pruefe dann erneut.");
       }
       updateSummary();
       draw();
@@ -1128,32 +1494,46 @@
 
     function switchMode(mode) {
       stopMotion();
+      clearLevel1Timer();
       state.mode = mode;
       tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.mode === mode));
 
       if (mode === "level1") {
+        state.level2Hits = 0;
+        state.level3Correct = 0;
+        state.level4Hits = 0;
+        state.unlockedLevel = Math.max(state.unlockedLevel, 1);
         state.target = createBasinGoal();
         state.goalIndex = 1;
         state.ship.x = shipStart.x;
         state.ship.y = shipStart.y;
-        setFeedback("Level 1", "Hier probierst du die beiden Schlepper frei aus. Das Schiff bewegt sich bewusst langsam, damit die Wirkung der Resultierenden gut erkennbar bleibt.");
+        startLevel1Timer();
+        setFeedback("Level 1", "Hier probierst du die beiden Schlepper 5 Minuten frei aus. Danach wechselt das Spiel automatisch in Level 2.");
       } else if (mode === "level2") {
-        state.target = createBasinGoal();
-        state.goalIndex = 1;
-        state.ship.x = shipStart.x;
-        state.ship.y = shipStart.y;
-        setFeedback("Level 2", "Jetzt steuerst du das Schiff mit der resultierenden Kraft aktiv in einen Zielkreis.");
-      } else if (mode === "level3") {
+        state.level3Correct = 0;
+        state.level2Approved = false;
+        state.unlockedLevel = Math.max(state.unlockedLevel, 2);
         state.examTarget = createExamTarget();
         state.ship.x = shipStart.x;
         state.ship.y = shipStart.y;
-        setFeedback("Level 3", "Jetzt ist die resultierende Kraft vorgegeben. Stelle Richtung und Betrag von Schlepper A und B passend ein und drücke auf Prüfen.");
+        state.target = createLevel2Target();
+        setFeedback("Level 2", "Ein orangefarbener Sollpfeil erscheint direkt am Schiff. Richte die grüne Resultierende darauf aus. So werden 5 Sollkurse nacheinander gelöst.");
+      } else if (mode === "level3") {
+        state.level2Hits = 0;
+        state.unlockedLevel = Math.max(state.unlockedLevel, 3);
+        state.target = createBasinGoal();
+        state.goalIndex = 1;
+        state.ship.x = shipStart.x;
+        state.ship.y = shipStart.y;
+        setFeedback("Level 3", "Jetzt steuerst du das Schiff aktiv. Es müssen 5 Ziele sicher angefahren werden.");
       } else {
         state.riverCheckpoint = 1;
+        state.level4Hits = 0;
+        state.unlockedLevel = Math.max(state.unlockedLevel, 4);
         state.ship.x = riverStart.x;
         state.ship.y = riverStart.y;
         state.target = createRiverTarget(1);
-        setFeedback("Level 4", "Jetzt kommt die Strömung dazu. Während der Fahrt musst du die Schlepper dynamisch nachregeln.");
+        setFeedback("Level 4", "Hier gibt es deutlich sichtbare Strömung von links nach rechts. Trotzdem ist das Level schaffbar: 5 Flussziele müssen erreicht werden.");
       }
 
       state.ship.vx = 0;
@@ -1164,8 +1544,8 @@
     }
 
     function handleAction() {
-      if (state.mode === "level3") {
-        checkExam();
+      if (state.mode === "level2") {
+        checkLevel3Alignment();
         return;
       }
 
@@ -1185,31 +1565,44 @@
     }
 
     function handleNext() {
-      if (state.mode === "level3") {
+      if (state.mode === "level2") {
         state.examTarget = createExamTarget();
+        state.level2Approved = false;
         resetShip();
-        setFeedback("Neue Prüfungsaufgabe", `Gesucht ist nun eine Resultierende von ${state.examTarget.force} N bei ${state.examTarget.angle}°.`);
+        state.target = createLevel2Target();
+        setFeedback("Neuer Sollkurs", `Die neue Sollkraft liegt bei ${state.examTarget.force} N und ${state.examTarget.angle}°.`);
+      } else if (state.mode === "level3") {
+        state.target = createBasinGoal();
+        state.goalIndex += 1;
+        resetShip();
+        setFeedback("Neues Ziel", "Stelle die Schlepper jetzt anders ein und steuere das Schiff zum nächsten Ziel.");
       } else if (state.mode === "level4") {
         state.riverCheckpoint = 1;
+        state.level4Hits = 0;
         state.target = createRiverTarget(1);
         resetShip();
         setFeedback("Neuer Flusslauf", "Starte neu und versuche, alle Markierungen mit geschickter Nachregelung zu erreichen.");
       } else if (state.mode === "level1") {
-        state.target = createBasinGoal();
-        resetShip();
-        setFeedback("Weiter zu Level 2", "Wenn ihr das freie Erkunden abgeschlossen habt, könnt ihr oben auf Level 2 wechseln und mit Ziel fahren.");
-      } else {
-        state.target = createBasinGoal();
-        state.goalIndex += 1;
-        resetShip();
-        setFeedback("Neues Ziel", "Stelle die Schlepper jetzt anders ein und steuere das Schiff zum nächsten Zielkreis.");
+        clearLevel1Timer();
+        switchMode("level2");
+        setFeedback("Level 1 beendet", "Die Erkundung ist abgeschlossen. Jetzt geht es weiter mit Level 2 und dem Sollkurs.");
+        return;
       }
       updateSummary();
       draw();
     }
 
     function attachEvents() {
-      [force1, angle1, force2, angle2].forEach((input) => input.addEventListener("input", syncControls));
+      function startFromIntro() {
+        introOverlay.classList.add("hide");
+        introOverlay.style.display = "none";
+        switchMode("level1");
+        draw();
+      }
+
+      introStartButton.addEventListener("click", startFromIntro);
+      introStartButton.addEventListener("pointerup", startFromIntro);
+      forceMenu.addEventListener("input", syncForceMenu);
       showParallelogram.addEventListener("change", draw);
       showHints.addEventListener("change", draw);
       actionButton.addEventListener("click", handleAction);
@@ -1219,12 +1612,37 @@
       });
       nextButton.addEventListener("click", handleNext);
       tabs.forEach((tab) => tab.addEventListener("click", () => switchMode(tab.dataset.mode)));
+
+      canvas.addEventListener("pointerdown", (event) => {
+        const point = getCanvasPoint(event);
+        const tug1 = tugPosition(state.controls.tug1.angle, 140);
+        const tug2 = tugPosition(state.controls.tug2.angle, 140);
+        if (distance(point, tug1) < 34) {
+          canvas.setPointerCapture(event.pointerId);
+          selectTug("tug1");
+          state.draggingTug = "tug1";
+          updateDraggedTug(point);
+        } else if (distance(point, tug2) < 34) {
+          canvas.setPointerCapture(event.pointerId);
+          selectTug("tug2");
+          state.draggingTug = "tug2";
+          updateDraggedTug(point);
+        }
+      });
+
+      canvas.addEventListener("pointermove", (event) => {
+        if (!state.draggingTug) return;
+        updateDraggedTug(getCanvasPoint(event));
+      });
+
+      window.addEventListener("pointerup", () => {
+        state.draggingTug = null;
+      });
     }
 
     attachEvents();
-    resetControlsToDefault();
-    updateSummary();
-    draw();
+    switchMode("level1");
+    updateLevelLocks();
   </script>
 </body>
 </html>
