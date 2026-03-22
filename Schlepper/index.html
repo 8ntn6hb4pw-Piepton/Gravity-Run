@@ -182,7 +182,8 @@
 
     .force-rail {
       display: grid;
-      align-content: center;
+      grid-template-rows: auto 1fr;
+      align-content: stretch;
       justify-items: center;
       gap: 8px;
       padding: 10px 4px;
@@ -276,8 +277,10 @@
       writing-mode: vertical-lr;
       direction: rtl;
       width: 30px;
-      height: 280px;
+      height: 100%;
+      min-height: 0;
       margin: 0;
+      align-self: stretch;
     }
 
     .value {
@@ -529,7 +532,9 @@
         padding: 6px 2px;
         border-radius: 16px;
         display: grid;
-        place-items: center;
+        grid-template-rows: auto 1fr;
+        align-content: stretch;
+        justify-items: center;
       }
 
       .force-rail-label {
@@ -538,7 +543,7 @@
 
       .force-slider {
         width: 24px;
-        height: 190px;
+        height: 100%;
       }
 
       input[type="range"].force-slider {
@@ -722,6 +727,8 @@
     const introOverlay = document.getElementById("introOverlay");
     const introStartButton = document.getElementById("introStartButton");
 
+    const harborWrap = document.querySelector(".harbor-wrap");
+    const forceRails = Array.from(document.querySelectorAll(".force-rail"));
     const forceMenuA = document.getElementById("forceMenuA");
     const forceMenuB = document.getElementById("forceMenuB");
     const showParallelogram = document.getElementById("showParallelogram");
@@ -968,6 +975,20 @@
     function updateControlLabels() {
       forceMenuA.value = state.controls.tug1.force;
       forceMenuB.value = state.controls.tug2.force;
+    }
+
+    function syncForceRailHeights() {
+      const wrapHeight = harborWrap ? harborWrap.clientHeight : 0;
+      if (!wrapHeight) return;
+
+      forceRails.forEach((rail) => {
+        rail.style.height = `${wrapHeight}px`;
+      });
+
+      const topOffset = window.innerWidth <= 700 ? 28 : 34;
+      const sliderHeight = Math.max(120, wrapHeight - topOffset);
+      forceMenuA.style.height = `${sliderHeight}px`;
+      forceMenuB.style.height = `${sliderHeight}px`;
     }
 
     function updateSummary() {
@@ -1713,6 +1734,7 @@
       if (state.running) return;
       state.running = true;
       updateSummary();
+      syncForceRailHeights();
     }
 
     function stopMotion() {
@@ -1737,6 +1759,7 @@
       state.shipSmokeParticles = [];
       updateSummary();
       draw();
+      syncForceRailHeights();
     }
 
     function syncForceMenuA() {
@@ -1751,6 +1774,7 @@
       updateControlLabels();
       updateSummary();
       draw();
+      syncForceRailHeights();
     }
 
     function syncControls() {
@@ -1953,6 +1977,7 @@
         introOverlay.style.display = "none";
         switchMode("level1");
         draw();
+        syncForceRailHeights();
       }
 
       introStartButton.addEventListener("click", startFromIntro);
@@ -1990,11 +2015,13 @@
       window.addEventListener("pointerup", () => {
         state.draggingTug = null;
       });
+      window.addEventListener("resize", syncForceRailHeights);
     }
 
     attachEvents();
     switchMode("level1");
     updateLevelLocks();
+    syncForceRailHeights();
     state.animationId = requestAnimationFrame(step);
   </script>
 </body>
