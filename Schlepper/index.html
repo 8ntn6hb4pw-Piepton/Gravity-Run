@@ -163,6 +163,13 @@
       color: var(--muted);
     }
 
+    .harbor-shell {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) 58px;
+      gap: 8px;
+      align-items: stretch;
+    }
+
     .harbor-wrap {
       position: relative;
       border-radius: 24px;
@@ -173,18 +180,24 @@
         linear-gradient(180deg, var(--water-1), var(--water-2) 50%, var(--water-3));
     }
 
-    .force-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 2;
-      width: 170px;
-      max-width: calc(100% - 72px);
-      padding: 10px 12px;
-      border-radius: 18px;
+    .force-rail {
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 8px;
+      padding: 10px 4px;
+      border-radius: 20px;
       background: rgba(255,255,255,0.88);
       border: 1px solid rgba(22,54,70,0.12);
       box-shadow: 0 10px 20px rgba(16,66,88,0.14);
+    }
+
+    .force-rail-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-align: center;
+      line-height: 1.1;
     }
 
     .scene-tools {
@@ -259,8 +272,12 @@
       height: 34px;
     }
 
-    #forceMenu {
-      width: 100%;
+    .force-slider {
+      writing-mode: vertical-lr;
+      direction: rtl;
+      width: 30px;
+      height: 180px;
+      margin: 0;
     }
 
     .value {
@@ -499,36 +516,32 @@
         margin-bottom: 2px;
       }
 
+      .harbor-shell {
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
+        gap: 6px;
+      }
+
       .harbor-wrap {
         border-radius: 18px;
       }
 
-      .force-overlay {
-        width: 42px;
-        min-width: 42px;
-        max-width: 42px;
-        padding: 6px 4px;
-        border-radius: 999px;
+      .force-rail {
+        padding: 6px 2px;
+        border-radius: 16px;
         display: grid;
         place-items: center;
       }
 
-      .force-overlay strong,
-      .force-overlay .tug-chip,
-      .force-overlay .value,
-      .force-overlay label {
-        display: none;
+      .force-rail-label {
+        font-size: 0.68rem;
       }
 
-      #forceMenu {
-        writing-mode: vertical-lr;
-        direction: rtl;
-        width: 28px;
-        height: 118px;
-        margin: 0;
+      .force-slider {
+        width: 24px;
+        height: 124px;
       }
 
-      input[type="range"]#forceMenu {
+      input[type="range"].force-slider {
         accent-color: var(--accent);
       }
 
@@ -602,7 +615,7 @@
         </div>
         <div class="card">
           <strong>Zugkraft</strong>
-          <div class="mini">Beim ausgewaehlten Schlepper erscheint ein kleiner Kraftregler im Wasserfenster. Damit stellst du die Groesse der Kraft ein.</div>
+          <div class="mini">Links neben dem Spielfeld stellst du Schlepper A ein, rechts daneben Schlepper B. Damit veraenderst du die Groesse der Kraft.</div>
         </div>
         <div class="card">
           <strong>Knopfbedeutung</strong>
@@ -646,19 +659,22 @@
         </div>
       </div>
 
-      <div class="harbor-wrap">
-        <canvas id="scene" width="860" height="640" aria-label="Schlepper-Simulation"></canvas>
-        <div class="force-overlay" id="forceOverlay">
-          <strong id="tugMenuTitle">Schlepper A steuern</strong>
-          <div class="tug-chip"><i class="dot" id="selectedTugDot" style="background: var(--tug-a)"></i><span id="selectedTugLabel">Ausgewählt: A</span></div>
-          <label for="forceMenu" style="margin-top: 8px;">Groesse der Kraft</label>
-          <input id="forceMenu" type="range" min="0" max="120" step="1" value="60">
-          <div class="value" id="forceMenuText">60 N · 150°</div>
+      <div class="harbor-shell">
+        <div class="force-rail">
+          <div class="force-rail-label">A</div>
+          <input class="force-slider" id="forceMenuA" type="range" min="0" max="120" step="1" value="60" aria-label="Groesse der Kraft Schlepper A">
         </div>
-        <div class="scene-tools">
-          <button class="tool-btn" id="actionButton" title="Start / Pause" aria-label="Start / Pause">▶</button>
-          <button class="tool-btn" id="resetButton" title="Zurücksetzen" aria-label="Zurücksetzen">↺</button>
-          <button class="tool-btn" id="nextButton" title="Nächste Aufgabe" aria-label="Nächste Aufgabe">◎</button>
+        <div class="harbor-wrap">
+          <canvas id="scene" width="860" height="640" aria-label="Schlepper-Simulation"></canvas>
+          <div class="scene-tools">
+            <button class="tool-btn" id="actionButton" title="Start / Pause" aria-label="Start / Pause">▶</button>
+            <button class="tool-btn" id="resetButton" title="Zurücksetzen" aria-label="Zurücksetzen">↺</button>
+            <button class="tool-btn" id="nextButton" title="Nächste Aufgabe" aria-label="Nächste Aufgabe">◎</button>
+          </div>
+        </div>
+        <div class="force-rail">
+          <div class="force-rail-label">B</div>
+          <input class="force-slider" id="forceMenuB" type="range" min="0" max="120" step="1" value="60" aria-label="Groesse der Kraft Schlepper B">
         </div>
       </div>
 
@@ -674,12 +690,12 @@
       <div class="compact-bar">
         <div class="tug-menu">
           <strong>Direkte Steuerung</strong>
-          <div class="tug-help">Tippe auf einen Schlepper und drehe ihn direkt im Wasserbecken. Der Kraftregler erscheint als kleines Overlay direkt daneben.</div>
+          <div class="tug-help">Tippe auf einen Schlepper und drehe ihn direkt im Wasserbecken. Die Kraftregler bleiben fest links und rechts neben dem Spielfeld.</div>
         </div>
 
         <div class="feedback" id="feedbackBox">
           <h2>Direkte Steuerung</h2>
-          <p>Die Schlepper werden jetzt direkt angetippt und auf ihrer Kreisbahn gedreht. Unten stellst du nur noch die Zugkraft des ausgewählten Schleppers ein.</p>
+          <p>Die Schlepper werden direkt angetippt und auf ihrer Kreisbahn gedreht. Die Kraft von A und B stellst du fest links und rechts neben dem Spielfeld ein.</p>
         </div>
       </div>
 
@@ -706,8 +722,8 @@
     const introOverlay = document.getElementById("introOverlay");
     const introStartButton = document.getElementById("introStartButton");
 
-    const forceMenu = document.getElementById("forceMenu");
-    const forceOverlay = document.getElementById("forceOverlay");
+    const forceMenuA = document.getElementById("forceMenuA");
+    const forceMenuB = document.getElementById("forceMenuB");
     const showParallelogram = document.getElementById("showParallelogram");
     const showHints = document.getElementById("showHints");
     const actionButton = document.getElementById("actionButton");
@@ -721,10 +737,6 @@
     const resultAngleText = document.getElementById("resultAngleText");
     const statusText = document.getElementById("statusText");
     const statusSubText = document.getElementById("statusSubText");
-    const tugMenuTitle = document.getElementById("tugMenuTitle");
-    const selectedTugLabel = document.getElementById("selectedTugLabel");
-    const selectedTugDot = document.getElementById("selectedTugDot");
-    const forceMenuText = document.getElementById("forceMenuText");
     const noteText = document.getElementById("noteText");
     const tabs = Array.from(document.querySelectorAll(".mode-tab"));
 
@@ -954,32 +966,8 @@
     }
 
     function updateControlLabels() {
-      const key = state.selectedTug;
-      const tug = state.controls[key];
-      const label = key === "tug1" ? "Schlepper A" : "Schlepper B";
-      const color = key === "tug1" ? "var(--tug-a)" : "var(--tug-b)";
-      tugMenuTitle.textContent = `${label} steuern`;
-      selectedTugLabel.textContent = `Ausgewählt: ${key === "tug1" ? "A" : "B"}`;
-      selectedTugDot.style.background = color;
-      forceMenu.value = tug.force;
-      forceMenuText.textContent = `${tug.force} N · ${tug.angle}°`;
-      updateForceOverlayPosition();
-    }
-
-    function updateForceOverlayPosition() {
-      const tug = tugPosition(state.controls[state.selectedTug].angle, 140);
-      const overlayWidth = forceOverlay.offsetWidth || 170;
-      const overlayHeight = forceOverlay.offsetHeight || 112;
-      const prefersLeft = tug.x > state.ship.x;
-      let x = prefersLeft ? tug.x - overlayWidth - 14 : tug.x + 18;
-      let y = tug.y - overlayHeight / 2;
-
-      if (x < 8) x = tug.x + 18;
-      if (x + overlayWidth > canvas.width - 8) x = tug.x - overlayWidth - 14;
-      if (x < 8) x = canvas.width - overlayWidth - 8;
-
-      y = clamp(y, 8, canvas.height - overlayHeight - 8);
-      forceOverlay.style.transform = `translate(${x}px, ${y}px)`;
+      forceMenuA.value = state.controls.tug1.force;
+      forceMenuB.value = state.controls.tug2.force;
     }
 
     function updateSummary() {
@@ -1080,7 +1068,6 @@
       drawForceArrow(state.controls.tug2, getCss("--tug-b"), "F2");
       drawResultantArrow();
       if (showHints.checked) drawHintBox();
-      updateForceOverlayPosition();
     }
 
     function drawBasinScene() {
@@ -1752,8 +1739,15 @@
       draw();
     }
 
-    function syncForceMenu() {
-      state.controls[state.selectedTug].force = Number(forceMenu.value);
+    function syncForceMenuA() {
+      state.controls.tug1.force = Number(forceMenuA.value);
+      updateControlLabels();
+      updateSummary();
+      draw();
+    }
+
+    function syncForceMenuB() {
+      state.controls.tug2.force = Number(forceMenuB.value);
       updateControlLabels();
       updateSummary();
       draw();
@@ -1962,7 +1956,8 @@
       }
 
       introStartButton.addEventListener("click", startFromIntro);
-      forceMenu.addEventListener("input", syncForceMenu);
+      forceMenuA.addEventListener("input", syncForceMenuA);
+      forceMenuB.addEventListener("input", syncForceMenuB);
       showParallelogram.addEventListener("change", draw);
       showHints.addEventListener("change", draw);
       bindToolButton(actionButton, handleAction);
