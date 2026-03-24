@@ -7,6 +7,18 @@ const touchButtons = Array.from(document.querySelectorAll(".touch-btn"));
 
 let audioContext = null;
 let audioUnlocked = false;
+const soundFiles = {
+  suction: "assets/sounds/suction.mp3",
+  "suction-hit": "assets/sounds/suction-hit.mp3",
+  alarm: "assets/sounds/alarm.mp3",
+  "trash-drop": "assets/sounds/trash-drop.mp3",
+  press: "assets/sounds/press.mp3",
+  cube: "assets/sounds/cube.mp3",
+  levelup: "assets/sounds/levelup.mp3",
+  upgrade: "assets/sounds/upgrade.mp3",
+  repair: "assets/sounds/repair.mp3",
+};
+const soundBank = {};
 
 const world = {
   width: canvas.width,
@@ -365,15 +377,33 @@ function randomSpawnDelay(level) {
 }
 
 function ensureAudio() {
-  if (audioUnlocked) {
-    return;
-  }
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) {
-    return;
+  if (!audioUnlocked) {
+    if (AudioCtx) {
+      audioContext = new AudioCtx();
+    }
+    for (const [name, src] of Object.entries(soundFiles)) {
+      const audio = new Audio(src);
+      audio.preload = "auto";
+      audio.crossOrigin = "anonymous";
+      soundBank[name] = audio;
+    }
+    audioUnlocked = true;
   }
-  audioContext = new AudioCtx();
-  audioUnlocked = true;
+  if (audioContext && audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+}
+
+function tryPlayFile(name, volume = 0.55) {
+  const base = soundBank[name];
+  if (!base) {
+    return false;
+  }
+  const player = base.cloneNode();
+  player.volume = volume;
+  player.play().catch(() => {});
+  return true;
 }
 
 function playTone({ frequency = 220, duration = 0.08, type = "sine", gain = 0.04, slide = 1 }) {
@@ -417,6 +447,18 @@ function playNoise({ duration = 0.08, gain = 0.03 }) {
 }
 
 function playSound(name) {
+  if (
+    name === "suction" &&
+    tryPlayFile(name, 0.18)
+  ) {
+    return;
+  }
+  if (
+    ["suction-hit", "alarm", "trash-drop", "press", "cube", "levelup", "upgrade", "repair"].includes(name) &&
+    tryPlayFile(name, 0.52)
+  ) {
+    return;
+  }
   if (name === "suction") {
     playTone({ frequency: 132, duration: 0.07, type: "sine", gain: 0.018, slide: 1.03 });
     playTone({ frequency: 208, duration: 0.045, type: "triangle", gain: 0.008, slide: 0.98 });
@@ -436,6 +478,33 @@ function playSound(name) {
   if (name === "trash-drop") {
     playNoise({ duration: 0.12, gain: 0.028 });
     return;
+  }
+  if (name === "press") {
+    playTone({ frequency: 128, duration: 0.08, type: "square", gain: 0.028, slide: 0.84 });
+    playTone({ frequency: 96, duration: 0.12, type: "triangle", gain: 0.025, slide: 0.9 });
+    playNoise({ duration: 0.06, gain: 0.012 });
+    return;
+  }
+  if (name === "cube") {
+    playTone({ frequency: 392, duration: 0.05, type: "triangle", gain: 0.02, slide: 1.12 });
+    playTone({ frequency: 523, duration: 0.09, type: "sine", gain: 0.024, slide: 1.06 });
+    return;
+  }
+  if (name === "levelup") {
+    playTone({ frequency: 392, duration: 0.08, type: "triangle", gain: 0.028, slide: 1.02 });
+    playTone({ frequency: 523, duration: 0.1, type: "triangle", gain: 0.03, slide: 1.03 });
+    playTone({ frequency: 659, duration: 0.13, type: "sine", gain: 0.032, slide: 1.04 });
+    return;
+  }
+  if (name === "upgrade") {
+    playTone({ frequency: 330, duration: 0.06, type: "triangle", gain: 0.02, slide: 1.05 });
+    playTone({ frequency: 494, duration: 0.12, type: "sine", gain: 0.025, slide: 1.08 });
+    return;
+  }
+  if (name === "repair") {
+    playTone({ frequency: 262, duration: 0.04, type: "square", gain: 0.018, slide: 1 });
+    playTone({ frequency: 330, duration: 0.05, type: "square", gain: 0.018, slide: 1 });
+    playTone({ frequency: 392, duration: 0.08, type: "triangle", gain: 0.02, slide: 1.03 });
   }
 }
 
@@ -530,6 +599,7 @@ function spawnUpgradeDrop(key) {
     rotation: random(-0.3, 0.3),
     spin: random(-0.02, 0.02),
   });
+  playSound("upgrade");
   return true;
 }
 
@@ -560,6 +630,7 @@ function activateUpgrade(key) {
   world.upgrades[key] = true;
   world.upgradeTimers[key] = 60 * 60;
   applyUpgradeEffects();
+  playSound("upgrade");
 }
 
 function runGlitch(type) {
@@ -706,6 +777,7 @@ function syncHud() {
 function triggerPressAction() {
   const queued = queuePressCycle();
   if (queued) {
+    playSound("press");
     robot.processState = "warning";
     robot.processTimer = upgradeActive("press") ? 34 : 52;
   }
@@ -969,6 +1041,7 @@ function tryCollectTrash() {
         triggerMaintenance();
       }
       robot.cargo.push(item);
+      playSound("suction-hit");
       continue;
     }
     remaining.push(item);
@@ -1048,6 +1121,7 @@ function triggerMaintenance() {
   if (world.maintenance.active) {
     return;
   }
+  playSound("alarm");
   const pool = ["wheel", "stack", "sidePanel", "eye", "rearHatch", "lamp"];
   const count = 2 + Math.floor(Math.random() * 2);
   const missingParts = [];
@@ -1231,6 +1305,7 @@ function updateMaintenanceBot() {
   bot.blink += 1;
   bot.timer += 1;
   if (world.repairParts.length === 0) {
+    playSound("repair");
     bot.active = false;
     bot.phase = "idle";
     bot.timer = 0;
@@ -1438,6 +1513,7 @@ function releaseCube() {
   const cubeSize = clamp(12 + batch.amount * 2.2, 14, 26);
 
   world.cubes += 1;
+  playSound("cube");
   if (world.combo.timer > 0) {
     world.combo.count += 1;
   } else {
@@ -1447,6 +1523,7 @@ function releaseCube() {
   world.upgradePoints += world.combo.count;
   if (world.cubes % 10 === 0) {
     world.levelBurstTimer = 40;
+    playSound("levelup");
     for (let i = 0; i < 10; i += 1) {
       world.spaceCubes.push({
         x: world.porthole.x + random(18, 44),
