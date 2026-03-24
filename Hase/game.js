@@ -3,6 +3,7 @@ const ctx = canvas.getContext("2d");
 
 const startButton = document.getElementById("startButton");
 const screenButton = document.getElementById("screenButton");
+const helpButton = document.getElementById("helpButton");
 const overlay = document.getElementById("overlay");
 const overlayTitle = document.getElementById("overlayTitle");
 const overlayText = document.getElementById("overlayText");
@@ -23,6 +24,12 @@ const input = {
   jump: false,
 };
 
+const audioState = {
+  context: null,
+  enabled: false,
+  unlocked: false,
+};
+
 const player = {
   x: 80,
   y: FLOOR_Y - 64,
@@ -35,6 +42,7 @@ const player = {
   jumpBuffer: 0,
   coyoteTimer: 0,
   jumpHoldTimer: 0,
+  jumpSoundPlayed: false,
 };
 
 const gameState = {
@@ -53,6 +61,10 @@ const gameState = {
   currentLevelTime: 0,
   eggsCollected: 0,
   pendingAction: null,
+  assistActive: false,
+  assistTargetX: 0,
+  assistTargetY: 0,
+  bubbles: [],
 };
 
 const physics = {
@@ -91,8 +103,164 @@ function enemySpec(x, y, left, right) {
   return { x, y, w: 34, h: 28, left, right, speed: 62, direction: -1, dead: false };
 }
 
+function ensureAudio() {
+  if (audioState.context) {
+    return audioState.context;
+  }
+
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) {
+    return null;
+  }
+
+  audioState.context = new AudioContextClass();
+  return audioState.context;
+}
+
+async function unlockAudio() {
+  const context = ensureAudio();
+  if (!context) {
+    return;
+  }
+
+  try {
+    if (context.state === "suspended") {
+      await context.resume();
+    }
+    audioState.enabled = true;
+    audioState.unlocked = true;
+  } catch (error) {
+    audioState.enabled = false;
+  }
+}
+
+function makeEnvelope(context, destination, { type, frequency, frequencyEnd, duration, volume, q, delay = 0 }) {
+  const now = context.currentTime + delay;
+  const oscillator = context.createOscillator();
+  const gainNode = context.createGain();
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(frequency, now);
+  if (frequencyEnd !== undefined) {
+    oscillator.frequency.exponentialRampToValueAtTime(Math.max(40, frequencyEnd), now + duration);
+  }
+  if (q) {
+    const filter = context.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(q, now);
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+  } else {
+    oscillator.connect(gainNode);
+  }
+  gainNode.gain.setValueAtTime(0.0001, now);
+  gainNode.gain.linearRampToValueAtTime(volume, now + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  gainNode.connect(destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration + 0.05);
+}
+
+function playToneStack(tones) {
+  const context = ensureAudio();
+  if (!context || !audioState.enabled) {
+    return;
+  }
+
+  const master = context.createGain();
+  master.gain.value = 0.2;
+  master.connect(context.destination);
+
+  for (const tone of tones) {
+    const delayNode = context.createGain();
+    delayNode.gain.value = 1;
+    delayNode.connect(master);
+    makeEnvelope(context, delayNode, tone);
+  }
+}
+
+function playSound(name) {
+  switch (name) {
+    case "jump":
+      playToneStack([
+        { type: "triangle", frequency: 420, frequencyEnd: 280, duration: 0.13, volume: 0.08, q: 2800 },
+        { type: "sine", frequency: 620, frequencyEnd: 480, duration: 0.1, volume: 0.05, q: 3200 },
+      ]);
+      break;
+    case "land":
+      playToneStack([
+        { type: "sine", frequency: 180, frequencyEnd: 120, duration: 0.09, volume: 0.035, q: 900 },
+      ]);
+      break;
+    case "coin":
+      playToneStack([
+        { type: "triangle", frequency: 980, frequencyEnd: 1240, duration: 0.16, volume: 0.06, q: 3600 },
+        { type: "sine", frequency: 1470, frequencyEnd: 1680, duration: 0.11, volume: 0.045, q: 4200 },
+      ]);
+      break;
+    case "egg":
+      playToneStack([
+        { type: "sine", frequency: 520, frequencyEnd: 700, duration: 0.18, volume: 0.055, q: 2400 },
+        { type: "triangle", frequency: 780, frequencyEnd: 980, duration: 0.14, volume: 0.04, q: 3000 },
+      ]);
+      break;
+    case "enemy":
+      playToneStack([
+        { type: "triangle", frequency: 240, frequencyEnd: 170, duration: 0.12, volume: 0.05, q: 1500 },
+        { type: "sine", frequency: 390, frequencyEnd: 280, duration: 0.09, volume: 0.03, q: 2200 },
+      ]);
+      break;
+    case "hurt":
+      playToneStack([
+        { type: "square", frequency: 280, frequencyEnd: 180, duration: 0.14, volume: 0.035, q: 1200 },
+      ]);
+      break;
+    case "levelClear":
+      playToneStack([
+        { type: "triangle", frequency: 660, frequencyEnd: 660, duration: 0.12, volume: 0.05, q: 3400, delay: 0 },
+        { type: "triangle", frequency: 880, frequencyEnd: 880, duration: 0.18, volume: 0.05, q: 3600, delay: 0.09 },
+        { type: "sine", frequency: 1320, frequencyEnd: 1320, duration: 0.24, volume: 0.04, q: 4200, delay: 0.18 },
+      ]);
+      break;
+    case "bossHit":
+      playToneStack([
+        { type: "triangle", frequency: 360, frequencyEnd: 260, duration: 0.12, volume: 0.055, q: 2200 },
+        { type: "triangle", frequency: 520, frequencyEnd: 420, duration: 0.14, volume: 0.035, q: 2600 },
+      ]);
+      break;
+    case "victory":
+      playToneStack([
+        { type: "triangle", frequency: 660, frequencyEnd: 660, duration: 0.1, volume: 0.04, q: 3600, delay: 0 },
+        { type: "triangle", frequency: 880, frequencyEnd: 880, duration: 0.16, volume: 0.05, q: 3600, delay: 0.1 },
+        { type: "triangle", frequency: 1320, frequencyEnd: 1320, duration: 0.24, volume: 0.06, q: 3600, delay: 0.22 },
+      ]);
+      break;
+    case "assist":
+      playToneStack([
+        { type: "sine", frequency: 540, frequencyEnd: 760, duration: 0.12, volume: 0.045, q: 3000 },
+        { type: "triangle", frequency: 820, frequencyEnd: 980, duration: 0.14, volume: 0.035, q: 3400, delay: 0.05 },
+      ]);
+      break;
+    default:
+      break;
+  }
+}
+
 function eggSpec(x, y) {
   return { x, y, w: 24, h: 30, collected: false };
+}
+
+function spawnJumpBubbles(count = 7) {
+  for (let i = 0; i < count; i += 1) {
+    gameState.bubbles.push({
+      x: player.x + player.w * 0.5 + (Math.random() - 0.5) * 18,
+      y: player.y + player.h - 10 + (Math.random() - 0.5) * 8,
+      vx: (Math.random() - 0.5) * 22,
+      vy: -30 - Math.random() * 42,
+      radius: 5 + Math.random() * 9,
+      life: 0.7 + Math.random() * 0.35,
+      maxLife: 0.7 + Math.random() * 0.35,
+    });
+  }
 }
 
 function levelSpec(world, stage, length, platforms, hazards, enemies, eggs) {
@@ -372,6 +540,7 @@ window.addEventListener("blur", () => {
 });
 
 startButton.addEventListener("click", () => {
+  unlockAudio();
   if (gameState.pendingAction) {
     const action = gameState.pendingAction;
     gameState.pendingAction = null;
@@ -397,6 +566,20 @@ screenButton.addEventListener("click", async () => {
 document.addEventListener("fullscreenchange", () => {
   screenButton.textContent = document.fullscreenElement ? "Fenster" : "Vollbild";
 });
+
+helpButton.addEventListener("click", () => {
+  activateJumpAssist();
+});
+
+document.addEventListener(
+  "pointerdown",
+  () => {
+    if (!audioState.unlocked) {
+      unlockAudio();
+    }
+  },
+  { passive: true }
+);
 
 function deepCloneLevel(level) {
   return JSON.parse(JSON.stringify(level));
@@ -440,6 +623,8 @@ function resetPlayer(x, y) {
   player.coyoteTimer = 0;
   player.jumpBuffer = 0;
   player.jumpHoldTimer = 0;
+  player.jumpSoundPlayed = false;
+  gameState.assistActive = false;
 }
 
 function updateHud() {
@@ -477,6 +662,69 @@ function getSolids(level) {
     { x: -200, y: FLOOR_Y, w: level.length + 400, h: HEIGHT - FLOOR_Y },
     ...level.platforms,
   ];
+}
+
+function getAssistTarget(level) {
+  const currentFootY = player.y + player.h;
+  const currentCenterX = player.x + player.w / 2;
+  const candidates = getSolids(level)
+    .filter((solid) => solid.y <= currentFootY + 12)
+    .filter((solid) => solid.x + 24 > currentCenterX + 40)
+    .map((solid) => ({
+      x: Math.max(solid.x + 24, Math.min(solid.x + solid.w - 24, currentCenterX + 120)),
+      y: solid.y - player.h,
+      gap: solid.x - currentCenterX,
+    }))
+    .sort((a, b) => {
+      if (Math.abs(a.y - player.y) !== Math.abs(b.y - player.y)) {
+        return Math.abs(a.y - player.y) - Math.abs(b.y - player.y);
+      }
+      return a.gap - b.gap;
+    });
+
+  if (candidates.length > 0) {
+    return candidates[0];
+  }
+
+  const fallbackX = Math.min(level.length - player.w, player.x + 180);
+  return { x: fallbackX, y: FLOOR_Y - player.h };
+}
+
+function activateJumpAssist() {
+  const level = gameState.currentLevel;
+  if (!level || !gameState.running || level.kind !== "level") {
+    return;
+  }
+
+  const target = getAssistTarget(level);
+  if (!target) {
+    return;
+  }
+
+  gameState.assistActive = true;
+  gameState.assistTargetX = target.x;
+  gameState.assistTargetY = target.y;
+  player.vy = -720;
+  player.grounded = false;
+  player.jumpHoldTimer = 0;
+  player.jumpBuffer = 0;
+  player.jumpSoundPlayed = true;
+  spawnJumpBubbles(10);
+  playSound("assist");
+  gameState.currentMessage = "Sprunghilfe aktiv.";
+  updateHud();
+}
+
+function updateBubbles(dt) {
+  gameState.bubbles = gameState.bubbles
+    .map((bubble) => ({
+      ...bubble,
+      x: bubble.x + bubble.vx * dt,
+      y: bubble.y + bubble.vy * dt,
+      vy: bubble.vy - 14 * dt,
+      life: bubble.life - dt,
+    }))
+    .filter((bubble) => bubble.life > 0);
 }
 
 function aabbOverlap(a, b) {
@@ -547,6 +795,7 @@ function updateEnemies(level, dt) {
     if (stomped) {
       enemy.dead = true;
       player.vy = -430;
+      playSound("enemy");
       gameState.currentMessage = "Boing! Gegner besiegt.";
       updateHud();
     } else {
@@ -565,6 +814,7 @@ function updateEggs(level) {
     }
     egg.collected = true;
     gameState.eggsCollected += 1;
+    playSound("egg");
     gameState.currentMessage = "Ein Osterei gefunden!";
     updateHud();
   }
@@ -615,6 +865,7 @@ function finishLevelSummary() {
   };
 
   gameState.pendingAction = nextAction;
+  playSound("levelClear");
   showOverlay("Level geschafft!", resultText, "Weiter");
 }
 
@@ -623,20 +874,35 @@ function updatePlayer(dt) {
   const solids = getSolids(level);
   gameState.currentLevelTime += dt;
   updateHud();
+  const wasGrounded = player.grounded;
+
+  if (gameState.assistActive) {
+    const targetCenterX = gameState.assistTargetX + player.w / 2;
+    const playerCenterX = player.x + player.w / 2;
+    const distanceX = targetCenterX - playerCenterX;
+    if (Math.abs(distanceX) < 8) {
+      player.vx = distanceX * 6;
+    } else {
+      player.vx = Math.sign(distanceX) * 285;
+      player.facing = Math.sign(distanceX) || player.facing;
+    }
+  }
 
   const dir = Number(input.right) - Number(input.left);
-  const accel = player.grounded ? physics.accelGround : physics.accelAir;
-  const friction = player.grounded ? physics.frictionGround : physics.frictionAir;
+  if (!gameState.assistActive) {
+    const accel = player.grounded ? physics.accelGround : physics.accelAir;
+    const friction = player.grounded ? physics.frictionGround : physics.frictionAir;
 
-  if (dir !== 0) {
-    player.vx += dir * accel * dt;
-    player.facing = dir;
-  } else {
-    const drag = friction * dt;
-    if (Math.abs(player.vx) <= drag) {
-      player.vx = 0;
+    if (dir !== 0) {
+      player.vx += dir * accel * dt;
+      player.facing = dir;
     } else {
-      player.vx -= Math.sign(player.vx) * drag;
+      const drag = friction * dt;
+      if (Math.abs(player.vx) <= drag) {
+        player.vx = 0;
+      } else {
+        player.vx -= Math.sign(player.vx) * drag;
+      }
     }
   }
 
@@ -659,6 +925,11 @@ function updatePlayer(dt) {
     player.coyoteTimer = 0;
     player.jumpBuffer = 0;
     player.jumpHoldTimer = physics.jumpHoldTime;
+    if (!player.jumpSoundPlayed) {
+      spawnJumpBubbles();
+      playSound("jump");
+      player.jumpSoundPlayed = true;
+    }
   }
 
   if (input.jump && player.jumpHoldTimer > 0 && player.vy < 0) {
@@ -692,6 +963,11 @@ function updatePlayer(dt) {
       player.vy = 0;
       player.grounded = true;
       player.jumpHoldTimer = 0;
+      if (!wasGrounded) {
+        playSound("land");
+      }
+      player.jumpSoundPlayed = false;
+      gameState.assistActive = false;
     } else if (player.vy < 0) {
       player.y = solid.y + solid.h;
       player.vy = 0;
@@ -701,6 +977,7 @@ function updatePlayer(dt) {
   player.x = Math.max(0, Math.min(level.length - player.w, player.x));
 
   if (player.y > HEIGHT + 120) {
+    gameState.assistActive = false;
     loseTry("Ups, noch mal! Der Hase versucht es erneut.");
     return;
   }
@@ -721,6 +998,7 @@ function updatePlayer(dt) {
 
     if (!level.coin.collected && circleBoxOverlap(level.coin, player)) {
       level.coin.collected = true;
+      playSound("coin");
       gameState.currentMessage = "Super! Jetzt schnell zum Ziel.";
       updateHud();
     }
@@ -770,6 +1048,7 @@ function updateBoss(dt) {
     gameState.bossHits += 1;
     boss.stunned = 0.7;
     player.vy = -480;
+    playSound("bossHit");
     gameState.currentMessage = `Treffer ${gameState.bossHits} von 3!`;
     updateHud();
 
@@ -782,6 +1061,7 @@ function updateBoss(dt) {
 }
 
 function loseTry(message) {
+  playSound("hurt");
   gameState.currentMessage = message;
   updateHud();
   const current = gameState.currentLevel;
@@ -820,6 +1100,7 @@ function winBossFight() {
     "Der Hase hat alle acht Muenzen gesammelt und den Boesewicht gefangen. Du bist ein echter Hoppel-Held!",
     "Noch eine Runde"
   );
+  playSound("victory");
 }
 
 function drawSky(theme) {
@@ -911,6 +1192,29 @@ function drawCoin(coin) {
   ctx.beginPath();
   ctx.arc(x - 4, coin.y - 4, coin.r * 0.45, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function drawBubbles() {
+  for (const bubble of gameState.bubbles) {
+    const alpha = Math.max(0, bubble.life / bubble.maxLife);
+    const x = bubble.x - gameState.cameraX;
+    const y = bubble.y;
+    ctx.fillStyle = `rgba(210, 244, 255, ${0.18 * alpha})`;
+    ctx.beginPath();
+    ctx.arc(x, y, bubble.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = `rgba(255, 255, 255, ${0.7 * alpha})`;
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(x, y, bubble.radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.55 * alpha})`;
+    ctx.beginPath();
+    ctx.arc(x - bubble.radius * 0.28, y - bubble.radius * 0.28, Math.max(1.5, bubble.radius * 0.18), 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function drawGoal(goal, active) {
@@ -1059,6 +1363,7 @@ function draw() {
     drawBoss(level.boss);
   }
 
+  drawBubbles();
   drawRabbit();
   drawLevelLabel(level);
 }
@@ -1071,6 +1376,8 @@ function loop(timestamp) {
   if (gameState.running && gameState.currentLevel) {
     updatePlayer(dt);
   }
+
+  updateBubbles(dt);
 
   if (gameState.currentLevel) {
     draw();
