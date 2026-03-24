@@ -232,6 +232,20 @@ canvas {
   font-size: 1.1rem;
 }
 
+@media (max-width: 1024px) {
+  .controls {
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .control-cluster {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
 .touch-button:active,
 .primary-button:active,
 .secondary-button:active {
@@ -269,11 +283,14 @@ canvas {
 
   .controls {
     gap: 10px;
+    justify-content: center;
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .control-cluster {
     gap: 10px;
+    justify-content: center;
+    width: 100%;
   }
 
   .touch-button-small {

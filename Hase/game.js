@@ -568,8 +568,14 @@ document.addEventListener("fullscreenchange", () => {
   screenButton.textContent = document.fullscreenElement ? "Fenster" : "Vollbild";
 });
 
-helpButton.addEventListener("click", () => {
+helpButton.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+  unlockAudio();
   activateJumpAssist();
+});
+
+helpButton.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
 });
 
 document.addEventListener(
