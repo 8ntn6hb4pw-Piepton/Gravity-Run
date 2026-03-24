@@ -1,1 +1,87 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hoppel-Helden</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="game-shell">
+        <div class="title-row">
+          <div>
+            <p class="eyebrow">Jump und Run</p>
+            <h1>Hoppel-Helden</h1>
+            <p class="subtitle">
+              Sammle in jedem Level eine goldene Muenze und erwische danach den
+              Boesewicht.
+            </p>
+          </div>
+          <div class="title-actions">
+            <button id="screenButton" class="secondary-button">Vollbild</button>
+            <button id="startButton" class="primary-button">Spiel starten</button>
+          </div>
+        </div>
 
+        <div class="hud">
+          <div class="hud-card">
+            <span class="hud-label">Level</span>
+            <strong id="levelLabel">1-1</strong>
+          </div>
+          <div class="hud-card">
+            <span class="hud-label">Muenzen</span>
+            <strong id="coinLabel">0 / 4</strong>
+          </div>
+          <div class="hud-card">
+            <span class="hud-label">Aufgabe</span>
+            <strong id="statusLabel">Druecke Start</strong>
+          </div>
+          <div class="hud-card">
+            <span class="hud-label">Zeit</span>
+            <strong id="timeLabel">0.0 s</strong>
+          </div>
+          <div class="hud-card">
+            <span class="hud-label">Ostereier</span>
+            <strong id="eggLabel">0</strong>
+          </div>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas id="game" width="960" height="540" aria-label="Jump und Run Spiel"></canvas>
+          <div id="overlay" class="overlay visible">
+            <div class="overlay-card">
+              <h2 id="overlayTitle">Hoppel-Helden</h2>
+              <p id="overlayText">
+                Der kleine Hase will den Boesewicht fangen. Hole in jedem Level
+                die Muenze und springe dann zum Ziel.
+              </p>
+              <p class="overlay-tip">
+                Steuerung: Pfeiltasten oder A/D und Leertaste. Auf dem Tablet
+                gehen auch die Tasten unten.
+              </p>
+            </div>
+          </div>
+
+          <div class="controls mobile-controls">
+            <div class="control-cluster control-cluster-left">
+              <button class="touch-button touch-button-small" data-action="left" aria-label="Nach links">
+                ◀
+              </button>
+              <button class="touch-button touch-button-small" data-action="right" aria-label="Nach rechts">
+                ▶
+              </button>
+            </div>
+            <div class="control-cluster control-cluster-right">
+              <button class="touch-button touch-button-jump" data-action="jump" aria-label="Springen">
+                Springen
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
