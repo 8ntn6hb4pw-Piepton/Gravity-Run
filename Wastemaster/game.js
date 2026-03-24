@@ -3476,6 +3476,8 @@ for (const button of touchButtons) {
   button.addEventListener("pointerup", end);
   button.addEventListener("pointercancel", end);
   button.addEventListener("pointerleave", end);
+  button.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
+  button.addEventListener("contextmenu", (event) => event.preventDefault());
 }
 
 resetYard();
