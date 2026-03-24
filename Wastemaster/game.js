@@ -7,18 +7,6 @@ const touchButtons = Array.from(document.querySelectorAll(".touch-btn"));
 
 let audioContext = null;
 let audioUnlocked = false;
-const soundFiles = {
-  suction: "assets/sounds/suction.mp3",
-  "suction-hit": "assets/sounds/suction-hit.mp3",
-  alarm: "assets/sounds/alarm.mp3",
-  "trash-drop": "assets/sounds/trash-drop.mp3",
-  press: "assets/sounds/press.mp3",
-  cube: "assets/sounds/cube.mp3",
-  levelup: "assets/sounds/levelup.mp3",
-  upgrade: "assets/sounds/upgrade.mp3",
-  repair: "assets/sounds/repair.mp3",
-};
-const soundBank = {};
 
 const world = {
   width: canvas.width,
@@ -377,33 +365,15 @@ function randomSpawnDelay(level) {
 }
 
 function ensureAudio() {
+  if (audioUnlocked) {
+    return;
+  }
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!audioUnlocked) {
-    if (AudioCtx) {
-      audioContext = new AudioCtx();
-    }
-    for (const [name, src] of Object.entries(soundFiles)) {
-      const audio = new Audio(src);
-      audio.preload = "auto";
-      audio.crossOrigin = "anonymous";
-      soundBank[name] = audio;
-    }
-    audioUnlocked = true;
+  if (!AudioCtx) {
+    return;
   }
-  if (audioContext && audioContext.state === "suspended") {
-    audioContext.resume().catch(() => {});
-  }
-}
-
-function tryPlayFile(name, volume = 0.55) {
-  const base = soundBank[name];
-  if (!base) {
-    return false;
-  }
-  const player = base.cloneNode();
-  player.volume = volume;
-  player.play().catch(() => {});
-  return true;
+  audioContext = new AudioCtx();
+  audioUnlocked = true;
 }
 
 function playTone({ frequency = 220, duration = 0.08, type = "sine", gain = 0.04, slide = 1 }) {
@@ -447,27 +417,16 @@ function playNoise({ duration = 0.08, gain = 0.03 }) {
 }
 
 function playSound(name) {
-  if (
-    name === "suction" &&
-    tryPlayFile(name, 0.18)
-  ) {
-    return;
-  }
-  if (
-    ["suction-hit", "alarm", "trash-drop", "press", "cube", "levelup", "upgrade", "repair"].includes(name) &&
-    tryPlayFile(name, 0.52)
-  ) {
-    return;
-  }
   if (name === "suction") {
-    playTone({ frequency: 132, duration: 0.07, type: "sine", gain: 0.018, slide: 1.03 });
-    playTone({ frequency: 208, duration: 0.045, type: "triangle", gain: 0.008, slide: 0.98 });
-    playNoise({ duration: 0.028, gain: 0.006 });
+    playTone({ frequency: 146, duration: 0.06, type: "sine", gain: 0.016, slide: 1.02 });
+    playTone({ frequency: 219, duration: 0.04, type: "triangle", gain: 0.008, slide: 0.99 });
+    playNoise({ duration: 0.02, gain: 0.004 });
     return;
   }
   if (name === "suction-hit") {
-    playTone({ frequency: 820, duration: 0.03, type: "triangle", gain: 0.012, slide: 0.84 });
-    playNoise({ duration: 0.024, gain: 0.012 });
+    playTone({ frequency: 740, duration: 0.025, type: "triangle", gain: 0.013, slide: 1.06 });
+    playTone({ frequency: 988, duration: 0.04, type: "sine", gain: 0.009, slide: 1.03 });
+    playNoise({ duration: 0.018, gain: 0.008 });
     return;
   }
   if (name === "alarm") {
@@ -476,35 +435,37 @@ function playSound(name) {
     return;
   }
   if (name === "trash-drop") {
-    playNoise({ duration: 0.12, gain: 0.028 });
+    playNoise({ duration: 0.08, gain: 0.022 });
+    playTone({ frequency: 110, duration: 0.04, type: "triangle", gain: 0.012, slide: 0.76 });
     return;
   }
   if (name === "press") {
-    playTone({ frequency: 128, duration: 0.08, type: "square", gain: 0.028, slide: 0.84 });
-    playTone({ frequency: 96, duration: 0.12, type: "triangle", gain: 0.025, slide: 0.9 });
-    playNoise({ duration: 0.06, gain: 0.012 });
+    playTone({ frequency: 165, duration: 0.05, type: "square", gain: 0.022, slide: 0.82 });
+    playTone({ frequency: 123, duration: 0.09, type: "triangle", gain: 0.024, slide: 0.86 });
+    playNoise({ duration: 0.04, gain: 0.01 });
     return;
   }
   if (name === "cube") {
-    playTone({ frequency: 392, duration: 0.05, type: "triangle", gain: 0.02, slide: 1.12 });
-    playTone({ frequency: 523, duration: 0.09, type: "sine", gain: 0.024, slide: 1.06 });
+    playTone({ frequency: 392, duration: 0.05, type: "triangle", gain: 0.018, slide: 1.05 });
+    playTone({ frequency: 587, duration: 0.08, type: "sine", gain: 0.024, slide: 1.04 });
     return;
   }
   if (name === "levelup") {
-    playTone({ frequency: 392, duration: 0.08, type: "triangle", gain: 0.028, slide: 1.02 });
-    playTone({ frequency: 523, duration: 0.1, type: "triangle", gain: 0.03, slide: 1.03 });
-    playTone({ frequency: 659, duration: 0.13, type: "sine", gain: 0.032, slide: 1.04 });
+    playTone({ frequency: 392, duration: 0.06, type: "triangle", gain: 0.024, slide: 1.01 });
+    playTone({ frequency: 494, duration: 0.08, type: "triangle", gain: 0.026, slide: 1.02 });
+    playTone({ frequency: 659, duration: 0.12, type: "sine", gain: 0.03, slide: 1.03 });
     return;
   }
   if (name === "upgrade") {
-    playTone({ frequency: 330, duration: 0.06, type: "triangle", gain: 0.02, slide: 1.05 });
-    playTone({ frequency: 494, duration: 0.12, type: "sine", gain: 0.025, slide: 1.08 });
+    playTone({ frequency: 330, duration: 0.05, type: "triangle", gain: 0.018, slide: 1.04 });
+    playTone({ frequency: 440, duration: 0.06, type: "triangle", gain: 0.02, slide: 1.05 });
+    playTone({ frequency: 554, duration: 0.1, type: "sine", gain: 0.022, slide: 1.06 });
     return;
   }
   if (name === "repair") {
-    playTone({ frequency: 262, duration: 0.04, type: "square", gain: 0.018, slide: 1 });
-    playTone({ frequency: 330, duration: 0.05, type: "square", gain: 0.018, slide: 1 });
-    playTone({ frequency: 392, duration: 0.08, type: "triangle", gain: 0.02, slide: 1.03 });
+    playTone({ frequency: 262, duration: 0.035, type: "square", gain: 0.016, slide: 1 });
+    playTone({ frequency: 330, duration: 0.045, type: "square", gain: 0.016, slide: 1.01 });
+    playTone({ frequency: 440, duration: 0.08, type: "triangle", gain: 0.02, slide: 1.04 });
   }
 }
 
