@@ -179,26 +179,13 @@ canvas {
 }
 
 .help-button {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  z-index: 2;
-  width: 58px;
-  height: 58px;
-  border: 0;
-  border-radius: 999px;
-  font: inherit;
-  font-size: 1.4rem;
+  min-width: 152px;
+  min-height: 88px;
+  padding: 16px 24px;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #1d3557;
-  background: rgba(255, 251, 240, 0.92);
-  box-shadow: 0 10px 18px rgba(31, 71, 97, 0.18);
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-.help-button:active {
-  transform: translateY(2px);
+  background: rgba(255, 251, 240, 0.94);
 }
 
 .controls {
@@ -285,13 +272,6 @@ canvas {
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
-  .help-button {
-    top: 12px;
-    right: 12px;
-    width: 52px;
-    height: 52px;
-  }
-
   .control-cluster {
     gap: 10px;
   }
@@ -303,6 +283,12 @@ canvas {
   }
 
   .touch-button-jump {
+    min-width: 138px;
+    min-height: 78px;
+    font-size: 1rem;
+  }
+
+  .help-button {
     min-width: 138px;
     min-height: 78px;
     font-size: 1rem;

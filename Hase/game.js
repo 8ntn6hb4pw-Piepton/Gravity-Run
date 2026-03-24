@@ -43,6 +43,7 @@ const player = {
   coyoteTimer: 0,
   jumpHoldTimer: 0,
   jumpSoundPlayed: false,
+  bubbleTrailTimer: 0,
 };
 
 const gameState = {
@@ -249,16 +250,16 @@ function eggSpec(x, y) {
   return { x, y, w: 24, h: 30, collected: false };
 }
 
-function spawnJumpBubbles(count = 7) {
+function spawnJumpBubbles(count = 7, spread = 18) {
   for (let i = 0; i < count; i += 1) {
     gameState.bubbles.push({
-      x: player.x + player.w * 0.5 + (Math.random() - 0.5) * 18,
-      y: player.y + player.h - 10 + (Math.random() - 0.5) * 8,
-      vx: (Math.random() - 0.5) * 22,
-      vy: -30 - Math.random() * 42,
-      radius: 5 + Math.random() * 9,
-      life: 0.7 + Math.random() * 0.35,
-      maxLife: 0.7 + Math.random() * 0.35,
+      x: player.x + player.w * 0.5 - player.facing * 10 + (Math.random() - 0.5) * spread,
+      y: player.y + player.h * 0.72 + (Math.random() - 0.5) * 12,
+      vx: -player.facing * (10 + Math.random() * 20) + (Math.random() - 0.5) * 10,
+      vy: -24 - Math.random() * 34,
+      radius: 4 + Math.random() * 8,
+      life: 0.62 + Math.random() * 0.28,
+      maxLife: 0.62 + Math.random() * 0.28,
     });
   }
 }
@@ -624,6 +625,7 @@ function resetPlayer(x, y) {
   player.jumpBuffer = 0;
   player.jumpHoldTimer = 0;
   player.jumpSoundPlayed = false;
+  player.bubbleTrailTimer = 0;
   gameState.assistActive = false;
 }
 
@@ -908,6 +910,16 @@ function updatePlayer(dt) {
 
   player.vx = Math.max(-physics.maxRunSpeed, Math.min(physics.maxRunSpeed, player.vx));
 
+  if (!player.grounded && player.vy < 90) {
+    player.bubbleTrailTimer -= dt;
+    if (player.bubbleTrailTimer <= 0) {
+      spawnJumpBubbles(2, 10);
+      player.bubbleTrailTimer = 0.05;
+    }
+  } else {
+    player.bubbleTrailTimer = 0;
+  }
+
   if (input.jump) {
     player.jumpBuffer = physics.jumpBufferTime;
   } else {
@@ -926,7 +938,7 @@ function updatePlayer(dt) {
     player.jumpBuffer = 0;
     player.jumpHoldTimer = physics.jumpHoldTime;
     if (!player.jumpSoundPlayed) {
-      spawnJumpBubbles();
+      spawnJumpBubbles(7, 18);
       playSound("jump");
       player.jumpSoundPlayed = true;
     }
