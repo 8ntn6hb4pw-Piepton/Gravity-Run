@@ -1,1 +1,1563 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terminplaner fuer LAA</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --panel: rgba(255, 249, 240, 0.88);
+      --panel-strong: #fffaf2;
+      --ink: #1f2430;
+      --muted: #6f7277;
+      --line: rgba(64, 55, 35, 0.12);
+      --accent: #d46a3d;
+      --accent-2: #1f7a6b;
+      --warn: #b1432f;
+      --ok: #2c7a43;
+      --busy: #d97757;
+      --free: #93c5ae;
+      --shadow: 0 24px 60px rgba(73, 48, 21, 0.12);
+      --radius: 24px;
+      --font-display: "Avenir Next", "Trebuchet MS", sans-serif;
+      --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(212, 106, 61, 0.2), transparent 30%),
+        radial-gradient(circle at top right, rgba(31, 122, 107, 0.18), transparent 26%),
+        linear-gradient(180deg, #f9f4ed 0%, #f1eadc 100%);
+    }
+
+    .shell {
+      width: min(1280px, calc(100% - 32px));
+      margin: 24px auto 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -70px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(31, 122, 107, 0.22), rgba(31, 122, 107, 0));
+      pointer-events: none;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      letter-spacing: 0.01em;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 3vw, 3.5rem);
+      line-height: 0.95;
+      margin-bottom: 16px;
+      max-width: 12ch;
+    }
+
+    .hero-copy p,
+    .help-text,
+    .meta,
+    .small {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(64, 55, 35, 0.08);
+      border-radius: 18px;
+      padding: 12px 14px;
+      min-width: 150px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.35rem;
+      color: var(--accent-2);
+    }
+
+    .hero-panel,
+    .controls,
+    .calendar-card,
+    .timeline-card,
+    .results-card {
+      padding: 24px;
+    }
+
+    .hero-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+      background:
+        linear-gradient(135deg, rgba(31, 122, 107, 0.09), rgba(212, 106, 61, 0.08)),
+        var(--panel-strong);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field,
+    .field-wide {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.96rem;
+    }
+
+    input,
+    select,
+    button,
+    textarea {
+      width: 100%;
+      font: inherit;
+      border-radius: 14px;
+      border: 1px solid rgba(64, 55, 35, 0.14);
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      padding: 12px 14px;
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: rgba(212, 106, 61, 0.7);
+      box-shadow: 0 0 0 4px rgba(212, 106, 61, 0.12);
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #d46a3d, #bb5430);
+      color: white;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: rgba(31, 122, 107, 0.08);
+      color: var(--accent-2);
+      border-color: rgba(31, 122, 107, 0.18);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .actions button {
+      flex: 1 1 180px;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(31, 122, 107, 0.08);
+      color: var(--accent-2);
+      min-height: 48px;
+    }
+
+    .warning {
+      background: rgba(177, 67, 47, 0.08);
+      color: var(--warn);
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+    }
+
+    .calendar-header,
+    .timeline-header,
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .calendar-controls button {
+      width: auto;
+      padding-inline: 12px;
+    }
+
+    .weekday-row,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .weekday-row {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .day {
+      min-height: 96px;
+      padding: 10px;
+      border-radius: 18px;
+      border: 1px solid rgba(64, 55, 35, 0.09);
+      background: rgba(255, 255, 255, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .day.muted {
+      opacity: 0.4;
+    }
+
+    .day.selected {
+      border-color: rgba(212, 106, 61, 0.5);
+      box-shadow: inset 0 0 0 1px rgba(212, 106, 61, 0.35);
+      background: rgba(255, 245, 238, 0.96);
+    }
+
+    .day-number {
+      font-weight: 700;
+    }
+
+    .occupancy {
+      margin-top: auto;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(64, 55, 35, 0.08);
+      overflow: hidden;
+    }
+
+    .occupancy span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--free), var(--busy));
+      border-radius: inherit;
+    }
+
+    .mini {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .timeline {
+      position: relative;
+      padding: 8px 0 10px 78px;
+      min-height: 620px;
+      border-left: 1px dashed rgba(64, 55, 35, 0.18);
+    }
+
+    .hour-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      border-top: 1px dashed rgba(64, 55, 35, 0.08);
+    }
+
+    .hour-line span {
+      position: absolute;
+      left: -74px;
+      top: -9px;
+      width: 60px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .block {
+      position: absolute;
+      left: 14px;
+      right: 12px;
+      border-radius: 18px;
+      padding: 10px 12px;
+      overflow: hidden;
+      border: 1px solid rgba(64, 55, 35, 0.08);
+    }
+
+    .block.busy {
+      background: rgba(217, 119, 87, 0.2);
+    }
+
+    .block.free {
+      background: rgba(147, 197, 174, 0.23);
+    }
+
+    .block.candidate {
+      background: rgba(31, 122, 107, 0.16);
+      border-color: rgba(31, 122, 107, 0.28);
+    }
+
+    .block strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(64, 55, 35, 0.1);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .pill strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .pill.active {
+      border-color: rgba(31, 122, 107, 0.3);
+      background: rgba(31, 122, 107, 0.11);
+    }
+
+    .summary-box {
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(64, 55, 35, 0.08);
+      border-radius: 18px;
+      margin-bottom: 14px;
+    }
+
+    .suggestions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .suggestion {
+      border-radius: 18px;
+      border: 1px solid rgba(64, 55, 35, 0.1);
+      background: rgba(255, 255, 255, 0.82);
+      padding: 14px 16px;
+    }
+
+    .suggestion.ok {
+      border-color: rgba(44, 122, 67, 0.18);
+      background: rgba(44, 122, 67, 0.08);
+    }
+
+    .suggestion.bad {
+      border-color: rgba(177, 67, 47, 0.18);
+      background: rgba(177, 67, 47, 0.08);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend i {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .empty {
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px dashed rgba(64, 55, 35, 0.16);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    a {
+      color: var(--accent-2);
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .grid,
+      .main,
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        min-height: 520px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <article class="card hero-copy">
+        <p class="meta">Kalendergestuetzte Terminpruefung fuer LAA</p>
+        <h1>Freie Besuchsfenster mit Fahrzeit finden</h1>
+        <p>
+          Diese Seite liest deinen Kalender, nutzt die Ortsangaben deiner Termine
+          und zeigt fuer jeden Tag freie Zeitraeume an. Ein gueltiger Termin wird
+          aus Unterrichtsdauer, Anfahrt mit 15 Minuten Vorlauf und 75 Minuten
+          Nachbesprechung berechnet.
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <strong id="statEvents">0</strong>
+            Kalendereintraege geladen
+          </div>
+          <div class="stat">
+            <strong id="statDays">0</strong>
+            Tage im Blick
+          </div>
+          <div class="stat">
+            <strong id="statOptions">0</strong>
+            passende Zeitfenster
+          </div>
+        </div>
+      </article>
+      <aside class="card hero-panel">
+        <h2>So funktioniert es</h2>
+        <p class="small">
+          1. Seite im Browser oeffnen.
+          <br>2. Unterrichtsdauer und Schulort eintragen.
+          <br>3. Tag anklicken und freie Fenster ansehen.
+        </p>
+        <p class="small">
+          Fuer die Fahrzeit wird ein Google-Maps-API-Key benoetigt. Ohne API-Key
+          bleibt die Kalenderansicht nutzbar, aber Fahrzeiten koennen dann nicht
+          verlaesslich geprueft werden.
+        </p>
+        <p class="small">
+          Der Kalender wird direkt aus iCloud geladen. Wenn dein Browser das
+          blockiert, liegt es an den Sicherheitsregeln des Browsers.
+        </p>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="card controls">
+        <div class="calendar-header">
+          <h2>Kalenderquelle</h2>
+          <span class="mini">Der Kalender ist fest eingebaut und wird direkt aus iCloud geladen.</span>
+        </div>
+        <div class="field-grid">
+          <div class="field-wide">
+            <label for="calendarUrl">Kalender-URL</label>
+            <input id="calendarUrl" type="url" readonly>
+          </div>
+          <div class="field">
+            <label for="mapsApiKey">Google Maps API-Key</label>
+            <input id="mapsApiKey" type="password" placeholder="optional fuer Fahrzeiten">
+          </div>
+          <div class="field-wide">
+            <label for="homeBase">Optionaler Standard-Ort</label>
+            <input id="homeBase" type="text" placeholder="wird genutzt, wenn ein Kalendereintrag keinen Ort hat">
+          </div>
+        </div>
+        <div class="actions" style="margin-top: 14px;">
+          <button id="loadCalendarBtn" class="btn-primary" type="button">Kalender laden</button>
+        </div>
+        <div id="sourceStatus" class="status">Der eingebaute Kalender wird beim Start automatisch geladen.</div>
+      </div>
+
+      <div class="card controls">
+        <div class="calendar-header">
+          <h2>Terminvorgaben</h2>
+          <span class="mini">Die LAA geben Dauer und Ort ein.</span>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="lessonDuration">Unterrichtsdauer in Minuten</label>
+            <input id="lessonDuration" type="number" min="15" step="5" value="45">
+          </div>
+          <div class="field">
+            <label for="bufferAfter">Nachbesprechung in Minuten</label>
+            <input id="bufferAfter" type="number" min="0" step="5" value="75">
+          </div>
+          <div class="field-wide">
+            <label for="appointmentLocation">Ort des Unterrichts / Treffpunkts</label>
+            <textarea id="appointmentLocation" placeholder="z. B. Gymnasium Musterstadt, Raum 204"></textarea>
+          </div>
+          <div class="field">
+            <label for="arrivalLead">Ankunft vorher in Minuten</label>
+            <input id="arrivalLead" type="number" min="0" step="5" value="15">
+          </div>
+          <div class="field">
+            <label for="slotStep">Raster fuer Vorschlaege</label>
+            <select id="slotStep">
+              <option value="15">15 Minuten</option>
+              <option value="30" selected>30 Minuten</option>
+              <option value="60">60 Minuten</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="dayStart">Tag beginnt</label>
+            <input id="dayStart" type="time" value="07:00">
+          </div>
+          <div class="field">
+            <label for="dayEnd">Tag endet</label>
+            <input id="dayEnd" type="time" value="18:00">
+          </div>
+        </div>
+        <div class="actions" style="margin-top: 14px;">
+          <button id="analyzeBtn" class="btn-primary" type="button">Freie Zeitfenster berechnen</button>
+          <button id="openMapsBtn" class="btn-secondary" type="button">Google Maps fuer Zielort oeffnen</button>
+        </div>
+        <div id="analysisStatus" class="status">Noch keine Analyse gestartet.</div>
+      </div>
+    </section>
+
+    <section class="main">
+      <div class="card calendar-card">
+        <div class="calendar-header">
+          <h2 id="monthLabel">Monatsansicht</h2>
+          <div class="calendar-controls">
+            <button id="prevMonthBtn" class="btn-secondary" type="button" aria-label="Vorheriger Monat">&larr;</button>
+            <button id="todayBtn" class="btn-secondary" type="button">Heute</button>
+            <button id="nextMonthBtn" class="btn-secondary" type="button" aria-label="Naechster Monat">&rarr;</button>
+          </div>
+        </div>
+        <div class="weekday-row">
+          <div>Mo</div>
+          <div>Di</div>
+          <div>Mi</div>
+          <div>Do</div>
+          <div>Fr</div>
+          <div>Sa</div>
+          <div>So</div>
+        </div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </div>
+
+      <div>
+        <section class="card timeline-card" style="margin-bottom: 18px;">
+          <div class="timeline-header">
+            <div>
+              <h2 id="selectedDateLabel">Tagesansicht</h2>
+              <div id="selectedDateMeta" class="mini">Noch kein Tag ausgewaehlt.</div>
+            </div>
+            <div class="legend">
+              <span><i style="background: rgba(217, 119, 87, 0.55);"></i>belegt</span>
+              <span><i style="background: rgba(147, 197, 174, 0.65);"></i>freie Luecke</span>
+              <span><i style="background: rgba(31, 122, 107, 0.5);"></i>passend</span>
+            </div>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </section>
+
+        <section class="card results-card">
+          <div class="results-header">
+            <h2>Vorschlaege</h2>
+            <span class="mini">Klick auf einen Tag zeigt passende Fenster.</span>
+          </div>
+          <div id="resultSummary" class="summary-box">Noch keine Daten vorhanden.</div>
+          <div id="candidatePills" class="pill-list"></div>
+          <div id="suggestions" class="suggestions">
+            <div class="empty">Lade zuerst den Kalender und starte dann die Analyse.</div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const CALENDAR_URL = "https://p26-caldav.icloud.com/published/2/MTEwOTY1MTUxOTExMDk2NWDv0P2_4SaDzCQwpCSe8-rYzr1P09QrhsbM3bjbK_aCvu--fX0CBu1_t8MnH9Rqv9GKtBeTerqXe5z0UwLxu3s";
+
+    const state = {
+      events: [],
+      parsedEvents: [],
+      viewMonth: startOfMonth(new Date()),
+      selectedDate: toDateKey(new Date()),
+      analysisByDay: new Map(),
+      mapsReady: false,
+      mapsLoading: null,
+      geocodeCache: new Map(),
+      routeCache: new Map(),
+      activeSuggestionIndex: 0,
+      autoLoadAttempts: 0
+    };
+
+    const el = {
+      calendarUrl: document.getElementById("calendarUrl"),
+      mapsApiKey: document.getElementById("mapsApiKey"),
+      homeBase: document.getElementById("homeBase"),
+      lessonDuration: document.getElementById("lessonDuration"),
+      bufferAfter: document.getElementById("bufferAfter"),
+      arrivalLead: document.getElementById("arrivalLead"),
+      slotStep: document.getElementById("slotStep"),
+      dayStart: document.getElementById("dayStart"),
+      dayEnd: document.getElementById("dayEnd"),
+      appointmentLocation: document.getElementById("appointmentLocation"),
+      loadCalendarBtn: document.getElementById("loadCalendarBtn"),
+      analyzeBtn: document.getElementById("analyzeBtn"),
+      openMapsBtn: document.getElementById("openMapsBtn"),
+      sourceStatus: document.getElementById("sourceStatus"),
+      analysisStatus: document.getElementById("analysisStatus"),
+      monthLabel: document.getElementById("monthLabel"),
+      calendarGrid: document.getElementById("calendarGrid"),
+      selectedDateLabel: document.getElementById("selectedDateLabel"),
+      selectedDateMeta: document.getElementById("selectedDateMeta"),
+      timeline: document.getElementById("timeline"),
+      resultSummary: document.getElementById("resultSummary"),
+      candidatePills: document.getElementById("candidatePills"),
+      suggestions: document.getElementById("suggestions"),
+      statEvents: document.getElementById("statEvents"),
+      statDays: document.getElementById("statDays"),
+      statOptions: document.getElementById("statOptions"),
+      prevMonthBtn: document.getElementById("prevMonthBtn"),
+      nextMonthBtn: document.getElementById("nextMonthBtn"),
+      todayBtn: document.getElementById("todayBtn")
+    };
+
+    function init() {
+      el.calendarUrl.value = CALENDAR_URL;
+      bindEvents();
+      renderCalendar();
+      renderDayView();
+      renderSuggestions();
+      autoLoadCalendar();
+    }
+
+    function bindEvents() {
+      el.loadCalendarBtn.addEventListener("click", loadCalendarFromLocalService);
+      el.analyzeBtn.addEventListener("click", analyzeAvailability);
+      el.openMapsBtn.addEventListener("click", openAppointmentInMaps);
+      el.prevMonthBtn.addEventListener("click", () => {
+        state.viewMonth = addMonths(state.viewMonth, -1);
+        renderCalendar();
+      });
+      el.nextMonthBtn.addEventListener("click", () => {
+        state.viewMonth = addMonths(state.viewMonth, 1);
+        renderCalendar();
+      });
+      el.todayBtn.addEventListener("click", () => {
+        state.viewMonth = startOfMonth(new Date());
+        state.selectedDate = toDateKey(new Date());
+        renderCalendar();
+        renderDayView();
+        renderSuggestions();
+      });
+    }
+
+    async function autoLoadCalendar() {
+      state.autoLoadAttempts = 0;
+      await loadCalendarFromLocalService({ auto: true });
+    }
+
+    async function loadCalendarFromLocalService(options = {}) {
+      const auto = Boolean(options.auto);
+      state.autoLoadAttempts += 1;
+      setStatus(el.sourceStatus, "Kalender wird direkt aus iCloud geladen ...");
+
+      try {
+        const response = await fetch(CALENDAR_URL, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+        const text = await response.text();
+        loadCalendarText(text, "iCloud-Kalender");
+      } catch (error) {
+        if (auto && state.autoLoadAttempts < 4) {
+          setStatus(
+            el.sourceStatus,
+            "Kalender noch nicht erreichbar. Neuer Versuch in 2 Sekunden ..."
+          );
+          window.setTimeout(() => {
+            loadCalendarFromLocalService({ auto: true });
+          }, 2000);
+          return;
+        }
+        setStatus(
+          el.sourceStatus,
+          "Der iCloud-Kalender konnte im Browser nicht geladen werden. Wahrscheinlich blockiert der Browser den Direktzugriff. Details: " + error.message,
+          true
+        );
+      }
+    }
+
+    function loadCalendarText(text, sourceLabel) {
+      const parsed = parseICS(text);
+      state.events = parsed;
+      state.parsedEvents = parsed
+        .filter((event) => event.end > new Date(Date.now() - 24 * 60 * 60 * 1000))
+        .sort((a, b) => a.start - b.start);
+      state.analysisByDay = new Map();
+      state.activeSuggestionIndex = 0;
+      updateStats();
+      setStatus(
+        el.sourceStatus,
+        sourceLabel + ": " + state.parsedEvents.length + " relevante Kalendereintraege geladen."
+      );
+      setStatus(el.analysisStatus, "Kalender geladen. Jetzt bitte Dauer und Ort eintragen und dann analysieren.");
+      renderCalendar();
+      renderDayView();
+      renderSuggestions();
+    }
+
+    async function analyzeAvailability() {
+      if (!state.parsedEvents.length) {
+        setStatus(el.analysisStatus, "Bitte zuerst einen Kalender laden.", true);
+        return;
+      }
+
+      const appointmentLocation = el.appointmentLocation.value.trim();
+      if (!appointmentLocation) {
+        setStatus(el.analysisStatus, "Bitte den Ort des Unterrichts eintragen.", true);
+        return;
+      }
+
+      const lessonMinutes = toPositiveNumber(el.lessonDuration.value, 45);
+      const afterMinutes = toPositiveNumber(el.bufferAfter.value, 75);
+      const arrivalLead = toPositiveNumber(el.arrivalLead.value, 15);
+      const slotStep = toPositiveNumber(el.slotStep.value, 30);
+      const dayStart = parseTimeInput(el.dayStart.value, 7 * 60);
+      const dayEnd = parseTimeInput(el.dayEnd.value, 18 * 60);
+      const apiKey = el.mapsApiKey.value.trim();
+
+      setStatus(el.analysisStatus, "Tage werden analysiert ...");
+
+      try {
+        if (apiKey) {
+          await ensureGoogleMaps(apiKey);
+        }
+
+        const baseDate = new Date();
+        const horizon = 42;
+        const analysisEntries = [];
+
+        for (let offset = 0; offset < horizon; offset += 1) {
+          const day = addDays(stripTime(baseDate), offset);
+          const dayKey = toDateKey(day);
+          const dayEvents = getEventsForDay(day);
+          const analysis = await analyzeDay(day, dayEvents, {
+            appointmentLocation,
+            lessonMinutes,
+            afterMinutes,
+            arrivalLead,
+            slotStep,
+            dayStart,
+            dayEnd,
+            hasMaps: Boolean(apiKey)
+          });
+          analysisEntries.push([dayKey, analysis]);
+        }
+
+        state.analysisByDay = new Map(analysisEntries);
+        state.activeSuggestionIndex = 0;
+        updateStats();
+        setStatus(
+          el.analysisStatus,
+          "Analyse abgeschlossen. Klicke im Kalender auf einen Tag, um freie Zeitraeume zu sehen."
+        );
+
+        const bestDay = analysisEntries.find(([, analysis]) => analysis.candidates.length > 0);
+        if (bestDay) {
+          state.selectedDate = bestDay[0];
+          state.viewMonth = startOfMonth(fromDateKey(bestDay[0]));
+        }
+
+        renderCalendar();
+        renderDayView();
+        renderSuggestions();
+      } catch (error) {
+        setStatus(el.analysisStatus, "Analyse fehlgeschlagen: " + error.message, true);
+      }
+    }
+
+    async function analyzeDay(day, dayEvents, config) {
+      const dayStartDate = addMinutes(stripTime(day), config.dayStart);
+      const dayEndDate = addMinutes(stripTime(day), config.dayEnd);
+      const mergedEvents = mergeIntervals(
+        dayEvents.map((event) => ({
+          start: clampDate(event.start, dayStartDate, dayEndDate),
+          end: clampDate(event.end, dayStartDate, dayEndDate),
+          summary: event.summary,
+          location: event.location || el.homeBase.value.trim() || ""
+        })).filter((event) => event.end > event.start)
+      );
+
+      const freeGaps = [];
+      let cursor = dayStartDate;
+
+      for (const event of mergedEvents) {
+        if (event.start > cursor) {
+          freeGaps.push({
+            start: new Date(cursor),
+            end: new Date(event.start),
+            previousEvent: freeGaps.length === 0 ? null : mergedEvents[mergedEvents.indexOf(event) - 1] || null,
+            nextEvent: event
+          });
+        }
+        if (event.end > cursor) {
+          cursor = new Date(event.end);
+        }
+      }
+
+      if (cursor < dayEndDate) {
+        freeGaps.push({
+          start: new Date(cursor),
+          end: new Date(dayEndDate),
+          previousEvent: mergedEvents[mergedEvents.length - 1] || null,
+          nextEvent: null
+        });
+      }
+
+      if (!mergedEvents.length) {
+        freeGaps.push({
+          start: new Date(dayStartDate),
+          end: new Date(dayEndDate),
+          previousEvent: null,
+          nextEvent: null
+        });
+      }
+
+      const candidates = [];
+
+      for (const gap of freeGaps) {
+        for (let start = new Date(gap.start); start < gap.end; start = addMinutes(start, config.slotStep)) {
+          const lessonEnd = addMinutes(start, config.lessonMinutes);
+          if (lessonEnd > gap.end) {
+            break;
+          }
+
+          const prevOrigin = gap.previousEvent?.location || el.homeBase.value.trim() || "";
+          const nextDestination = gap.nextEvent?.location || "";
+
+          const travelBefore = config.hasMaps && prevOrigin
+            ? await getTravelMinutes(prevOrigin, config.appointmentLocation)
+            : null;
+          const travelAfter = config.hasMaps && nextDestination
+            ? await getTravelMinutes(config.appointmentLocation, nextDestination)
+            : null;
+
+          const prepStart = addMinutes(start, -(config.arrivalLead + (travelBefore || 0)));
+          const reviewEnd = addMinutes(lessonEnd, config.afterMinutes + (travelAfter || 0));
+
+          const fitsBefore = prepStart >= gap.start;
+          const fitsAfter = reviewEnd <= gap.end;
+          const fitsOverall = fitsBefore && fitsAfter;
+
+          if (fitsOverall) {
+            candidates.push({
+              start: new Date(start),
+              lessonEnd,
+              end: reviewEnd,
+              prepStart,
+              freeGapStart: gap.start,
+              freeGapEnd: gap.end,
+              travelBefore: travelBefore || 0,
+              travelAfter: travelAfter || 0,
+              previousLocation: prevOrigin,
+              nextLocation: nextDestination
+            });
+          }
+        }
+      }
+
+      const busyMinutes = mergedEvents.reduce((sum, event) => sum + minutesBetween(event.start, event.end), 0);
+      const totalMinutes = Math.max(1, minutesBetween(dayStartDate, dayEndDate));
+      const occupancyRatio = Math.min(1, busyMinutes / totalMinutes);
+
+      return {
+        day,
+        dayStartDate,
+        dayEndDate,
+        mergedEvents,
+        freeGaps,
+        candidates,
+        occupancyRatio
+      };
+    }
+
+    function renderCalendar() {
+      const monthStart = startOfMonth(state.viewMonth);
+      const monthEnd = endOfMonth(monthStart);
+      const firstGridDate = startOfWeek(monthStart, 1);
+      const lastGridDate = endOfWeek(monthEnd, 1);
+      const days = [];
+      for (let cursor = new Date(firstGridDate); cursor <= lastGridDate; cursor = addDays(cursor, 1)) {
+        days.push(new Date(cursor));
+      }
+
+      el.monthLabel.textContent = monthStart.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+      el.calendarGrid.innerHTML = "";
+
+      for (const day of days) {
+        const dayKey = toDateKey(day);
+        const analysis = state.analysisByDay.get(dayKey);
+        const inMonth = day.getMonth() === monthStart.getMonth();
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "day" + (inMonth ? "" : " muted") + (state.selectedDate === dayKey ? " selected" : "");
+        btn.innerHTML = `
+          <span class="day-number">${day.getDate()}</span>
+          <span class="mini">${analysis ? analysis.candidates.length + " Optionen" : "ohne Analyse"}</span>
+          <div class="occupancy"><span style="width:${Math.round((analysis?.occupancyRatio || 0) * 100)}%"></span></div>
+        `;
+        btn.addEventListener("click", () => {
+          state.selectedDate = dayKey;
+          if (!inMonth) {
+            state.viewMonth = startOfMonth(day);
+          }
+          renderCalendar();
+          renderDayView();
+          renderSuggestions();
+        });
+        el.calendarGrid.appendChild(btn);
+      }
+    }
+
+    function renderDayView() {
+      const day = fromDateKey(state.selectedDate);
+      const analysis = state.analysisByDay.get(state.selectedDate);
+      el.selectedDateLabel.textContent = day.toLocaleDateString("de-DE", {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      });
+
+      if (!analysis) {
+        el.selectedDateMeta.textContent = "Fuer diesen Tag liegt noch keine Analyse vor.";
+        el.timeline.innerHTML = "";
+        return;
+      }
+
+      el.selectedDateMeta.textContent =
+        analysis.candidates.length > 0
+          ? analysis.candidates.length + " passende Zeitfenster gefunden."
+          : "Keine passenden Zeitfenster gefunden.";
+
+      const totalMinutes = minutesBetween(analysis.dayStartDate, analysis.dayEndDate);
+      const pxPerMinute = Math.max(0.7, 620 / totalMinutes);
+      const timelineHeight = Math.max(520, totalMinutes * pxPerMinute + 20);
+      el.timeline.style.minHeight = timelineHeight + "px";
+      el.timeline.innerHTML = "";
+
+      for (let minute = 0; minute <= totalMinutes; minute += 60) {
+        const line = document.createElement("div");
+        line.className = "hour-line";
+        line.style.top = 10 + minute * pxPerMinute + "px";
+        const time = addMinutes(analysis.dayStartDate, minute);
+        line.innerHTML = `<span>${formatTime(time)}</span>`;
+        el.timeline.appendChild(line);
+      }
+
+      for (const gap of analysis.freeGaps) {
+        appendBlock(el.timeline, gap.start, gap.end, analysis.dayStartDate, pxPerMinute, "free", {
+          title: "Freie Luecke",
+          subtitle: formatRange(gap.start, gap.end)
+        });
+      }
+
+      for (const event of analysis.mergedEvents) {
+        appendBlock(el.timeline, event.start, event.end, analysis.dayStartDate, pxPerMinute, "busy", {
+          title: event.summary || "Belegt",
+          subtitle: formatRange(event.start, event.end) + (event.location ? " | " + event.location : "")
+        });
+      }
+
+      const activeCandidate = analysis.candidates[state.activeSuggestionIndex] || analysis.candidates[0];
+      if (activeCandidate) {
+        appendBlock(el.timeline, activeCandidate.prepStart, activeCandidate.end, analysis.dayStartDate, pxPerMinute, "candidate", {
+          title: "Passender Termin",
+          subtitle: [
+            "Unterricht: " + formatRange(activeCandidate.start, activeCandidate.lessonEnd),
+            "Vorbereitung/Anfahrt ab " + formatTime(activeCandidate.prepStart),
+            "fertig um " + formatTime(activeCandidate.end)
+          ].join(" | ")
+        });
+      }
+    }
+
+    function renderSuggestions() {
+      const analysis = state.analysisByDay.get(state.selectedDate);
+      if (!analysis) {
+        el.resultSummary.textContent = "Noch keine Analyse fuer den gewaehlten Tag.";
+        el.candidatePills.innerHTML = "";
+        el.suggestions.innerHTML = '<div class="empty">Bitte Kalender laden und Analyse starten.</div>';
+        return;
+      }
+
+      el.resultSummary.innerHTML = `
+        <strong>${analysis.candidates.length}</strong> passende Zeitfenster am
+        <strong>${fromDateKey(state.selectedDate).toLocaleDateString("de-DE")}</strong>.
+        Die Berechnung beruecksichtigt Unterricht, Anfahrt mit Vorlauf und die Nachbesprechung.
+      `;
+
+      if (!analysis.candidates.length) {
+        el.candidatePills.innerHTML = "";
+        el.suggestions.innerHTML = '<div class="suggestion bad">An diesem Tag passt kein Zeitfenster zu den aktuellen Vorgaben.</div>';
+        updateStats();
+        return;
+      }
+
+      if (state.activeSuggestionIndex >= analysis.candidates.length) {
+        state.activeSuggestionIndex = 0;
+      }
+
+      el.candidatePills.innerHTML = "";
+      analysis.candidates.slice(0, 8).forEach((candidate, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "pill" + (index === state.activeSuggestionIndex ? " active" : "");
+        button.innerHTML = `
+          <strong>${formatRange(candidate.start, candidate.lessonEnd)}</strong>
+          <span class="mini">bereit ab ${formatTime(candidate.prepStart)}, fertig ${formatTime(candidate.end)}</span>
+        `;
+        button.addEventListener("click", () => {
+          state.activeSuggestionIndex = index;
+          renderSuggestions();
+          renderDayView();
+        });
+        el.candidatePills.appendChild(button);
+      });
+
+      const activeCandidate = analysis.candidates[state.activeSuggestionIndex];
+      const mapsUrl = buildDirectionsUrl(activeCandidate.previousLocation || "", el.appointmentLocation.value.trim(), activeCandidate.start);
+      el.suggestions.innerHTML = `
+        <div class="suggestion ok">
+          <strong>Empfohlenes Fenster</strong>
+          <div>${formatRange(activeCandidate.start, activeCandidate.lessonEnd)} Unterricht</div>
+          <div>Anfahrt/Puffer beginnt um ${formatTime(activeCandidate.prepStart)}</div>
+          <div>Nachbesprechung endet um ${formatTime(activeCandidate.end)}</div>
+          <div>Fahrzeit davor: ${activeCandidate.travelBefore} Minuten</div>
+          <div>Fahrzeit danach: ${activeCandidate.travelAfter} Minuten</div>
+        </div>
+        <div class="suggestion">
+          <strong>Kalenderkontext</strong>
+          <div>Vorheriger Ort: ${activeCandidate.previousLocation || "nicht im Kalender hinterlegt"}</div>
+          <div>Naechster Ort: ${activeCandidate.nextLocation || "kein Folgetermin oder Ort unbekannt"}</div>
+        </div>
+        <div class="suggestion">
+          <strong>Google Maps</strong>
+          <div><a href="${mapsUrl}" target="_blank" rel="noreferrer">Route fuer dieses Zeitfenster in Google Maps oeffnen</a></div>
+        </div>
+      `;
+      updateStats();
+    }
+
+    function appendBlock(container, start, end, origin, pxPerMinute, kind, content) {
+      const top = 10 + minutesBetween(origin, start) * pxPerMinute;
+      const height = Math.max(34, minutesBetween(start, end) * pxPerMinute);
+      const block = document.createElement("div");
+      block.className = "block " + kind;
+      block.style.top = top + "px";
+      block.style.height = height + "px";
+      block.innerHTML = `<strong>${escapeHtml(content.title)}</strong><div class="mini">${escapeHtml(content.subtitle)}</div>`;
+      container.appendChild(block);
+    }
+
+    function parseICS(text) {
+      const lines = unfoldICS(text);
+      const blocks = [];
+      let current = null;
+
+      for (const line of lines) {
+        if (line === "BEGIN:VEVENT") {
+          current = [];
+        } else if (line === "END:VEVENT") {
+          if (current) {
+            blocks.push(current);
+          }
+          current = null;
+        } else if (current) {
+          current.push(line);
+        }
+      }
+
+      const now = new Date();
+      const horizonEnd = addDays(now, 90);
+      const events = [];
+
+      for (const block of blocks) {
+        const item = {};
+        for (const rawLine of block) {
+          const index = rawLine.indexOf(":");
+          if (index === -1) {
+            continue;
+          }
+          const rawKey = rawLine.slice(0, index);
+          const value = rawLine.slice(index + 1);
+          const key = rawKey.split(";")[0].toUpperCase();
+          const params = rawKey.includes(";") ? rawKey.slice(rawKey.indexOf(";") + 1) : "";
+          if (!item[key]) {
+            item[key] = [];
+          }
+          item[key].push({ value, params });
+        }
+
+        const startEntry = item.DTSTART?.[0];
+        const endEntry = item.DTEND?.[0];
+        if (!startEntry || !endEntry) {
+          continue;
+        }
+
+        const baseEvent = {
+          summary: decodeICSText(item.SUMMARY?.[0]?.value || "Termin"),
+          location: decodeICSText(item.LOCATION?.[0]?.value || ""),
+          description: decodeICSText(item.DESCRIPTION?.[0]?.value || ""),
+          uid: item.UID?.[0]?.value || Math.random().toString(36).slice(2),
+          allDay: /VALUE=DATE/.test(startEntry.params)
+        };
+
+        const start = parseICSDate(startEntry.value, startEntry.params);
+        const end = parseICSDate(endEntry.value, endEntry.params);
+        const durationMinutes = Math.max(15, minutesBetween(start, end));
+        const rrule = item.RRULE?.[0]?.value;
+
+        if (!rrule) {
+          events.push({ ...baseEvent, start, end });
+          continue;
+        }
+
+        const recurrences = expandRRule(rrule, start, horizonEnd);
+        for (const recurringStart of recurrences) {
+          const recurringEnd = addMinutes(recurringStart, durationMinutes);
+          events.push({ ...baseEvent, start: recurringStart, end: recurringEnd });
+        }
+      }
+
+      return events;
+    }
+
+    function unfoldICS(text) {
+      const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      const rawLines = normalized.split("\n");
+      const lines = [];
+      for (const line of rawLines) {
+        if (/^[ \t]/.test(line) && lines.length) {
+          lines[lines.length - 1] += line.slice(1);
+        } else {
+          lines.push(line);
+        }
+      }
+      return lines.filter(Boolean);
+    }
+
+    function parseICSDate(value, params) {
+      if (/VALUE=DATE/.test(params) && /^\d{8}$/.test(value)) {
+        const year = Number(value.slice(0, 4));
+        const month = Number(value.slice(4, 6)) - 1;
+        const day = Number(value.slice(6, 8));
+        return new Date(year, month, day, 0, 0, 0, 0);
+      }
+
+      if (/^\d{8}T\d{6}Z$/.test(value)) {
+        const year = Number(value.slice(0, 4));
+        const month = Number(value.slice(4, 6)) - 1;
+        const day = Number(value.slice(6, 8));
+        const hour = Number(value.slice(9, 11));
+        const minute = Number(value.slice(11, 13));
+        const second = Number(value.slice(13, 15));
+        return new Date(Date.UTC(year, month, day, hour, minute, second));
+      }
+
+      if (/^\d{8}T\d{6}$/.test(value)) {
+        const year = Number(value.slice(0, 4));
+        const month = Number(value.slice(4, 6)) - 1;
+        const day = Number(value.slice(6, 8));
+        const hour = Number(value.slice(9, 11));
+        const minute = Number(value.slice(11, 13));
+        const second = Number(value.slice(13, 15));
+        return new Date(year, month, day, hour, minute, second, 0);
+      }
+
+      return new Date(value);
+    }
+
+    function expandRRule(rrule, dtstart, horizonEnd) {
+      const rules = Object.fromEntries(
+        rrule.split(";").map((part) => {
+          const [key, value] = part.split("=");
+          return [key, value];
+        })
+      );
+      const freq = rules.FREQ;
+      const interval = Number(rules.INTERVAL || 1);
+      const count = Number(rules.COUNT || 999);
+      const until = rules.UNTIL ? parseICSDate(rules.UNTIL, "") : horizonEnd;
+      const byDay = (rules.BYDAY || "").split(",").filter(Boolean);
+      const maxDate = until < horizonEnd ? until : horizonEnd;
+      const occurrences = [];
+
+      if (freq === "DAILY") {
+        let current = new Date(dtstart);
+        while (occurrences.length < count && current <= maxDate) {
+          occurrences.push(new Date(current));
+          current = addDays(current, interval);
+        }
+        return occurrences;
+      }
+
+      if (freq === "WEEKLY") {
+        const byDayValues = byDay.length ? byDay : [weekdayCode(dtstart)];
+        let weekCursor = startOfWeek(dtstart, 1);
+        while (occurrences.length < count && weekCursor <= maxDate) {
+          for (const code of byDayValues) {
+            const dayOffset = weekdayIndex(code);
+            if (dayOffset < 0) {
+              continue;
+            }
+            const candidate = addDays(weekCursor, dayOffset);
+            candidate.setHours(dtstart.getHours(), dtstart.getMinutes(), dtstart.getSeconds(), 0);
+            if (candidate < dtstart || candidate > maxDate) {
+              continue;
+            }
+            occurrences.push(new Date(candidate));
+            if (occurrences.length >= count) {
+              break;
+            }
+          }
+          weekCursor = addDays(weekCursor, interval * 7);
+        }
+        return occurrences.sort((a, b) => a - b);
+      }
+
+      return [dtstart];
+    }
+
+    async function ensureGoogleMaps(apiKey) {
+      if (state.mapsReady) {
+        return;
+      }
+      if (state.mapsLoading) {
+        return state.mapsLoading;
+      }
+
+      state.mapsLoading = new Promise((resolve, reject) => {
+        const callbackName = "__mapsReady_" + Math.random().toString(36).slice(2);
+        window[callbackName] = () => {
+          state.mapsReady = true;
+          delete window[callbackName];
+          resolve();
+        };
+
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(apiKey) + "&libraries=places&callback=" + callbackName;
+        script.async = true;
+        script.onerror = () => reject(new Error("Google Maps konnte nicht geladen werden."));
+        document.head.appendChild(script);
+      });
+
+      return state.mapsLoading;
+    }
+
+    async function getTravelMinutes(origin, destination) {
+      if (!origin || !destination) {
+        return 0;
+      }
+
+      const cacheKey = origin + " -> " + destination;
+      if (state.routeCache.has(cacheKey)) {
+        return state.routeCache.get(cacheKey);
+      }
+
+      if (!window.google?.maps?.DistanceMatrixService) {
+        throw new Error("Google Maps API ist nicht verfuegbar.");
+      }
+
+      const service = new google.maps.DistanceMatrixService();
+      const result = await new Promise((resolve, reject) => {
+        service.getDistanceMatrix(
+          {
+            origins: [origin],
+            destinations: [destination],
+            travelMode: google.maps.TravelMode.DRIVING,
+            drivingOptions: {
+              departureTime: new Date(),
+              trafficModel: google.maps.TrafficModel.BEST_GUESS
+            },
+            unitSystem: google.maps.UnitSystem.METRIC
+          },
+          (response, status) => {
+            if (status !== "OK") {
+              reject(new Error("Google Maps meldet: " + status));
+              return;
+            }
+            const element = response.rows?.[0]?.elements?.[0];
+            if (!element || element.status !== "OK") {
+              reject(new Error("Route nicht gefunden."));
+              return;
+            }
+            resolve(element);
+          }
+        );
+      });
+
+      const minutes = Math.ceil((result.duration_in_traffic?.value || result.duration?.value || 0) / 60);
+      state.routeCache.set(cacheKey, minutes);
+      return minutes;
+    }
+
+    function getEventsForDay(day) {
+      const start = stripTime(day);
+      const end = addDays(start, 1);
+      return state.parsedEvents.filter((event) => event.end > start && event.start < end);
+    }
+
+    function mergeIntervals(events) {
+      if (!events.length) {
+        return [];
+      }
+      const sorted = [...events].sort((a, b) => a.start - b.start);
+      const merged = [sorted[0]];
+
+      for (let i = 1; i < sorted.length; i += 1) {
+        const current = sorted[i];
+        const previous = merged[merged.length - 1];
+        if (current.start <= previous.end) {
+          previous.end = new Date(Math.max(previous.end.getTime(), current.end.getTime()));
+          previous.summary = previous.summary || current.summary;
+          previous.location = previous.location || current.location;
+        } else {
+          merged.push({ ...current });
+        }
+      }
+      return merged;
+    }
+
+    function openAppointmentInMaps() {
+      const location = el.appointmentLocation.value.trim();
+      if (!location) {
+        setStatus(el.analysisStatus, "Bitte zuerst den Terminort eintragen.", true);
+        return;
+      }
+      window.open(buildDirectionsUrl("", location, null), "_blank", "noopener,noreferrer");
+    }
+
+    function buildDirectionsUrl(origin, destination, arrivalTime) {
+      const url = new URL("https://www.google.com/maps/dir/");
+      if (origin) {
+        url.searchParams.set("origin", origin);
+      }
+      url.searchParams.set("destination", destination);
+      url.searchParams.set("travelmode", "driving");
+      if (arrivalTime instanceof Date) {
+        url.searchParams.set("arrival_time", Math.floor(arrivalTime.getTime() / 1000));
+      }
+      return url.toString();
+    }
+
+    function updateStats() {
+      el.statEvents.textContent = String(state.parsedEvents.length);
+      el.statDays.textContent = String(state.analysisByDay.size);
+      const options = [...state.analysisByDay.values()].reduce((sum, day) => sum + day.candidates.length, 0);
+      el.statOptions.textContent = String(options);
+    }
+
+    function setStatus(node, message, isWarning = false) {
+      node.textContent = message;
+      node.classList.toggle("warning", Boolean(isWarning));
+    }
+
+    function decodeICSText(value) {
+      return value
+        .replace(/\\n/g, "\n")
+        .replace(/\\,/g, ",")
+        .replace(/\\;/g, ";")
+        .replace(/\\\\/g, "\\");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function parseTimeInput(value, fallback) {
+      if (!value || !value.includes(":")) {
+        return fallback;
+      }
+      const [hours, minutes] = value.split(":").map(Number);
+      return hours * 60 + minutes;
+    }
+
+    function toPositiveNumber(value, fallback) {
+      const n = Number(value);
+      return Number.isFinite(n) && n >= 0 ? n : fallback;
+    }
+
+    function minutesBetween(a, b) {
+      return Math.round((b - a) / 60000);
+    }
+
+    function addMinutes(date, minutes) {
+      return new Date(date.getTime() + minutes * 60000);
+    }
+
+    function addDays(date, days) {
+      const copy = new Date(date);
+      copy.setDate(copy.getDate() + days);
+      return copy;
+    }
+
+    function addMonths(date, months) {
+      const copy = new Date(date);
+      copy.setMonth(copy.getMonth() + months, 1);
+      return copy;
+    }
+
+    function stripTime(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function startOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth(), 1);
+    }
+
+    function endOfMonth(date) {
+      return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    }
+
+    function startOfWeek(date, mondayFirst) {
+      const copy = stripTime(date);
+      const day = copy.getDay();
+      const offset = mondayFirst ? (day === 0 ? -6 : 1 - day) : -day;
+      return addDays(copy, offset);
+    }
+
+    function endOfWeek(date, mondayFirst) {
+      return addDays(startOfWeek(date, mondayFirst), 6);
+    }
+
+    function toDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + d;
+    }
+
+    function fromDateKey(key) {
+      const [year, month, day] = key.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function formatTime(date) {
+      return date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function formatRange(start, end) {
+      return formatTime(start) + " - " + formatTime(end);
+    }
+
+    function clampDate(date, min, max) {
+      return new Date(Math.min(Math.max(date.getTime(), min.getTime()), max.getTime()));
+    }
+
+    function weekdayCode(date) {
+      return ["SU", "MO", "TU", "WE", "TH", "FR", "SA"][date.getDay()];
+    }
+
+    function weekdayIndex(code) {
+      return {
+        MO: 0,
+        TU: 1,
+        WE: 2,
+        TH: 3,
+        FR: 4,
+        SA: 5,
+        SU: 6
+      }[code] ?? -1;
+    }
+
+    init();
+  </script>
+</body>
+</html>
