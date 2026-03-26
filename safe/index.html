@@ -1,1 +1,738 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sicherheitsquiz ACG</title>
+  <style>
+    :root {
+      --acg-orange: #eb5b27;
+      --acg-orange-soft: #fff2eb;
+      --acg-ink: #1f1d1b;
+      --acg-slate: #57514c;
+      --acg-mist: #f6f2ee;
+      --acg-line: rgba(31, 29, 27, 0.12);
+      --acg-green: #1f8a56;
+      --acg-red: #b52d28;
+      --acg-shadow: 0 22px 50px rgba(31, 29, 27, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--acg-ink);
+      background:
+        radial-gradient(circle at top left, rgba(235, 91, 39, 0.18), transparent 22rem),
+        radial-gradient(circle at top right, rgba(31, 138, 86, 0.08), transparent 18rem),
+        linear-gradient(180deg, #fffaf7 0%, #f2ede8 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      border: 2px solid rgba(31, 29, 27, 0.09);
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 20rem;
+      height: 20rem;
+      top: 2rem;
+      right: 5rem;
+    }
+
+    body::after {
+      width: 15rem;
+      height: 15rem;
+      top: 7rem;
+      right: 12rem;
+    }
+
+    .app-shell {
+      width: min(980px, 100%);
+      position: relative;
+      z-index: 1;
+    }
+
+    .quiz-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--acg-shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 28px 32px 20px;
+      background:
+        linear-gradient(135deg, rgba(235, 91, 39, 0.12), rgba(255, 255, 255, 0) 55%),
+        linear-gradient(180deg, rgba(31, 29, 27, 0.02), rgba(31, 29, 27, 0));
+      border-bottom: 1px solid var(--acg-line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+
+    .brand img {
+      width: 210px;
+      max-width: 42vw;
+      height: auto;
+      display: block;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--acg-orange-soft);
+      color: var(--acg-orange);
+      font-size: 0.83rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 64ch;
+      color: var(--acg-slate);
+      font-size: 1.02rem;
+      line-height: 1.55;
+    }
+
+    .content {
+      padding: 28px 32px 34px;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .progress-meta {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--acg-slate);
+    }
+
+    .progress-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #eee6df;
+      overflow: hidden;
+      flex: 1 1 260px;
+      min-width: 220px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--acg-orange), #f08a63);
+      border-radius: 999px;
+      transition: width 240ms ease;
+    }
+
+    .question-panel,
+    .result-panel {
+      display: none;
+    }
+
+    .question-panel.active,
+    .result-panel.active {
+      display: block;
+    }
+
+    .question-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(31, 29, 27, 0.06);
+      color: var(--acg-slate);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .question-situation {
+      font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .question-context {
+      margin: 0 0 22px;
+      color: var(--acg-slate);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .option-list {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .option {
+      position: relative;
+    }
+
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option label {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--acg-line);
+      background: #fff;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .option label:hover {
+      transform: translateY(-1px);
+      border-color: rgba(235, 91, 39, 0.45);
+      box-shadow: 0 12px 24px rgba(31, 29, 27, 0.08);
+    }
+
+    .option input:checked + label {
+      border-color: var(--acg-orange);
+      background: linear-gradient(180deg, #fff9f6, #fff3ec);
+      box-shadow: 0 14px 30px rgba(235, 91, 39, 0.12);
+    }
+
+    .option-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(31, 29, 27, 0.06);
+      color: var(--acg-slate);
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .option input:checked + label .option-badge {
+      background: var(--acg-orange);
+      color: #fff;
+    }
+
+    .option-text {
+      line-height: 1.55;
+      color: var(--acg-ink);
+      font-size: 1rem;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .helper-text {
+      color: var(--acg-slate);
+      font-size: 0.95rem;
+    }
+
+    .warning-text {
+      color: var(--acg-red);
+      font-weight: 700;
+      min-height: 1.4em;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, var(--acg-orange), #f07a4a);
+      color: #fff;
+      box-shadow: 0 14px 26px rgba(235, 91, 39, 0.22);
+    }
+
+    .button-secondary {
+      background: rgba(31, 29, 27, 0.06);
+      color: var(--acg-ink);
+    }
+
+    .result-panel {
+      padding: 10px 0 2px;
+    }
+
+    .result-box {
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid var(--acg-line);
+    }
+
+    .result-box.fail {
+      background: linear-gradient(180deg, #fff7f6, #fff1ef);
+      border-color: rgba(181, 45, 40, 0.16);
+    }
+
+    .result-box.success {
+      background: linear-gradient(180deg, #f3fbf7, #edf9f2);
+      border-color: rgba(31, 138, 86, 0.18);
+    }
+
+    .result-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .fail .result-kicker {
+      background: rgba(181, 45, 40, 0.1);
+      color: var(--acg-red);
+    }
+
+    .success .result-kicker {
+      background: rgba(31, 138, 86, 0.12);
+      color: var(--acg-green);
+    }
+
+    .result-title {
+      margin: 0 0 10px;
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .result-text,
+    .instruction-box {
+      color: var(--acg-slate);
+      line-height: 1.65;
+      font-size: 1rem;
+    }
+
+    .instruction-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(31, 29, 27, 0.08);
+    }
+
+    .instruction-box strong {
+      display: block;
+      color: var(--acg-ink);
+      margin-bottom: 6px;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero,
+      .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .brand {
+        justify-content: flex-start;
+      }
+
+      .brand img {
+        width: 180px;
+      }
+
+      .option label {
+        grid-template-columns: 42px 1fr;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="quiz-card">
+      <header class="hero">
+        <div class="brand">
+          <img src="ACG_Logo.png" alt="Alexander-Coppel-Gesamtschule">
+        </div>
+        <span class="eyebrow">Sicherheitsquiz Kollegium</span>
+        <h1>Was ist in dieser Alltagssituation richtig?</h1>
+        <p>
+          Jede Frage zeigt eine typische Situation aus dem Schulalltag. Wählen Sie jeweils die beste Reaktion.
+          Die Reihenfolge wird bei jedem Start neu gemischt. Bei einer falschen Antwort erscheint ein kurzer Hinweis,
+          danach geht es mit der nächsten Frage weiter.
+        </p>
+      </header>
+
+      <div class="content">
+        <div class="status-bar" id="statusBar">
+          <div class="progress-meta" id="progressMeta">Frage 1 von 10</div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <section class="question-panel active" id="questionPanel">
+          <div class="question-tag" id="questionTag">Situation</div>
+          <div class="question-situation" id="questionSituation"></div>
+          <p class="question-context" id="questionContext"></p>
+          <form id="optionForm" class="option-list"></form>
+          <div class="actions">
+            <div>
+              <div class="helper-text">Single Choice: genau eine Option auswählen.</div>
+              <div class="warning-text" id="warningText"></div>
+            </div>
+            <button type="button" class="button-primary" id="checkButton">Antwort prüfen</button>
+          </div>
+        </section>
+
+        <section class="result-panel" id="failPanel">
+          <div class="result-box fail">
+            <div class="result-kicker">Hinweis</div>
+            <h2 class="result-title">So wäre es in dieser Situation richtig.</h2>
+            <p class="result-text">
+              Kurz merken, dann geht es direkt mit der nächsten Situation weiter.
+            </p>
+            <div class="instruction-box">
+              <strong id="failHeadline">Richtig wäre gewesen:</strong>
+              <span id="failInstruction"></span>
+            </div>
+            <div class="result-actions">
+              <button type="button" class="button-primary" id="continueAfterHintButton">Weiter zur nächsten Frage</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="result-panel" id="successPanel">
+          <div class="result-box success">
+            <h2 class="result-title">Danke.</h2>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        tag: "Fluchtwege",
+        situation: "Vor dem Unterricht stehen mehrere Rucksäcke im Flur vor dem Klassenraum.",
+        context: "Die Schülerinnen und Schüler wollen nur kurz in einen anderen Raum gehen und die Taschen später holen.",
+        options: [
+          "Das ist für ein paar Minuten in Ordnung, solange niemand darüber stolpert.",
+          "Die Taschen müssen sofort aus dem Flur entfernt werden, weil Fluchtwege jederzeit frei bleiben müssen.",
+          "Das ist nur dann problematisch, wenn gleichzeitig auch ein Rettungsfenster im Raum ist."
+        ],
+        correct: 1,
+        instruction: "Fluchtwege und Treppenhäuser müssen jederzeit frei und in voller Breite nutzbar sein. Auch kurzes Abstellen von Taschen oder Material ist dort nicht in Ordnung."
+      },
+      {
+        tag: "Fluchtpläne",
+        situation: "Ein Whiteboard wurde so verschoben, dass der Flucht- und Rettungsplan kaum noch sichtbar ist.",
+        context: "Im Raum selbst kennt man sich zwar aus, aber für Gäste oder Vertretungen ist die Orientierung erschwert.",
+        options: [
+          "Das ist unkritisch, solange der Plan noch teilweise sichtbar ist.",
+          "Das Whiteboard wird wieder so gestellt, dass Fluchtplan und Sicherheitszeichen vollständig sichtbar sind.",
+          "Der Plan ist nur für Elternabende wichtig, im normalen Unterricht spielt das keine Rolle."
+        ],
+        correct: 1,
+        instruction: "Flucht- und Rettungspläne sowie Sicherheitszeichen dürfen nicht verdeckt werden. Dort informieren wir uns über Fluchtwege und Sammelstelle."
+      },
+      {
+        tag: "Brandschutztüren",
+        situation: "Eine Tür wird für den bequemen Durchgang mit einem Gegenstand offen gehalten.",
+        context: "Im Alltag wirkt das praktisch, weil viele Personen zwischen zwei Bereichen hin und her gehen.",
+        options: [
+          "Wenn die Tür schwer ist, darf sie vorübergehend offengehalten werden.",
+          "Die Blockade muss sofort entfernt werden, damit die Tür ihre Schutzfunktion erfüllen kann.",
+          "Das ist nur relevant, wenn gleichzeitig Rauch zu sehen ist."
+        ],
+        correct: 1,
+        instruction: "Brandschutz- und Rauchschutztüren dürfen nicht blockiert oder verkeilt werden. Verkeilungen und Blockaden sind sofort zu entfernen."
+      },
+      {
+        tag: "Brandverhütung",
+        situation: "Für eine schöne Adventsstimmung soll im Klassenraum Deko mit echten Kerzen aufgebaut werden.",
+        context: "Die Gruppe achtet eigentlich gut auf Ordnung und möchte nur eine ruhige Atmosphäre schaffen.",
+        options: [
+          "Echte Kerzen sind in Ordnung, wenn eine Lehrkraft durchgehend im Raum bleibt.",
+          "Echte Kerzen sind nur bei Sonderveranstaltungen im PZ erlaubt.",
+          "Feuer und offenes Licht sind im Gebäude verboten, also werden sichere Alternativen ohne Flamme genutzt."
+        ],
+        correct: 2,
+        instruction: "Feuer und offenes Licht sind im Gebäude verboten. Dazu gehören ausdrücklich auch Kerzen in Dekorationen."
+      },
+      {
+        tag: "Alarmierung",
+        situation: "Sie hören den Hausalarm und es gibt einen konkreten Hinweis auf einen Brand.",
+        context: "Mehrere Kolleginnen und Kollegen gehen bereits in Richtung Ausgang.",
+        options: [
+          "Der Hausalarm reicht aus, externe Hilfe wird dadurch automatisch informiert.",
+          "Das Gebäude wird geordnet geräumt und zusätzlich wird 112 verständigt.",
+          "Zuerst wird abgewartet, ob der Alarm nach einigen Minuten von selbst endet."
+        ],
+        correct: 1,
+        instruction: "Der Hausalarm alarmiert intern. Hilfe von außen kommt erst über den Notruf 112. Bei einem tatsächlichen Brand muss also zusätzlich 112 angerufen werden."
+      },
+      {
+        tag: "Sammelstelle",
+        situation: "An der Sammelstelle fehlt eine Schülerin oder ein Schüler, und Sie wissen noch, in welchem Raum die Person zuletzt war.",
+        context: "Die Gruppe steht bereits vollständig an der Sammelstelle, aber eine Person bleibt vermisst.",
+        options: [
+          "Sie warten erst ab, ob die Person von selbst auftaucht.",
+          "Sie gehen selbst noch einmal ins Gebäude zurück und suchen nach.",
+          "Sie melden die fehlende Person mit Raumangabe sofort in die Sdui-Lehrerzimmer-Gruppe und an die Brandschutzhelfer."
+        ],
+        correct: 2,
+        instruction: "Fehlende Personen werden an der Sammelstelle nicht nur gezählt, sondern sofort mit Raumangabe weitergemeldet: in die Sdui-Lehrerzimmer-Gruppe und an die Brandschutzhelfer."
+      },
+      {
+        tag: "Räumung",
+        situation: "Beim Verlassen des Klassenraums im Brandfall fragen Schülerinnen und Schüler, ob die Tür abgeschlossen werden soll.",
+        context: "Die Gruppe ist bereits auf dem Weg nach draußen.",
+        options: [
+          "Ja, damit niemand mehr in den Raum hineingehen kann.",
+          "Nein. Türen und Fenster möglichst schließen, aber nicht abschließen.",
+          "Die Tür bleibt weit offen, damit der Raum später schneller kontrolliert werden kann."
+        ],
+        correct: 1,
+        instruction: "Im Brandfall sollen Türen und Fenster möglichst geschlossen werden, aber nicht abgeschlossen. So wird die Ausbreitung von Feuer und Rauch gebremst."
+      },
+      {
+        tag: "Unfälle",
+        situation: "Eine Kollegin stürzt im Schulalltag, ein Schüler verletzt sich, und die Situation ist zunächst glimpflich ausgegangen.",
+        context: "Alle sind versorgt, nun stellt sich die Frage nach dem weiteren Vorgehen.",
+        options: [
+          "Wenn es glimpflich ausging, reicht eine kurze mündliche Notiz im Lehrerzimmer.",
+          "Unfälle müssen unverzüglich gemeldet und mit Unfallbericht dokumentiert werden; das Formular gibt es bei Kirsten Tepper.",
+          "Ein Unfallbericht ist nur nötig, wenn ein Rettungswagen vor Ort war."
+        ],
+        correct: 1,
+        instruction: "Unfälle im Schulalltag mit Kollegium sowie Schülerinnen und Schülern müssen unverzüglich gemeldet und per Unfallbericht dokumentiert werden."
+      },
+      {
+        tag: "Sondernutzungen",
+        situation: "Für einen Projekttag oder den Tag der offenen Tür soll ein Klassenraum anders genutzt und umgebaut werden.",
+        context: "Die Idee ist gut, aber Möblierung, Deko und Wegeführung würden sich deutlich ändern.",
+        options: [
+          "Solange genug Platz wirkt, kann der Raum spontan umgebaut werden.",
+          "Die Sondernutzung wird vorab mit der Schulleitung abgestimmt; bei Bedarf wird der Sicherheitsbeauftragte hinzugezogen.",
+          "Eine Abstimmung ist nur für Aula und PZ nötig, nicht für normale Klassenräume."
+        ],
+        correct: 1,
+        instruction: "Sondernutzungen von Räumen, Klassenräumen, PZ und Aula sind vorab mit der Schulleitung abzustimmen. Bei Bedarf wird der Sicherheitsbeauftragte hinzugezogen."
+      },
+      {
+        tag: "Leitern",
+        situation: "Ein Material liegt oben auf dem Schrank, aber gerade ist keine Leiter griffbereit.",
+        context: "Eine Schülerin oder ein Schüler sagt: 'Ich kann schnell auf den Stuhl steigen.'",
+        options: [
+          "Das ist in Ordnung, wenn jemand den Stuhl festhält.",
+          "Man nimmt nur eine geeignete Leiter und nur nach entsprechender Unterweisung; auf Stühle oder Tische wird nicht gestiegen.",
+          "Für kurze Wege ist auch der Tisch eine akzeptable Behelfslösung."
+        ],
+        correct: 1,
+        instruction: "Leitern dürfen nur sachgerecht und nach vorheriger Unterweisung genutzt werden. Auf Tische oder Stühle zu steigen ist keine Lösung, sondern eine erhebliche Unfallgefahr."
+      }
+    ];
+
+    const progressMeta = document.getElementById("progressMeta");
+    const progressFill = document.getElementById("progressFill");
+    const statusBar = document.getElementById("statusBar");
+    const questionSituation = document.getElementById("questionSituation");
+    const questionContext = document.getElementById("questionContext");
+    const questionTag = document.getElementById("questionTag");
+    const optionForm = document.getElementById("optionForm");
+    const warningText = document.getElementById("warningText");
+    const questionPanel = document.getElementById("questionPanel");
+    const failPanel = document.getElementById("failPanel");
+    const successPanel = document.getElementById("successPanel");
+    const failInstruction = document.getElementById("failInstruction");
+    const checkButton = document.getElementById("checkButton");
+    const continueAfterHintButton = document.getElementById("continueAfterHintButton");
+
+    let shuffledQuestions = [];
+    let currentIndex = 0;
+
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderQuestion() {
+      const question = shuffledQuestions[currentIndex];
+      const progress = ((currentIndex + 1) / shuffledQuestions.length) * 100;
+
+      questionTag.textContent = question.tag;
+      questionSituation.textContent = question.situation;
+      questionContext.textContent = question.context;
+      progressMeta.textContent = `Frage ${currentIndex + 1} von ${shuffledQuestions.length}`;
+      progressFill.style.width = `${progress}%`;
+      warningText.textContent = "";
+
+      optionForm.innerHTML = question.options
+        .map((option, index) => `
+          <div class="option">
+            <input type="radio" id="option-${index}" name="answer" value="${index}">
+            <label for="option-${index}">
+              <span class="option-badge">${String.fromCharCode(65 + index)}</span>
+              <span class="option-text">${escapeHtml(option)}</span>
+            </label>
+          </div>
+        `)
+        .join("");
+    }
+
+    function showPanel(panelName) {
+      questionPanel.classList.remove("active");
+      failPanel.classList.remove("active");
+      successPanel.classList.remove("active");
+      statusBar.style.display = panelName === "success" ? "none" : "flex";
+
+      if (panelName === "question") {
+        questionPanel.classList.add("active");
+      } else if (panelName === "fail") {
+        failPanel.classList.add("active");
+      } else if (panelName === "success") {
+        successPanel.classList.add("active");
+      }
+    }
+
+    function evaluateAnswer() {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      if (!selected) {
+        warningText.textContent = "Bitte wählen Sie zuerst eine Antwort aus.";
+        return;
+      }
+
+      const question = shuffledQuestions[currentIndex];
+      const chosenIndex = Number(selected.value);
+
+      if (chosenIndex !== question.correct) {
+        failInstruction.textContent = question.instruction;
+        continueAfterHintButton.textContent =
+          currentIndex === shuffledQuestions.length - 1 ? "Zum Abschluss" : "Weiter zur nächsten Frage";
+        showPanel("fail");
+        return;
+      }
+
+      if (currentIndex === shuffledQuestions.length - 1) {
+        showPanel("success");
+        progressMeta.textContent = `Geschafft: ${shuffledQuestions.length} von ${shuffledQuestions.length}`;
+        progressFill.style.width = "100%";
+        return;
+      }
+
+      currentIndex += 1;
+      renderQuestion();
+      showPanel("question");
+    }
+
+    function continueAfterHint() {
+      if (currentIndex === shuffledQuestions.length - 1) {
+        showPanel("success");
+        progressMeta.textContent = `Geschafft: ${shuffledQuestions.length} von ${shuffledQuestions.length}`;
+        progressFill.style.width = "100%";
+        return;
+      }
+
+      currentIndex += 1;
+      renderQuestion();
+      showPanel("question");
+    }
+
+    function startQuiz() {
+      shuffledQuestions = shuffle(questions);
+      currentIndex = 0;
+      renderQuestion();
+      showPanel("question");
+    }
+
+    checkButton.addEventListener("click", evaluateAnswer);
+    continueAfterHintButton.addEventListener("click", continueAfterHint);
+
+    startQuiz();
+  </script>
+</body>
+</html>
