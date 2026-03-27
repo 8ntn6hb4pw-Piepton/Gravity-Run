@@ -467,6 +467,26 @@ h3 {
   box-shadow: inset 0 0 0 1px rgba(205, 255, 234, 0.06);
 }
 
+.example-section {
+  margin-top: 8px;
+}
+
+.example-screen {
+  padding: 18px;
+  border: 1px solid rgba(31, 95, 191, 0.16);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.example-body {
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.example-screen .cas-screen-header {
+  color: rgba(31, 43, 56, 0.7);
+}
+
 .cas-step-tabs {
   display: flex;
   flex-wrap: wrap;

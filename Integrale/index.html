@@ -6,7 +6,7 @@
     <title>Integraltrainer - Gruppenwahl</title>
     <meta
       name="description"
-      content="Interaktive Uebungsseite zu Flaechen zwischen Graphen und der x-Achse oder zwischen zwei Funktionen."
+      content="Interaktive Übungsseite zu Flächen zwischen Graphen und der x-Achse oder zwischen zwei Funktionen."
     >
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
@@ -15,10 +15,10 @@
     <div class="page-shell">
       <header class="hero">
         <p class="eyebrow">Integraltrainer</p>
-        <h1>Flaechen mit Integralen untersuchen</h1>
+        <h1>Flächen mit Integralen untersuchen</h1>
         <p class="hero-copy">
-          Waehle eine Gruppe und springe direkt zur passenden Aufgabenseite mit
-          Hinweisen, GeoGebra-Visualisierung und einer TI-Nspire-CAS-aehnlichen
+          Wähle eine Gruppe und springe direkt zur passenden Aufgabenseite mit
+          Hinweisen, GeoGebra-Visualisierung und einer TI-Nspire-CAS-ähnlichen
           Befehlsansicht.
         </p>
       </header>
@@ -37,15 +37,24 @@
             <span class="chip chip-blue">Graph und x-Achse</span>
             <span class="chip chip-sand">Zwei Graphen</span>
             <span class="chip chip-mint">Tipps aufklappbar</span>
+            <a class="button-link" href="beispiele.html">Beispiele ansehen</a>
           </div>
         </section>
 
         <section>
           <div class="section-heading">
             <h2>Gruppen</h2>
-            <p>Startpunkt fuer die einzelnen Aufgaben</p>
+            <p>Startpunkt für die einzelnen Aufgaben</p>
           </div>
           <div id="group-grid" class="group-grid" aria-live="polite"></div>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>Beispiele</h2>
+            <p>Zwei einfache Klick-Beispiele zum Einstieg</p>
+          </div>
+          <div id="example-grid" class="group-grid" aria-live="polite"></div>
         </section>
       </main>
     </div>

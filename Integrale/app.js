@@ -4,23 +4,24 @@ const GROUPS = {
   A: {
     id: "A",
     title: "Gruppe A",
-    subtitle: "Flaechen zwischen einem Funktionsgraphen und der x-Achse",
-    teaser: "Drei Nullstellen, zwei Teilflaechen und ein wichtiger Vorzeichenwechsel.",
+    subtitle: "Flächen zwischen einem Funktionsgraphen und der x-Achse",
+    teaser: "Drei Nullstellen, zwei Teilflächen und ein wichtiger Vorzeichenwechsel.",
     kind: "Graph und x-Achse",
     task:
-      "Ermittle den Flaecheninhalt aller von dem Graphen von f mit der x-Achse eingeschlossenen Teilflaechen.",
+      "Finde den Flächeninhalt aller Teilflächen, die der Graph von f mit der x-Achse einschließt.",
     givenLatex: ["f(x)=x^3-x^2-2x+1"],
     tips: [
-      "Bestimme zuerst die Nullstellen von \\(f\\). Hier gibt es drei reelle Schnittpunkte mit der x-Achse: \\(x_1\\approx-1{,}24698\\), \\(x_2\\approx0{,}44504\\), \\(x_3\\approx1{,}80194\\).",
-      "Zwischen \\(x_1\\) und \\(x_2\\) liegt der Graph oberhalb der x-Achse, zwischen \\(x_2\\) und \\(x_3\\) unterhalb der x-Achse.",
-      "Du brauchst deshalb zwei Teilintegrale und addierst ihre Betraege: \\(A=\\left|\\int_{x_1}^{x_2} f(x)\\,dx\\right|+\\left|\\int_{x_2}^{x_3} f(x)\\,dx\\right|\\)."
+      "Schau zuerst, wo der Graph die x-Achse schneidet. Genau diese Stellen brauchst du später als Grenzen für die Integrale.",
+      "Hier gibt es drei Nullstellen: \\(x_1\\approx-1{,}24698\\), \\(x_2\\approx0{,}44504\\), \\(x_3\\approx1{,}80194\\). Das ist wichtig, weil dadurch nicht nur eine Fläche entsteht, sondern zwei.",
+      "Zwischen \\(x_1\\) und \\(x_2\\) liegt der Graph über der x-Achse, zwischen \\(x_2\\) und \\(x_3\\) darunter. Wenn du nur ein einziges Integral rechnest, würden sich Plus- und Minusflächen teilweise wegheben.",
+      "Deshalb rechnest du zwei Teilflächen getrennt und addierst am Ende beide positiv: \\(A=\\left|\\int_{x_1}^{x_2} f(x)\\,dx\\right|+\\left|\\int_{x_2}^{x_3} f(x)\\,dx\\right|\\)."
     ],
     answer: {
       target: 2.765547639838901,
       tolerance: 0.03,
-      placeholder: "z. B. 2.766",
+      placeholder: "z. B. 2,766",
       errorHint:
-        "Noch nicht richtig. Achte darauf, dass hier zwei Teilflaechen entstehen und beide positiv addiert werden."
+        "Noch nicht richtig. Hier entstehen zwei Teilflächen. Beide müssen am Ende positiv addiert werden."
     },
     geogebra: {
       window: { xMin: -2.3, xMax: 2.5, yMin: -3.6, yMax: 3.8 },
@@ -37,68 +38,63 @@ const GROUPS = {
       ]
     },
     geoCommandsNote:
-      "Die Grafik zeigt die beiden Teilflaechen getrennt, weil der Graph die x-Achse mehrfach schneidet.",
+      "Die Grafik zeigt die beiden Teilflächen getrennt, weil der Graph die x-Achse mehrfach schneidet.",
     casSteps: [
       {
-        title: "Funktion anlegen",
+        title: "Funktion eingeben",
         lines: ["f(x):=x^3-x^2-2*x+1"],
-        note: "Lege die Funktion zuerst an."
+        note: "So legst du die Funktion im TI-Nspire CX II-T CAS an."
       },
       {
-        title: "Linke Nullstelle",
-        lines: ["x1:=nSolve(f(x)=0,x,-2)"],
-        note: "Mit einem Startwert links von der y-Achse findet der CAS die erste Nullstelle."
+        title: "Nullstellen holen",
+        lines: ["polyroots(x^3-x^2-2*x+1,x)"],
+        note: "Das passt zu eurem Handout: Menü > Algebra > Polynomwerkzeuge > Reelle Polynomwurzel."
       },
       {
-        title: "Mittlere Nullstelle",
-        lines: ["x2:=nSolve(f(x)=0,x,0)"],
-        note: "Ein Startwert nahe 0 liefert die mittlere Nullstelle."
+        title: "Grenzen speichern",
+        lines: ["x1:=-1.24698", "x2:=0.44504", "x3:=1.80194"],
+        note: "Die drei Werte aus der Ausgabe speicherst du ab, damit du sie gleich bequem einsetzen kannst."
       },
       {
-        title: "Rechte Nullstelle",
-        lines: ["x3:=nSolve(f(x)=0,x,2)"],
-        note: "Ein Startwert rechts liefert die dritte Nullstelle."
+        title: "Erste Teilfläche",
+        lines: ["A1:=abs(∫(f(x),x,x1,x2))"],
+        note: "Die erste Fläche rechnest du extra aus. Der Betrag ist wichtig, damit aus einer Fläche keine negative Zahl wird."
       },
       {
-        title: "Erste Teilflaeche",
-        lines: ["A1:=abs(int(f(x),x,x1,x2))"],
-        note: "Die erste Teilflaeche wird einzeln als Betrag berechnet."
+        title: "Zweite Teilfläche",
+        lines: ["A2:=abs(∫(f(x),x,x2,x3))"],
+        note: "Dasselbe machst du noch einmal für die zweite Fläche."
       },
       {
-        title: "Zweite Teilflaeche",
-        lines: ["A2:=abs(int(f(x),x,x2,x3))"],
-        note: "Auch die zweite Teilflaeche wird separat berechnet."
-      },
-      {
-        title: "Gesamtflaeche",
+        title: "Alles zusammen",
         lines: ["A:=A1+A2"],
-        note: "Zum Schluss addierst du beide positiven Teilflaechen."
+        note: "Erst jetzt addierst du beide Teilflächen zur gesamten Fläche."
       }
     ],
     casNote:
-      "Die Eingaben sind an TI-Nspire-CAS angelehnt und lassen sich Schritt fuer Schritt durchklicken."
+      "Die Schritte orientieren sich am TI-Nspire-Handout: Funktion speichern, Nullstellen holen, Grenzen übernehmen und die Teilintegrale getrennt rechnen."
   },
   B: {
     id: "B",
     title: "Gruppe B",
-    subtitle: "Flaechen zwischen sich schneidenden Funktionsgraphen",
+    subtitle: "Flächen zwischen sich schneidenden Funktionsgraphen",
     teaser: "Die obere Funktion wechselt im Intervall, deshalb musst du aufteilen.",
     kind: "Zwei Graphen",
     task:
-      "Ermittle den Flaecheninhalt im Intervall zwischen den Graphen von f und g.",
+      "Finde den Flächeninhalt im Intervall zwischen den Graphen von f und g.",
     givenLatex: ["f(x)=x^4+4", "g(x)=5x^2", "I=[-1;3]"],
     tips: [
-      "Setze \\(f(x)=g(x)\\). Dann entsteht \\(x^4-5x^2+4=0\\).",
-      "Die relevanten Schnittpunkte im Intervall sind \\(x=-1\\), \\(x=1\\) und \\(x=2\\).",
-      "Auf \\([-1,1]\\) liegt \\(f\\) ueber \\(g\\), auf \\([1,2]\\) liegt \\(g\\) ueber \\(f\\), auf \\([2,3]\\) wieder \\(f\\) ueber \\(g\\).",
-      "Deshalb gilt \\(A=\\int_{-1}^{1}(f-g)\\,dx+\\int_{1}^{2}(g-f)\\,dx+\\int_{2}^{3}(f-g)\\,dx\\)."
+      "Zuerst musst du wissen, wo sich die beiden Graphen schneiden. Genau dort ändert sich nämlich, welcher Graph oben liegt.",
+      "Setzt du \\(f(x)=g(x)\\), bekommst du \\(x^4-5x^2+4=0\\). Die wichtigen Schnittstellen im Intervall sind \\(x=-1\\), \\(x=1\\) und \\(x=2\\).",
+      "Auf \\([-1,1]\\) liegt \\(f\\) oben, auf \\([1,2]\\) liegt \\(g\\) oben und auf \\([2,3]\\) wieder \\(f\\). Darum darfst du nicht einfach stumpf von \\(-1\\) bis \\(3\\) integrieren.",
+      "Rechne also Abschnitt für Abschnitt: \\(A=\\int_{-1}^{1}(f-g)\\,dx+\\int_{1}^{2}(g-f)\\,dx+\\int_{2}^{3}(f-g)\\,dx\\)."
     ],
     answer: {
       target: 316 / 15,
       tolerance: 0.03,
-      placeholder: "z. B. 316/15 oder 21.067",
+      placeholder: "z. B. 316/15 oder 21,067",
       errorHint:
-        "Noch nicht richtig. Pruefe, ob du das Intervall an den Schnittpunkten x=1 und x=2 getrennt hast."
+        "Noch nicht richtig. Prüfe noch einmal, ob du an den Schnittpunkten \\(x=1\\) und \\(x=2\\) getrennt hast."
     },
     geogebra: {
       window: { xMin: -2.5, xMax: 3.5, yMin: -3, yMax: 90 },
@@ -114,63 +110,68 @@ const GROUPS = {
       ]
     },
     geoCommandsNote:
-      "Die Flaeche ist in drei Abschnitte zerlegt, damit der Wechsel der oberen Funktion sichtbar bleibt.",
+      "Die Fläche ist in drei Abschnitte zerlegt, damit der Wechsel der oberen Funktion sichtbar bleibt.",
     casSteps: [
       {
-        title: "Funktionen anlegen",
+        title: "Funktionen eingeben",
         lines: ["f(x):=x^4+4", "g(x):=5*x^2"],
-        note: "Lege beide Funktionen an."
+        note: "Zuerst legst du beide Funktionen an."
       },
       {
-        title: "Schnittpunkte bestimmen",
-        lines: ["solve(f(x)=g(x),x)"],
-        note: "Hier siehst du, wo die Aufteilung des Intervalls noetig ist."
+        title: "Schnittstellen finden",
+        lines: ["polyroots(x^4-5*x^2+4,x)"],
+        note: "Du formst gedanklich zu \\(f(x)-g(x)=0\\) um und nutzt dann wie im Handout die Polynomwurzel-Funktion."
+      },
+      {
+        title: "Relevante Grenzen speichern",
+        lines: ["x1:=-1", "x2:=1", "x3:=2"],
+        note: "Für das gegebene Intervall brauchst du genau diese drei Schnittstellen."
       },
       {
         title: "Erster Abschnitt",
-        lines: ["A1:=int(f(x)-g(x),x,-1,1)"],
-        note: "Auf dem ersten Abschnitt liegt f ueber g."
+        lines: ["A1:=∫(f(x)-g(x),x,-1,1)"],
+        note: "Hier liegt \\(f\\) oben, deshalb rechnest du \\(f-g\\)."
       },
       {
         title: "Zweiter Abschnitt",
-        lines: ["A2:=int(g(x)-f(x),x,1,2)"],
-        note: "Zwischen 1 und 2 musst du die Reihenfolge umdrehen."
+        lines: ["A2:=∫(g(x)-f(x),x,1,2)"],
+        note: "Zwischen 1 und 2 liegt \\(g\\) oben. Deshalb wechselst du jetzt zu \\(g-f\\)."
       },
       {
         title: "Dritter Abschnitt",
-        lines: ["A3:=int(f(x)-g(x),x,2,3)"],
-        note: "Ab x=2 liegt wieder f ueber g."
+        lines: ["A3:=∫(f(x)-g(x),x,2,3)"],
+        note: "Ab \\(x=2\\) liegt wieder \\(f\\) oben."
       },
       {
-        title: "Gesamtflaeche",
+        title: "Alles zusammen",
         lines: ["A:=A1+A2+A3"],
-        note: "Addiere die drei positiven Teilflaechen."
+        note: "Jetzt addierst du die drei Teilflächen."
       }
     ],
     casNote:
-      "Hier ist die Zerlegung wichtiger als die eigentliche Integration."
+      "Hier ist die wichtigste Idee nicht das Tippen, sondern das saubere Zerlegen an den Schnittstellen."
   },
   C: {
     id: "C",
     title: "Gruppe C",
-    subtitle: "Flaechen zwischen einem Funktionsgraphen und der x-Achse",
-    teaser: "Eine doppelte Nullstelle sorgt dafuer, dass der Graph die x-Achse nur beruehrt.",
+    subtitle: "Flächen zwischen einem Funktionsgraphen und der x-Achse",
+    teaser: "Eine doppelte Nullstelle sorgt dafür, dass der Graph die x-Achse nur berührt.",
     kind: "Graph und x-Achse",
     task:
-      "Ermittle den Flaecheninhalt der von dem Graphen von f und der x-Achse eingeschlossenen Flaeche.",
+      "Finde den Flächeninhalt der Fläche, die der Graph von f mit der x-Achse einschließt.",
     givenLatex: ["f(x)=(x^2-1)^2-1"],
     tips: [
-      "Multipliziere zuerst aus: \\(f(x)=x^4-2x^2=x^2(x^2-2)\\).",
-      "Die Nullstellen sind \\(x=-\\sqrt{2}\\), \\(x=0\\) und \\(x=\\sqrt{2}\\). Bei \\(x=0\\) liegt eine doppelte Nullstelle vor.",
-      "Im Intervall \\([-\\sqrt{2},\\sqrt{2}]\\) liegt der Graph unterhalb der x-Achse.",
-      "Deshalb reicht ein einziges Betragsintegral: \\(A=\\left|\\int_{-\\sqrt{2}}^{\\sqrt{2}} f(x)\\,dx\\right|\\)."
+      "Multipliziere zuerst aus. Dann sieht die Funktion viel übersichtlicher aus: \\(f(x)=x^4-2x^2=x^2(x^2-2)\\).",
+      "Jetzt kannst du die Nullstellen leichter erkennen: \\(x=-\\sqrt{2}\\), \\(x=0\\) und \\(x=\\sqrt{2}\\).",
+      "Der Punkt \\(x=0\\) ist besonders: Dort schneidet der Graph die x-Achse nicht, sondern berührt sie nur. Deshalb entsteht keine zweite getrennte Fläche.",
+      "Darum reicht hier ein einziges Integral über das ganze eingeschlossene Stück: \\(A=\\left|\\int_{-\\sqrt{2}}^{\\sqrt{2}} f(x)\\,dx\\right|\\)."
     ],
     answer: {
       target: (16 * Math.sqrt(2)) / 15,
       tolerance: 0.02,
       placeholder: "z. B. 16*sqrt(2)/15",
       errorHint:
-        "Noch nicht richtig. Achte darauf, dass x=0 nur ein Beruehrpunkt ist und keine neue Flaeche abtrennt."
+        "Noch nicht richtig. Denk daran: Bei \\(x=0\\) wird keine neue Fläche abgetrennt, weil der Graph die x-Achse dort nur berührt."
     },
     geogebra: {
       window: { xMin: -2.3, xMax: 2.3, yMin: -1.5, yMax: 2.6 },
@@ -183,53 +184,53 @@ const GROUPS = {
       ]
     },
     geoCommandsNote:
-      "Trotz der drei Nullstellen entsteht hier nur eine zusammenhaengende Flaeche.",
+      "Trotz der drei Nullstellen entsteht hier nur eine zusammenhängende Fläche.",
     casSteps: [
       {
-        title: "Funktion anlegen",
+        title: "Funktion eingeben",
         lines: ["f(x):=(x^2-1)^2-1"],
-        note: "Lege die Funktion an."
+        note: "So legst du die Funktion an."
       },
       {
-        title: "Funktion faktorisieren",
-        lines: ["factor(f(x))"],
-        note: "So wird die Struktur mit der doppelten Nullstelle sichtbar."
+        title: "Umformen prüfen",
+        lines: ["expand(f(x))", "factor(expand(f(x)))"],
+        note: "So siehst du direkt, warum die Nullstellen leicht zu finden sind und warum \\(x=0\\) eine besondere Stelle ist."
       },
       {
-        title: "Nullstellen bestimmen",
-        lines: ["solve(f(x)=0,x)"],
-        note: "Jetzt kannst du die Integrationsgrenzen direkt ablesen."
+        title: "Nullstellen holen",
+        lines: ["polyroots(x^4-2*x^2,x)"],
+        note: "Im Handout ist dafür die Funktion \\(polyroots\\) vorgesehen."
       },
       {
-        title: "Flaeche berechnen",
-        lines: ["A:=abs(int(f(x),x,-sqrt(2),sqrt(2)))"],
-        note: "Ein einziges Betragsintegral reicht hier aus."
+        title: "Fläche berechnen",
+        lines: ["A:=abs(∫(f(x),x,-sqrt(2),sqrt(2)))"],
+        note: "Hier reicht ein einziges Betragsintegral, weil nur eine zusammenhängende Fläche vorliegt."
       }
     ],
     casNote:
-      "Wenn du zuerst faktorisierst, wird die Aufgabe deutlich transparenter."
+      "Bei dieser Aufgabe hilft das Umformen mehr als langes Rechnen."
   },
   D: {
     id: "D",
     title: "Gruppe D",
-    subtitle: "Flaechen zwischen sich schneidenden Funktionsgraphen",
+    subtitle: "Flächen zwischen sich schneidenden Funktionsgraphen",
     teaser: "Im Intervall [0;2] gibt es genau einen Schnittpunkt.",
     kind: "Zwei Graphen",
     task:
-      "Ermittle den Flaecheninhalt im Intervall zwischen den Graphen von f und g.",
+      "Finde den Flächeninhalt im Intervall zwischen den Graphen von f und g.",
     givenLatex: ["f(x)=x^3+x", "g(x)=x^2+1", "I=[0;2]"],
     tips: [
-      "Setze \\(f(x)=g(x)\\). Dann erhaeltst du \\(x^3-x^2+x-1=(x-1)(x^2+1)\\).",
-      "Der einzige reelle Schnittpunkt liegt bei \\(x=1\\).",
-      "Auf \\([0,1]\\) liegt \\(g\\) ueber \\(f\\), auf \\([1,2]\\) liegt \\(f\\) ueber \\(g\\).",
-      "Deshalb gilt \\(A=\\int_0^1(g-f)\\,dx+\\int_1^2(f-g)\\,dx\\)."
+      "Du musst zuerst den Schnittpunkt finden, weil dort der obere Graph wechseln kann.",
+      "Aus \\(f(x)=g(x)\\) wird \\(x^3-x^2+x-1=0\\). Durch Faktorisieren bekommst du \\((x-1)(x^2+1)\\).",
+      "Der einzige reelle Schnittpunkt ist also \\(x=1\\). Genau dort musst du das Intervall teilen.",
+      "Auf \\([0,1]\\) liegt \\(g\\) über \\(f\\), auf \\([1,2]\\) liegt \\(f\\) über \\(g\\). Deshalb rechnest du erst \\(g-f\\) und danach \\(f-g\\)."
     ],
     answer: {
       target: 2.5,
       tolerance: 0.02,
       placeholder: "z. B. 5/2",
       errorHint:
-        "Noch nicht richtig. Trenne unbedingt am Schnittpunkt x=1 und beachte den Wechsel der oberen Funktion."
+        "Noch nicht richtig. Trenne bei \\(x=1\\) und achte darauf, welcher Graph links und rechts oben liegt."
     },
     geogebra: {
       window: { xMin: -0.5, xMax: 2.4, yMin: -0.4, yMax: 11 },
@@ -242,58 +243,58 @@ const GROUPS = {
       ]
     },
     geoCommandsNote:
-      "Die Grafik ist in zwei Teile zerlegt, damit der Wechsel bei x=1 sofort sichtbar wird.",
+      "Die Grafik ist in zwei Teile zerlegt, damit der Wechsel bei \\(x=1\\) sofort sichtbar wird.",
     casSteps: [
       {
-        title: "Funktionen anlegen",
+        title: "Funktionen eingeben",
         lines: ["f(x):=x^3+x", "g(x):=x^2+1"],
         note: "Lege zuerst beide Funktionen an."
       },
       {
-        title: "Schnittpunkt bestimmen",
-        lines: ["factor(f(x)-g(x))", "solve(f(x)=g(x),x)"],
-        note: "Hier siehst du direkt, dass es nur einen reellen Schnittpunkt gibt."
+        title: "Schnittpunkt finden",
+        lines: ["factor(x^3-x^2+x-1)", "polyroots(x^3-x^2+x-1,x)"],
+        note: "So siehst du erst die Struktur und bekommst dann die reelle Schnittstelle."
       },
       {
-        title: "Erster Abschnitt",
-        lines: ["A1:=int(g(x)-f(x),x,0,1)"],
-        note: "Auf [0,1] liegt g oberhalb."
+        title: "Ersten Teil rechnen",
+        lines: ["A1:=∫(g(x)-f(x),x,0,1)"],
+        note: "Auf \\([0,1]\\) liegt \\(g\\) oben, also musst du \\(g-f\\) rechnen."
       },
       {
-        title: "Zweiter Abschnitt",
-        lines: ["A2:=int(f(x)-g(x),x,1,2)"],
-        note: "Auf [1,2] liegt f oberhalb."
+        title: "Zweiten Teil rechnen",
+        lines: ["A2:=∫(f(x)-g(x),x,1,2)"],
+        note: "Auf \\([1,2]\\) liegt \\(f\\) oben, deshalb jetzt \\(f-g\\)."
       },
       {
-        title: "Gesamtflaeche",
+        title: "Alles zusammen",
         lines: ["A:=A1+A2"],
-        note: "Am Ende addierst du beide Teilflaechen."
+        note: "Zum Schluss addierst du beide Teilflächen."
       }
     ],
     casNote:
-      "Diese Gruppe ist ein gutes Beispiel fuer das saubere Wechseln zwischen f-g und g-f."
+      "Diese Aufgabe ist ein gutes Beispiel dafür, warum der Schnittpunkt zuerst kommen muss."
   },
   E: {
     id: "E",
     title: "Gruppe E",
-    subtitle: "Flaechen zwischen einem Funktionsgraphen und der x-Achse",
+    subtitle: "Flächen zwischen einem Funktionsgraphen und der x-Achse",
     teaser: "Im ganzen Intervall liegt die Funktion unterhalb der x-Achse.",
     kind: "Graph und x-Achse",
     task:
-      "Ermittle den Flaecheninhalt zwischen dem Graphen von f und der x-Achse im gegebenen Intervall.",
+      "Finde den Flächeninhalt zwischen dem Graphen von f und der x-Achse im gegebenen Intervall.",
     givenLatex: ["f(x)=0{,}25x^3-2", "I=[-4;1]"],
     tips: [
-      "Bestimme zuerst die Nullstelle: \\(0{,}25x^3-2=0\\Rightarrow x=2\\).",
-      "Die Nullstelle liegt ausserhalb des Intervalls \\([-4,1]\\).",
-      "Damit ist \\(f(x)\\) im gesamten Intervall negativ.",
-      "Deshalb reicht \\(A=\\left|\\int_{-4}^{1} f(x)\\,dx\\right|\\)."
+      "Prüfe zuerst, ob die Funktion im Intervall überhaupt die x-Achse schneidet. Wenn nicht, musst du nicht aufteilen.",
+      "Mit \\(0{,}25x^3-2=0\\) bekommst du \\(x=2\\). Diese Nullstelle liegt aber gar nicht im Intervall \\([-4,1]\\).",
+      "Damit weißt du: Im ganzen vorgegebenen Bereich liegt der Graph unter der x-Achse.",
+      "Deshalb genügt ein einziges Integral mit Betrag: \\(A=\\left|\\int_{-4}^{1} f(x)\\,dx\\right|\\)."
     ],
     answer: {
       target: 415 / 16,
       tolerance: 0.03,
       placeholder: "z. B. 415/16",
       errorHint:
-        "Noch nicht richtig. Hier brauchst du kein Aufteilen, aber du musst den Betrag der negativen Flaeche beachten."
+        "Noch nicht richtig. Du brauchst hier kein Aufteilen, aber du musst aus dem negativen Integral einen positiven Flächeninhalt machen."
     },
     geogebra: {
       window: { xMin: -4.7, xMax: 1.5, yMin: -20.5, yMax: 5 },
@@ -303,48 +304,48 @@ const GROUPS = {
       ]
     },
     geoCommandsNote:
-      "Die markierte Flaeche besteht hier nur aus einem einzigen Abschnitt.",
+      "Die markierte Fläche besteht hier nur aus einem einzigen Abschnitt.",
     casSteps: [
       {
-        title: "Funktion anlegen",
+        title: "Funktion eingeben",
         lines: ["f(x):=0.25*x^3-2"],
-        note: "Lege die Funktion an."
+        note: "Lege zuerst die Funktion an."
       },
       {
-        title: "Nullstelle pruefen",
-        lines: ["solve(f(x)=0,x)"],
-        note: "So siehst du sofort, dass die Nullstelle bei x=2 ausserhalb des Intervalls liegt."
+        title: "Nullstelle prüfen",
+        lines: ["polyroots(0.25*x^3-2,x)"],
+        note: "Damit siehst du sofort: Die Nullstelle liegt bei \\(x=2\\) und damit außerhalb des Intervalls."
       },
       {
-        title: "Flaeche berechnen",
-        lines: ["A:=abs(int(f(x),x,-4,1))"],
-        note: "Da der Graph im ganzen Intervall unter der x-Achse liegt, brauchst du nur ein Betragsintegral."
+        title: "Fläche berechnen",
+        lines: ["A:=abs(∫(f(x),x,-4,1))"],
+        note: "Weil die Funktion im ganzen Intervall unter der x-Achse liegt, reicht ein einziges Betragsintegral."
       }
     ],
     casNote:
-      "Die eigentliche Idee hier ist die Vorzeichenkontrolle vor dem Rechnen."
+      "Hier spart dir die Vorzeichenkontrolle am Anfang viel Arbeit."
   },
   F: {
     id: "F",
     title: "Gruppe F",
-    subtitle: "Flaechen zwischen sich schneidenden Funktionsgraphen",
-    teaser: "Drei Schnittpunkte, zwei Teilflaechen und numerische Grenzen.",
+    subtitle: "Flächen zwischen sich schneidenden Funktionsgraphen",
+    teaser: "Drei Schnittpunkte, zwei Teilflächen und numerische Grenzen.",
     kind: "Zwei Graphen",
     task:
-      "Ermittle den Flaecheninhalt aller von den Graphen von f und g eingeschlossenen Flaechen.",
+      "Finde den Flächeninhalt aller Flächen, die von den Graphen von f und g eingeschlossen werden.",
     givenLatex: ["f(x)=x^3-4x+3", "g(x)=4-0{,}5x^2"],
     tips: [
-      "Setze \\(f(x)=g(x)\\). Daraus entsteht \\(x^3+0{,}5x^2-4x-1=0\\).",
-      "Die drei Schnittpunkte sind numerisch \\(x_1\\approx-2{,}14648\\), \\(x_2\\approx-0{,}24615\\) und \\(x_3\\approx1{,}89263\\).",
-      "Zwischen diesen drei Schnittpunkten liegen genau zwei eingeschlossene Teilflaechen.",
-      "Deshalb gilt \\(A=\\left|\\int_{x_1}^{x_2}(f-g)\\,dx\\right|+\\left|\\int_{x_2}^{x_3}(f-g)\\,dx\\right|\\)."
+      "Hier musst du zuerst die Schnittpunkte finden, weil genau zwischen ihnen die eingeschlossenen Flächen liegen.",
+      "Aus \\(f(x)=g(x)\\) wird \\(x^3+0{,}5x^2-4x-1=0\\). Diese Gleichung hat drei reelle Lösungen.",
+      "Numerisch bekommst du ungefähr \\(x_1\\approx-2{,}14648\\), \\(x_2\\approx-0{,}24615\\) und \\(x_3\\approx1{,}89263\\). Dadurch entstehen genau zwei eingeschlossene Teilflächen.",
+      "Rechne deshalb nicht alles auf einmal, sondern erst die linke und dann die rechte Teilfläche: \\(A=\\left|\\int_{x_1}^{x_2}(f-g)\\,dx\\right|+\\left|\\int_{x_2}^{x_3}(f-g)\\,dx\\right|\\)."
     ],
     answer: {
       target: 8.375415651009177,
       tolerance: 0.03,
-      placeholder: "z. B. 8.375",
+      placeholder: "z. B. 8,375",
       errorHint:
-        "Noch nicht richtig. Bestimme zuerst alle drei Schnittpunkte numerisch und rechne danach die zwei Teilflaechen getrennt."
+        "Noch nicht richtig. Bestimme zuerst alle drei Schnittpunkte und rechne dann die beiden Teilflächen getrennt."
     },
     geogebra: {
       window: { xMin: -3.1, xMax: 2.8, yMin: -6.5, yMax: 8.2 },
@@ -365,49 +366,127 @@ const GROUPS = {
       "Die Grafik markiert genau die beiden eingeschlossenen Bereiche zwischen den drei Schnittpunkten.",
     casSteps: [
       {
-        title: "Funktionen anlegen",
+        title: "Funktionen eingeben",
         lines: ["f(x):=x^3-4*x+3", "g(x):=4-0.5*x^2"],
-        note: "Lege beide Funktionen an."
+        note: "Lege zuerst beide Funktionen an."
       },
       {
-        title: "Linker Schnittpunkt",
-        lines: ["x1:=nSolve(f(x)=g(x),x,-3)"],
-        note: "Ein Startwert links liefert den ersten Schnittpunkt."
+        title: "Schnittpunkte holen",
+        lines: ["polyroots(x^3+0.5*x^2-4*x-1,x)"],
+        note: "Du gehst wie im Handout vor: erst zu \\(f(x)-g(x)=0\\) umformen, dann \\(polyroots\\) benutzen."
       },
       {
-        title: "Mittlerer Schnittpunkt",
-        lines: ["x2:=nSolve(f(x)=g(x),x,0)"],
-        note: "Mit einem Startwert nahe 0 findest du den mittleren Schnittpunkt."
+        title: "Grenzen speichern",
+        lines: ["x1:=-2.14648", "x2:=-0.24615", "x3:=1.89263"],
+        note: "Die drei Näherungswerte aus der Ausgabe speicherst du ab."
       },
       {
-        title: "Rechter Schnittpunkt",
-        lines: ["x3:=nSolve(f(x)=g(x),x,2)"],
-        note: "Ein Startwert rechts liefert den dritten Schnittpunkt."
+        title: "Linke Teilfläche",
+        lines: ["A1:=abs(∫(f(x)-g(x),x,x1,x2))"],
+        note: "Erst berechnest du die linke eingeschlossene Fläche."
       },
       {
-        title: "Erste Teilflaeche",
-        lines: ["A1:=abs(int(f(x)-g(x),x,x1,x2))"],
-        note: "Berechne zuerst die linke Teilflaeche."
+        title: "Rechte Teilfläche",
+        lines: ["A2:=abs(∫(f(x)-g(x),x,x2,x3))"],
+        note: "Dann rechnest du die rechte Fläche."
       },
       {
-        title: "Zweite Teilflaeche",
-        lines: ["A2:=abs(int(f(x)-g(x),x,x2,x3))"],
-        note: "Danach folgt die rechte Teilflaeche."
-      },
-      {
-        title: "Gesamtflaeche",
+        title: "Alles zusammen",
         lines: ["A:=A1+A2"],
-        note: "Addiere die beiden positiven Teilflaechen."
+        note: "Jetzt addierst du beide Teilflächen zur Gesamtfläche."
       }
     ],
     casNote:
-      "Bei dieser Gruppe ist die numerische Nullstellensuche der Schluessel zum Rest."
+      "Bei dieser Aufgabe ist die Nullstellensuche der eigentliche Startpunkt. Danach läuft der Rest wie bei den einfacheren Aufgaben."
+  }
+};
+
+const EXAMPLES = {
+  xaxis: {
+    id: "xaxis",
+    title: "Beispiel 1: Fläche zwischen Graph und x-Achse",
+    teaser: "Ein sehr anschauliches Beispiel mit einer Parabel und genau einer eingeschlossenen Fläche.",
+    givenLatex: ["f(x)=-x^2+4"],
+    steps: [
+      {
+        title: "Nullstellen finden",
+        body:
+          "Zuerst schaust du, wo der Graph die x-Achse schneidet. Aus \\(-x^2+4=0\\) folgt \\(x=-2\\) und \\(x=2\\). Genau diese beiden Stellen begrenzen die Fläche."
+      },
+      {
+        title: "Überlegen, ob man aufteilen muss",
+        body:
+          "Zwischen \\(-2\\) und \\(2\\) liegt der Graph komplett über der x-Achse. Deshalb musst du hier nicht in Teilflächen zerlegen."
+      },
+      {
+        title: "Integral aufschreiben",
+        body:
+          "Jetzt kannst du die Fläche direkt mit einem Integral berechnen: \\(A=\\int_{-2}^{2}(-x^2+4)\\,dx\\)."
+      },
+      {
+        title: "Ergebnis deuten",
+        body:
+          "Wenn du das Integral ausrechnest, bekommst du \\(A=\\frac{32}{3}\\approx10{,}67\\). Das ist der Flächeninhalt in Flächeneinheiten."
+      }
+    ],
+    geogebra: {
+      window: { xMin: -3.5, xMax: 3.5, yMin: -1.5, yMax: 5.5 },
+      commands: [
+        "f(x)=-x^2+4",
+        "P1=(-2,0)",
+        "P2=(2,0)",
+        "I1=Integral(f,-2,2)"
+      ]
+    },
+    geoNote:
+      "Hier sieht man gut: Die Fläche liegt komplett oberhalb der x-Achse, deshalb reicht ein einziges Integral."
+  },
+  between: {
+    id: "between",
+    title: "Beispiel 2: Fläche zwischen zwei Graphen",
+    teaser: "Eine Gerade und eine Parabel liefern eine einfache, geschlossene Fläche.",
+    givenLatex: ["f(x)=x+3", "g(x)=x^2+1"],
+    steps: [
+      {
+        title: "Schnittpunkte finden",
+        body:
+          "Du setzt zuerst die beiden Funktionen gleich: \\(x+3=x^2+1\\). Daraus folgt \\(x^2-x-2=0\\), also \\(x=-1\\) und \\(x=2\\)."
+      },
+      {
+        title: "Oberen Graphen bestimmen",
+        body:
+          "Zwischen \\(-1\\) und \\(2\\) liegt die Gerade \\(f(x)=x+3\\) über der Parabel \\(g(x)=x^2+1\\). Das ist wichtig, weil du für die Fläche immer \\(\\text{oben}-\\text{unten}\\) rechnest."
+      },
+      {
+        title: "Integral aufschreiben",
+        body:
+          "Damit lautet der Ansatz \\(A=\\int_{-1}^{2}(f(x)-g(x))\\,dx=\\int_{-1}^{2}(x+3-(x^2+1))\\,dx\\)."
+      },
+      {
+        title: "Ergebnis deuten",
+        body:
+          "Nach dem Rechnen bekommst du \\(A=\\frac{9}{2}=4{,}5\\). Das ist die gesamte eingeschlossene Fläche zwischen den beiden Graphen."
+      }
+    ],
+    geogebra: {
+      window: { xMin: -2.2, xMax: 3, yMin: -0.5, yMax: 6.5 },
+      commands: [
+        "f(x)=x+3",
+        "g(x)=x^2+1",
+        "P1=(-1,2)",
+        "P2=(2,5)",
+        "I1=IntegralBetween(f,g,-1,2)"
+      ]
+    },
+    geoNote:
+      "Auch hier sieht man schön, warum zuerst die Schnittpunkte bestimmt werden: Sie begrenzen die Fläche."
   }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   renderIndexPage();
   renderDetailPage();
+  renderExamplesPage();
 });
 
 function renderIndexPage() {
@@ -434,13 +513,36 @@ function renderIndexPage() {
         </div>
         <p>${group.teaser}</p>
         <div class="card-actions">
-          <a class="button-link" href="gruppe.html?group=${group.id}">Gruppe oeffnen</a>
+          <a class="button-link" href="gruppe.html?group=${group.id}">Gruppe öffnen</a>
         </div>
       </article>
     `;
   }).join("");
 
   renderMath(grid);
+
+  const exampleGrid = document.querySelector("#example-grid");
+  if (exampleGrid) {
+    exampleGrid.innerHTML = Object.values(EXAMPLES).map((example, index) => {
+      return `
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <h2>${example.title}</h2>
+              <p class="group-kind">${example.teaser}</p>
+            </div>
+            <div class="group-badge" aria-hidden="true">${index + 1}</div>
+          </div>
+          <p>${example.givenLatex.map((line) => escapeHtml(line)).join("<br>")}</p>
+          <div class="card-actions">
+            <a class="button-link" href="beispiele.html#example-${example.id}">Beispiel öffnen</a>
+          </div>
+        </article>
+      `;
+    }).join("");
+
+    renderMath(exampleGrid);
+  }
 }
 
 function renderDetailPage() {
@@ -457,7 +559,7 @@ function renderDetailPage() {
     root.innerHTML = `
       <section class="empty-state">
         <h2>Diese Gruppe gibt es nicht.</h2>
-        <p>Bitte kehre zur Startseite zurueck und waehle eine Gruppe von A bis F.</p>
+        <p>Bitte kehre zur Startseite zurück und wähle eine Gruppe von A bis F.</p>
         <div class="card-actions">
           <a class="button-link" href="index.html">Zur Startseite</a>
         </div>
@@ -503,11 +605,11 @@ function renderDetailPage() {
         <details class="tips-panel fold-panel" open>
           <summary class="fold-summary">
             <span class="fold-summary-label">Tipps</span>
-            <span class="fold-summary-note">schrittweise oeffnen</span>
+            <span class="fold-summary-note">schrittweise öffnen</span>
           </summary>
           <div class="fold-content">
             <p class="eyebrow">Tipps</p>
-            <h2>Schritt fuer Schritt</h2>
+            <h2>Schritt für Schritt</h2>
             <div class="tips-list">
               ${group.tips.map((tip, index) => {
                 return `
@@ -523,16 +625,16 @@ function renderDetailPage() {
 
         <details class="solution-panel fold-panel" open>
           <summary class="fold-summary">
-            <span class="fold-summary-label">Loesung pruefen</span>
+            <span class="fold-summary-label">Lösung prüfen</span>
             <span class="fold-summary-note">Antwort eingeben</span>
           </summary>
           <div class="fold-content">
-            <p class="eyebrow">Antwort pruefen</p>
-            <h2>Flaecheninhalt eingeben</h2>
+            <p class="eyebrow">Antwort prüfen</p>
+            <h2>Flächeninhalt eingeben</h2>
             <p class="note">
-              Dezimalzahlen und Ausdruecke wie <code>316/15</code> oder <code>16*sqrt(2)/15</code> werden akzeptiert.
+              Dezimalzahlen und Ausdrücke wie <code>316/15</code> oder <code>16*sqrt(2)/15</code> werden akzeptiert.
             </p>
-            <label class="answer-label" for="answer-input">Deine Loesung</label>
+            <label class="answer-label" for="answer-input">Deine Lösung</label>
             <div class="answer-form">
               <input
                 id="answer-input"
@@ -542,8 +644,8 @@ function renderDetailPage() {
                 autocomplete="off"
                 placeholder="${group.answer.placeholder}"
               >
-              <button class="button-link" type="button" data-check-answer>Pruefen</button>
-              <button class="nav-link is-secondary" type="button" data-reset-answer>Eingabe loeschen</button>
+              <button class="button-link" type="button" data-check-answer>Prüfen</button>
+              <button class="nav-link is-secondary" type="button" data-reset-answer>Eingabe löschen</button>
             </div>
             <div id="answer-feedback" class="answer-feedback" hidden></div>
           </div>
@@ -564,7 +666,7 @@ function renderDetailPage() {
             <div class="geo-stage">
               <div id="ggb-container" class="ggb-frame" aria-label="GeoGebra-Ansicht">
                 <div class="ggb-placeholder">
-                  Grafik wird erst beim Oeffnen dieses Bereichs geladen.
+                  Grafik wird erst beim Öffnen dieses Bereichs geladen.
                 </div>
               </div>
               <p class="geo-note">${group.geoCommandsNote}</p>
@@ -615,7 +717,7 @@ function renderDetailPage() {
                 <button class="nav-link is-secondary" type="button" data-copy-cas-all>Alle Schritte kopieren</button>
               </div>
               <div class="cas-nav">
-                <button class="nav-link is-secondary" type="button" data-cas-prev>Zurueck</button>
+                <button class="nav-link is-secondary" type="button" data-cas-prev>Zurück</button>
                 <button class="nav-link" type="button" data-cas-next>Weiter</button>
               </div>
               <p class="cas-note">${group.casNote}</p>
@@ -627,7 +729,7 @@ function renderDetailPage() {
 
     <nav class="nav-bar" aria-label="Gruppennavigation">
       <a class="nav-link is-secondary" href="gruppe.html?group=${neighbors.previous}">Vorherige Gruppe: ${neighbors.previous}</a>
-      <a class="nav-link" href="gruppe.html?group=${neighbors.next}">Naechste Gruppe: ${neighbors.next}</a>
+      <a class="nav-link" href="gruppe.html?group=${neighbors.next}">Nächste Gruppe: ${neighbors.next}</a>
     </nav>
   `;
 
@@ -650,7 +752,8 @@ function setupAnswerChecker(group) {
   const showFeedback = (kind, message) => {
     feedback.hidden = false;
     feedback.className = `answer-feedback feedback-${kind}`;
-    feedback.textContent = message;
+    feedback.innerHTML = message;
+    renderMath(feedback);
   };
 
   const validate = () => {
@@ -658,7 +761,7 @@ function setupAnswerChecker(group) {
     if (value === null) {
       showFeedback(
         "bad",
-        "Die Eingabe konnte nicht gelesen werden. Erlaubt sind Dezimalzahlen, Brueche, sqrt(...), abs(...) und pi."
+        "Die Eingabe konnte nicht gelesen werden. Erlaubt sind Dezimalzahlen, Brüche, sqrt(...), abs(...) und pi."
       );
       return;
     }
@@ -667,7 +770,7 @@ function setupAnswerChecker(group) {
     const negativeDelta = Math.abs(value + group.answer.target);
 
     if (negativeDelta <= group.answer.tolerance) {
-      showFeedback("close", "Fast richtig. Beim Flaecheninhalt muss das Ergebnis positiv sein.");
+      showFeedback("close", "Fast richtig. Beim Flächeninhalt muss das Ergebnis positiv sein.");
       return;
     }
 
@@ -677,7 +780,7 @@ function setupAnswerChecker(group) {
     }
 
     if (delta <= group.answer.tolerance * 4) {
-      showFeedback("close", "Fast richtig. Pruefe noch einmal Rundung, Betrag oder die letzte Summe.");
+      showFeedback("close", "Fast richtig. Prüfe noch einmal Rundung, Betrag oder die letzte Summe.");
       return;
     }
 
@@ -772,7 +875,7 @@ async function copyText(button, text, successLabel) {
     await navigator.clipboard.writeText(text);
     button.textContent = successLabel;
   } catch (_error) {
-    button.textContent = "Kopieren nicht moeglich";
+    button.textContent = "Kopieren nicht möglich";
   }
 
   window.setTimeout(() => {
@@ -796,7 +899,7 @@ function setupGeoGebra(group) {
         <div class="empty-state" style="margin: 0; height: 100%; display: grid; place-items: center;">
           <div>
             <h3>GeoGebra konnte nicht geladen werden.</h3>
-            <p>Bitte pruefe die Internetverbindung oder lade die Seite neu.</p>
+            <p>Bitte prüfe die Internetverbindung oder lade die Seite neu.</p>
           </div>
         </div>
       `;
@@ -948,7 +1051,7 @@ function evaluateMathExpression(rawValue) {
 
   expression = expression.split("=").pop();
   expression = expression.replace(/\s+/g, "");
-  expression = expression.replace(/flaecheneinheiten|flacheneinheiten|fe/g, "");
+  expression = expression.replace(/flächeneinheiten|flaecheneinheiten|flacheneinheiten|fe/g, "");
   expression = expression.replace(/sqrt/g, "S");
   expression = expression.replace(/pi/g, "P");
   expression = expression.replace(/abs/g, "A");
@@ -986,12 +1089,226 @@ function getNeighbors(id) {
 
 function getPraiseMessage() {
   const messages = [
-    "Stark geloest. Dein Flaecheninhalt ist richtig.",
+    "Stark gelöst. Dein Flächeninhalt ist richtig.",
     "Sehr gut gerechnet. Das Ergebnis passt.",
-    "Klasse. Genau so soll der Flaecheninhalt herauskommen.",
-    "Sauber gearbeitet. Deine Loesung stimmt."
+    "Klasse. Genau so soll der Flächeninhalt herauskommen.",
+    "Sauber gearbeitet. Deine Lösung stimmt."
   ];
   return messages[Math.floor(Math.random() * messages.length)];
+}
+
+function renderExamplesPage() {
+  const root = document.querySelector("#examples-root");
+  if (!root) {
+    return;
+  }
+
+  root.innerHTML = Object.values(EXAMPLES).map((example) => {
+    return `
+      <section id="example-${example.id}" class="example-section">
+        <div class="detail-grid">
+          <div>
+            <article class="task-panel">
+              <p class="eyebrow">Beispiel</p>
+              <h2>${example.title}</h2>
+              <p class="task-text">${example.teaser}</p>
+              <ul class="math-list">
+                ${example.givenLatex.map((line) => `<li>\\(${line}\\)</li>`).join("")}
+              </ul>
+            </article>
+
+            <article class="tips-panel">
+              <p class="eyebrow">Erklärung</p>
+              <h2>Schritt für Schritt</h2>
+              <div class="cas-step-tabs" role="tablist" aria-label="Beispielschritte">
+                ${example.steps.map((step, index) => {
+                  return `
+                    <button
+                      class="cas-step-tab${index === 0 ? " is-active" : ""}"
+                      type="button"
+                      data-example-step="${example.id}:${index}"
+                    >
+                      ${index + 1}
+                    </button>
+                  `;
+                }).join("")}
+              </div>
+              <div class="example-screen">
+                <div class="cas-screen-header">
+                  <span id="example-counter-${example.id}">Schritt 1 / ${example.steps.length}</span>
+                  <span id="example-title-${example.id}">${example.steps[0].title}</span>
+                </div>
+                <div id="example-body-${example.id}" class="example-body">${example.steps[0].body}</div>
+              </div>
+              <div class="cas-nav">
+                <button class="nav-link is-secondary" type="button" data-example-prev="${example.id}">Zurück</button>
+                <button class="nav-link" type="button" data-example-next="${example.id}">Weiter</button>
+              </div>
+            </article>
+          </div>
+
+          <div>
+            <details class="geo-panel fold-panel" data-example-geo-panel="${example.id}" open>
+              <summary class="fold-summary">
+                <span class="fold-summary-label">Grafik zum Beispiel</span>
+                <span class="fold-summary-note">mit Fläche und Punkten</span>
+              </summary>
+              <div class="fold-content">
+                <div class="geo-header">
+                  <p class="eyebrow">GeoGebra</p>
+                  <button class="reload-button" type="button" data-example-reload="${example.id}">Grafik neu laden</button>
+                </div>
+                <div class="geo-stage">
+                  <div id="example-ggb-${example.id}" class="ggb-frame" aria-label="GeoGebra-Ansicht zum Beispiel"></div>
+                  <p class="geo-note">${example.geoNote}</p>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+    `;
+  }).join("");
+
+  renderMath(root);
+  Object.values(EXAMPLES).forEach((example) => {
+    setupExampleStepper(example);
+    setupExampleGeo(example);
+  });
+}
+
+function setupExampleStepper(example) {
+  const tabs = Array.from(document.querySelectorAll(`[data-example-step^="${example.id}:"]`));
+  const prevButton = document.querySelector(`[data-example-prev="${example.id}"]`);
+  const nextButton = document.querySelector(`[data-example-next="${example.id}"]`);
+  const title = document.querySelector(`#example-title-${example.id}`);
+  const counter = document.querySelector(`#example-counter-${example.id}`);
+  const body = document.querySelector(`#example-body-${example.id}`);
+
+  if (!tabs.length || !prevButton || !nextButton || !title || !counter || !body) {
+    return;
+  }
+
+  let activeIndex = 0;
+
+  const renderStep = () => {
+    const step = example.steps[activeIndex];
+    title.textContent = step.title;
+    counter.textContent = `Schritt ${activeIndex + 1} / ${example.steps.length}`;
+    body.innerHTML = step.body;
+    tabs.forEach((tab, index) => {
+      tab.classList.toggle("is-active", index === activeIndex);
+    });
+    prevButton.disabled = activeIndex === 0;
+    nextButton.disabled = activeIndex === example.steps.length - 1;
+    renderMath(body);
+  };
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => {
+      activeIndex = index;
+      renderStep();
+    });
+  });
+
+  prevButton.addEventListener("click", () => {
+    activeIndex = Math.max(0, activeIndex - 1);
+    renderStep();
+  });
+
+  nextButton.addEventListener("click", () => {
+    activeIndex = Math.min(example.steps.length - 1, activeIndex + 1);
+    renderStep();
+  });
+
+  renderStep();
+}
+
+function setupExampleGeo(example) {
+  const panel = document.querySelector(`[data-example-geo-panel="${example.id}"]`);
+  const container = document.querySelector(`#example-ggb-${example.id}`);
+  const reloadButton = document.querySelector(`[data-example-reload="${example.id}"]`);
+
+  if (!panel || !container) {
+    return;
+  }
+
+  let hasLoaded = false;
+
+  const injectApplet = () => {
+    if (typeof window.GGBApplet !== "function") {
+      container.innerHTML = `
+        <div class="ggb-placeholder">
+          GeoGebra konnte gerade nicht geladen werden.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = "";
+    const width = Math.max(Math.min(container.clientWidth || 900, 960), 320);
+    const height = Math.max(Math.round(width * 0.66), 360);
+
+    const params = {
+      appName: "classic",
+      perspective: "G",
+      width,
+      height,
+      showToolBar: false,
+      showAlgebraInput: false,
+      showMenuBar: false,
+      showResetIcon: true,
+      showFullscreenButton: false,
+      showSuggestionButtons: false,
+      allowStyleBar: false,
+      enableShiftDragZoom: true,
+      enableRightClick: false,
+      preventFocus: false,
+      useBrowserForJS: true,
+      borderColor: "#d9e5ff",
+      appletOnLoad(api) {
+        api.evalCommand('SetPerspective("G")');
+        api.evalCommand("ShowGrid(false)");
+        api.evalCommand("ShowAxes(true)");
+        api.setCoordSystem(
+          example.geogebra.window.xMin,
+          example.geogebra.window.xMax,
+          example.geogebra.window.yMin,
+          example.geogebra.window.yMax
+        );
+        example.geogebra.commands.forEach((command) => api.evalCommand(command));
+        styleGeoObjects(api);
+      }
+    };
+
+    const applet = new window.GGBApplet(params, true);
+    applet.inject(container.id, "preferhtml5");
+  };
+
+  const ensureApplet = () => {
+    if (hasLoaded) {
+      return;
+    }
+    hasLoaded = true;
+    injectApplet();
+  };
+
+  if (panel.open) {
+    ensureApplet();
+  }
+
+  panel.addEventListener("toggle", () => {
+    if (panel.open) {
+      ensureApplet();
+    }
+  });
+
+  if (reloadButton) {
+    reloadButton.addEventListener("click", () => {
+      hasLoaded = true;
+      injectApplet();
+    });
+  }
 }
 
 function escapeHtml(value) {
