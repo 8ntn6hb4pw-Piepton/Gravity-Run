@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Integraltrainer - Gruppe</title>
+    <meta
+      name="description"
+      content="Detailseite mit Aufgabe, Tipps, GeoGebra und TI-Nspire-CAS-aehnlicher Eingabehilfe."
+    >
+    <link rel="stylesheet" href="styles.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.42/dist/katex.min.css"
+      integrity="sha384-DVShYR21zvUU4zL2VjLlIbYSeiS43grntDO/Sm1DwmGGXKxGmvBlXWZ9lnyKhota"
+      crossorigin="anonymous"
+    >
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.42/dist/katex.min.js"
+      integrity="sha384-qrraMcfiHZOij7s14X818B0oe4NpSugmOO0Q0fmDYBWV+6c10vA26yjevqe5zD0D"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.42/dist/contrib/auto-render.min.js"
+      integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.geogebra.org/apps/deployggb.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body class="page-detail">
+    <div class="page-shell">
+      <header class="detail-header">
+        <a class="back-link" href="index.html">Zurueck zur Gruppenwahl</a>
+        <div class="detail-header-copy">
+          <p id="group-kicker" class="eyebrow">Gruppe</p>
+          <h1 id="group-title">Aufgabe wird geladen</h1>
+          <p id="group-subtitle" class="hero-copy"></p>
+        </div>
+      </header>
+
+      <main id="group-detail" class="detail-layout" aria-live="polite"></main>
+    </div>
+  </body>
+</html>

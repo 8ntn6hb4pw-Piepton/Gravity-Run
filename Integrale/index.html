@@ -1,1 +1,53 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Integraltrainer - Gruppenwahl</title>
+    <meta
+      name="description"
+      content="Interaktive Uebungsseite zu Flaechen zwischen Graphen und der x-Achse oder zwischen zwei Funktionen."
+    >
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body class="page-home">
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">Integraltrainer</p>
+        <h1>Flaechen mit Integralen untersuchen</h1>
+        <p class="hero-copy">
+          Waehle eine Gruppe und springe direkt zur passenden Aufgabenseite mit
+          Hinweisen, GeoGebra-Visualisierung und einer TI-Nspire-CAS-aehnlichen
+          Befehlsansicht.
+        </p>
+      </header>
 
+      <main>
+        <section class="panel intro-panel">
+          <div>
+            <h2>So ist die Seite aufgebaut</h2>
+            <p>
+              Auf jeder Detailseite findest du die Originalaufgabe, mehrere
+              aufklappbare Tipps, eine markierte GeoGebra-Darstellung und eine
+              CAS-Konsole mit typischen Eingaben.
+            </p>
+          </div>
+          <div class="legend">
+            <span class="chip chip-blue">Graph und x-Achse</span>
+            <span class="chip chip-sand">Zwei Graphen</span>
+            <span class="chip chip-mint">Tipps aufklappbar</span>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>Gruppen</h2>
+            <p>Startpunkt fuer die einzelnen Aufgaben</p>
+          </div>
+          <div id="group-grid" class="group-grid" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
