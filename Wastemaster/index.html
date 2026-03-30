@@ -12,35 +12,38 @@
         <div class="landscape-hint">
           <p>Bitte quer halten fuer das beste Spielgefuehl.</p>
         </div>
-        <canvas id="game" width="1280" height="720" aria-label="Spielbereich"></canvas>
-        <section class="touch-controls" aria-label="Touch-Steuerung">
-          <div class="touch-pad">
-            <button class="touch-btn drive" data-key="ArrowLeft" type="button">Links</button>
-            <button class="touch-btn drive" data-key="ArrowRight" type="button">Rechts</button>
-          </div>
-          <div class="touch-actions">
-            <button class="touch-btn suction" data-key=" " data-hold="true" type="button">Saugen</button>
-            <button class="touch-btn press" data-action="press" type="button">Pressen</button>
-            <button class="touch-btn reset" data-action="reset" type="button">Reset</button>
-          </div>
-        </section>
-        <section class="start-screen" id="startScreen">
-          <div class="start-card">
-            <p class="eyebrow">Schrottsammler</p>
-            <h1>Raumstation Start</h1>
-            <p class="copy">
-              Bewege den Roboter, sauge Muell bodennah ein und presse ihn zu Wuerfeln.
-            </p>
-            <div class="start-list">
-              <p><strong>A / D</strong> oder Pfeile links / rechts: fahren</p>
-              <p><strong>Leertaste halten</strong>: Sauger ausfahren und einsaugen</p>
+        <div class="game-stage" id="gameStage">
+          <canvas id="game" width="1280" height="720" aria-label="Spielbereich"></canvas>
+          <section class="touch-controls" aria-label="Touch-Steuerung">
+            <div class="touch-pad">
+              <button class="touch-btn drive" data-key="ArrowLeft" type="button">Links</button>
+              <button class="touch-btn drive" data-key="ArrowRight" type="button">Rechts</button>
+            </div>
+            <div class="touch-actions">
+              <button class="touch-btn suction" data-key=" " data-hold="true" type="button">Saugen</button>
+              <button class="touch-btn press" data-action="press" type="button">Pressen</button>
+              <button class="touch-btn reset" data-action="reset" type="button">Reset</button>
+            </div>
+          </section>
+          <section class="start-screen" id="startScreen">
+            <div class="start-card">
+              <p class="eyebrow">Schrottsammler</p>
+              <h1>Raumstation Start</h1>
+              <p class="copy">
+                Bewege den Roboter, sauge Muell bodennah ein und presse ihn zu Wuerfeln.
+              </p>
+              <div class="start-list">
+                <p><strong>A / D</strong> oder Pfeile links / rechts: fahren</p>
+                <p><strong>Leertaste halten</strong>: Sauger ausfahren und einsaugen</p>
               <p><strong>W</strong>: aktuelle Ladung pressen</p>
               <p><strong>R</strong>: Runde neu starten</p>
               <p><strong>Smartphone quer</strong>: grosse Tasten unter dem Spiel verwenden</p>
+              <p><strong>Power-Ups</strong>: rechts blinkt rot, wenn ein Power-Up anforderbar ist</p>
             </div>
-            <button id="startButton" type="button">Start</button>
-          </div>
-        </section>
+              <button id="startButton" type="button">Start</button>
+            </div>
+          </section>
+        </div>
       </section>
     </main>
 
