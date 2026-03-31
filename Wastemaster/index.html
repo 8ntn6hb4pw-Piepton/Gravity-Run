@@ -15,14 +15,19 @@
         <div class="game-stage" id="gameStage">
           <canvas id="game" width="1280" height="720" aria-label="Spielbereich"></canvas>
           <section class="touch-controls" aria-label="Touch-Steuerung">
-            <div class="touch-pad">
-              <button class="touch-btn drive" data-key="ArrowLeft" type="button">Links</button>
-              <button class="touch-btn drive" data-key="ArrowRight" type="button">Rechts</button>
+            <button class="touch-reset" id="mobileReset" type="button">Reset</button>
+            <div class="touch-drive-field" id="driveField" aria-label="Fahrfeld">
+              <div class="drive-track"></div>
+              <div class="drive-thumb" id="driveThumb"></div>
+              <p class="drive-caption">Unten wischen zum Fahren</p>
             </div>
-            <div class="touch-actions">
-              <button class="touch-btn suction" data-key=" " data-hold="true" type="button">Saugen</button>
-              <button class="touch-btn press" data-action="press" type="button">Pressen</button>
-              <button class="touch-btn reset" data-action="reset" type="button">Reset</button>
+            <div class="touch-suction-control" id="suctionControl" aria-label="Saugen und Pressen">
+              <div class="suction-lane"></div>
+              <div class="suction-pull" id="suctionPull"></div>
+              <div class="suction-core" id="suctionCore">
+                <span class="suction-title">Saugen</span>
+                <span class="suction-hint">nach unten ziehen = pressen</span>
+              </div>
             </div>
           </section>
           <section class="start-screen" id="startScreen">
@@ -37,7 +42,8 @@
                 <p><strong>Leertaste halten</strong>: Sauger ausfahren und einsaugen</p>
               <p><strong>W</strong>: aktuelle Ladung pressen</p>
               <p><strong>R</strong>: Runde neu starten</p>
-              <p><strong>Smartphone quer</strong>: grosse Tasten unter dem Spiel verwenden</p>
+              <p><strong>Smartphone quer</strong>: unten wischen zum Fahren, rechts halten zum Saugen</p>
+              <p><strong>Smartphone</strong>: Saugen-Kreis rechts nach unten ziehen = Pressen</p>
               <p><strong>Power-Ups</strong>: rechts blinkt rot, wenn ein Power-Up anforderbar ist</p>
             </div>
               <button id="startButton" type="button">Start</button>

@@ -4,10 +4,24 @@ const gameStageEl = document.getElementById("gameStage");
 
 const startScreenEl = document.getElementById("startScreen");
 const startButtonEl = document.getElementById("startButton");
-const touchButtons = Array.from(document.querySelectorAll(".touch-btn"));
+const driveFieldEl = document.getElementById("driveField");
+const driveThumbEl = document.getElementById("driveThumb");
+const suctionControlEl = document.getElementById("suctionControl");
+const suctionCoreEl = document.getElementById("suctionCore");
+const suctionPullEl = document.getElementById("suctionPull");
+const mobileResetEl = document.getElementById("mobileReset");
 
 let audioContext = null;
 let audioUnlocked = false;
+
+const mobileTouchState = {
+  drivePointerId: null,
+  driveValue: 0,
+  suctionPointerId: null,
+  suctionStartY: 0,
+  suctionPressTriggered: false,
+  suctionPull: 0,
+};
 
 const world = {
   width: canvas.width,
@@ -1896,6 +1910,11 @@ function showPowerupNotice(text, color = "#9feaff") {
 }
 
 function resetYard() {
+  resetTouchDrive();
+  mobileTouchState.suctionPointerId = null;
+  mobileTouchState.suctionPressTriggered = false;
+  releaseVirtualKey(" ");
+  setSuctionPull(0);
   robot.x = 260;
   robot.y = world.floorY - 54;
   robot.velocityX = 0;
@@ -2086,6 +2105,43 @@ function releaseVirtualKey(key) {
   world.keys[key] = false;
 }
 
+function updateDriveTouchUi() {
+  if (!driveFieldEl) {
+    return;
+  }
+  const percent = 50 + mobileTouchState.driveValue * 40;
+  driveFieldEl.style.setProperty("--drive-thumb-x", `${percent}%`);
+  driveFieldEl.classList.toggle("is-active", Math.abs(mobileTouchState.driveValue) > 0.05);
+}
+
+function setTouchDriveFromValue(value) {
+  mobileTouchState.driveValue = clamp(value, -1, 1);
+  releaseVirtualKey("ArrowLeft");
+  releaseVirtualKey("ArrowRight");
+
+  if (mobileTouchState.driveValue <= -0.16) {
+    pressVirtualKey("ArrowLeft");
+  } else if (mobileTouchState.driveValue >= 0.16) {
+    pressVirtualKey("ArrowRight");
+  }
+
+  updateDriveTouchUi();
+}
+
+function resetTouchDrive() {
+  mobileTouchState.drivePointerId = null;
+  setTouchDriveFromValue(0);
+}
+
+function setSuctionPull(value) {
+  mobileTouchState.suctionPull = clamp(value, 0, 1);
+  if (suctionControlEl) {
+    suctionControlEl.style.setProperty("--suction-pull", mobileTouchState.suctionPull.toFixed(3));
+    suctionControlEl.classList.toggle("is-active", mobileTouchState.suctionPull > 0 || !!world.keys[" "]);
+    suctionControlEl.classList.toggle("is-triggered", mobileTouchState.suctionPressTriggered);
+  }
+}
+
 function updateRobot() {
   if (world.gameOver || world.intro.active) {
     robot.velocityX *= 0.86;
@@ -2094,8 +2150,9 @@ function updateRobot() {
   }
 
   const suctionActive = !!world.keys[" "];
-  const outOfFuel = world.fuel <= 0.01 || world.refuel.active;
-  const engineActive = !outOfFuel;
+  const outOfFuel = world.fuel <= 0.01;
+  const engineActive = !outOfFuel || world.refuel.active;
+  const engineFactor = world.refuel.active ? 0.62 : 1;
   const broken = world.maintenance.active;
   const driveStats = getDriveStats();
 
@@ -2106,13 +2163,13 @@ function updateRobot() {
   const zeroGControl = world.zeroGTimer > 0 ? 0.09 : 0;
 
   if (moveLeft && engineActive) {
-    robot.velocityX -= acceleration + zeroGControl;
+    robot.velocityX -= (acceleration + zeroGControl) * engineFactor;
     robot.swayVelocity -= 0.01;
     robot.direction = -1;
   }
 
   if (moveRight && engineActive) {
-    robot.velocityX += acceleration + zeroGControl;
+    robot.velocityX += (acceleration + zeroGControl) * engineFactor;
     robot.swayVelocity += 0.01;
     robot.direction = 1;
   }
@@ -2124,10 +2181,10 @@ function updateRobot() {
   if (world.ship.shakeTimer > 0 && world.zeroGTimer === 0) {
     robot.velocityX += Math.sin(world.frame * 1.8) * 0.06;
   }
-  robot.velocityX = clamp(robot.velocityX, -topSpeed, topSpeed);
+  robot.velocityX = clamp(robot.velocityX, -topSpeed * engineFactor, topSpeed * engineFactor);
   robot.x = clamp(robot.x + robot.velocityX, 70, world.width - 110);
   const targetExtension =
-    suctionActive && robot.cargo.length < world.cargoCapacity && !outOfFuel && !broken ? 1 : 0;
+    suctionActive && robot.cargo.length < world.cargoCapacity && engineActive && !broken ? 1 : 0;
   robot.intakeExtension += (targetExtension - robot.intakeExtension) * 0.24;
   robot.intakePulse += 0.1 + robot.intakeExtension * 0.32 + Math.abs(robot.velocityX) * 0.03;
   robot.swayVelocity += (-robot.velocityX * 0.012 - robot.sway) * 0.04;
@@ -2653,6 +2710,7 @@ function triggerRefuel() {
   world.refuel.phase = "descending";
   world.refuel.y = -120;
   world.refuel.timer = 240;
+  showPowerupNotice("TANKT NACH", "#9feaff");
 }
 
 function triggerZeroG() {
@@ -3052,6 +3110,7 @@ function updateRefuelBot() {
     if (hose.y < -110) {
       hose.active = false;
       hose.phase = "idle";
+      showPowerupNotice("TANK VOLL", "#b7ff93");
     }
   }
 }
@@ -6706,51 +6765,121 @@ canvas.addEventListener("click", (event) => {
 window.addEventListener("resize", resizeGameStage);
 window.addEventListener("orientationchange", resizeGameStage);
 
-for (const button of touchButtons) {
-  const key = button.dataset.key;
-  const hold = button.dataset.hold === "true";
-  const action = button.dataset.action;
+if (driveFieldEl) {
+  const updateDriveFromPointer = (event) => {
+    const rect = driveFieldEl.getBoundingClientRect();
+    const ratio = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    setTouchDriveFromValue(ratio);
+  };
 
-  const start = (event) => {
+  const endDrivePointer = (event) => {
+    if (mobileTouchState.drivePointerId !== event.pointerId) {
+      return;
+    }
+    event.preventDefault();
+    try {
+      driveFieldEl.releasePointerCapture(event.pointerId);
+    } catch {}
+    resetTouchDrive();
+  };
+
+  driveFieldEl.addEventListener("pointerdown", (event) => {
     event.preventDefault();
     if (!world.started) {
       beginRun();
     }
-    button.classList.add("is-active");
+    mobileTouchState.drivePointerId = event.pointerId;
+    driveFieldEl.setPointerCapture(event.pointerId);
+    updateDriveFromPointer(event);
+  });
 
-    if (key) {
-      pressVirtualKey(key);
+  driveFieldEl.addEventListener("pointermove", (event) => {
+    if (mobileTouchState.drivePointerId !== event.pointerId) {
+      return;
     }
-    if (action === "press") {
-      triggerPressAction();
-    } else if (action === "reset") {
-      resetYard();
-    }
-    if (!hold && key) {
-      setTimeout(() => {
-        releaseVirtualKey(key);
-        button.classList.remove("is-active");
-      }, 80);
-    }
-  };
-
-  const end = (event) => {
     event.preventDefault();
-    button.classList.remove("is-active");
-    if (key) {
-      releaseVirtualKey(key);
+    updateDriveFromPointer(event);
+  });
+
+  driveFieldEl.addEventListener("pointerup", endDrivePointer);
+  driveFieldEl.addEventListener("pointercancel", endDrivePointer);
+  driveFieldEl.addEventListener("lostpointercapture", resetTouchDrive);
+  driveFieldEl.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
+  driveFieldEl.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+if (suctionControlEl) {
+  const endSuctionPointer = (event) => {
+    if (mobileTouchState.suctionPointerId !== null && event.pointerId !== mobileTouchState.suctionPointerId) {
+      return;
     }
+    event.preventDefault();
+    if (mobileTouchState.suctionPointerId !== null) {
+      try {
+        suctionControlEl.releasePointerCapture(mobileTouchState.suctionPointerId);
+      } catch {}
+    }
+    mobileTouchState.suctionPointerId = null;
+    mobileTouchState.suctionPressTriggered = false;
+    releaseVirtualKey(" ");
+    setSuctionPull(0);
   };
 
-  button.addEventListener("pointerdown", start);
-  button.addEventListener("pointerup", end);
-  button.addEventListener("pointercancel", end);
-  button.addEventListener("pointerleave", end);
-  button.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
-  button.addEventListener("contextmenu", (event) => event.preventDefault());
+  suctionControlEl.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    if (!world.started) {
+      beginRun();
+    }
+    mobileTouchState.suctionPointerId = event.pointerId;
+    mobileTouchState.suctionStartY = event.clientY;
+    mobileTouchState.suctionPressTriggered = false;
+    suctionControlEl.setPointerCapture(event.pointerId);
+    pressVirtualKey(" ");
+    setSuctionPull(0.06);
+  });
+
+  suctionControlEl.addEventListener("pointermove", (event) => {
+    if (mobileTouchState.suctionPointerId !== event.pointerId) {
+      return;
+    }
+    event.preventDefault();
+    const pull = clamp((event.clientY - mobileTouchState.suctionStartY) / 92, 0, 1);
+    if (pull >= 0.62 && !mobileTouchState.suctionPressTriggered) {
+      mobileTouchState.suctionPressTriggered = true;
+      triggerPressAction();
+    }
+    setSuctionPull(pull);
+  });
+
+  suctionControlEl.addEventListener("pointerup", endSuctionPointer);
+  suctionControlEl.addEventListener("pointercancel", endSuctionPointer);
+  suctionControlEl.addEventListener("lostpointercapture", () => {
+    mobileTouchState.suctionPointerId = null;
+    mobileTouchState.suctionPressTriggered = false;
+    releaseVirtualKey(" ");
+    setSuctionPull(0);
+  });
+  suctionControlEl.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
+  suctionControlEl.addEventListener("contextmenu", (event) => event.preventDefault());
+}
+
+if (mobileResetEl) {
+  mobileResetEl.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    if (!world.started) {
+      beginRun();
+      return;
+    }
+    resetYard();
+    startIntroSequence();
+  });
+  mobileResetEl.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
+  mobileResetEl.addEventListener("contextmenu", (event) => event.preventDefault());
 }
 
 resizeGameStage();
 resetYard();
+updateDriveTouchUi();
+setSuctionPull(0);
 render();
 tick();
