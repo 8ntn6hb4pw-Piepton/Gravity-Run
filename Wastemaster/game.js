@@ -11,7 +11,6 @@ const driveThumbEl = document.getElementById("driveThumb");
 const suctionControlEl = document.getElementById("suctionControl");
 const suctionCoreEl = document.getElementById("suctionCore");
 const suctionPullEl = document.getElementById("suctionPull");
-const mobileResetEl = document.getElementById("mobileReset");
 
 let audioContext = null;
 let audioUnlocked = false;
@@ -559,12 +558,258 @@ const trashTypes = [
     radius: [8, 12],
   },
   {
+    type: "circuitBoard",
+    fill: "#3b8b62",
+    stroke: "#1f4f37",
+    radius: [9, 13],
+  },
+  {
+    type: "brakeDisc",
+    fill: "#9ca5ad",
+    stroke: "#50585f",
+    radius: [10, 14],
+  },
+  {
+    type: "piston",
+    fill: "#aeb6be",
+    stroke: "#5e6870",
+    radius: [9, 13],
+  },
+  {
+    type: "bearing",
+    fill: "#b7c0c8",
+    stroke: "#64707a",
+    radius: [8, 12],
+  },
+  {
+    type: "bolt",
+    fill: "#9ea6ac",
+    stroke: "#566067",
+    radius: [7, 11],
+  },
+  {
+    type: "bananaPeel",
+    fill: "#f0d65d",
+    stroke: "#8d6f1a",
+    radius: [9, 13],
+  },
+  {
+    type: "apple",
+    fill: "#de5b4d",
+    stroke: "#7f2a21",
+    radius: [8, 12],
+  },
+  {
+    type: "veggie",
+    fill: "#72ba5b",
+    stroke: "#3e6f2f",
+    radius: [8, 12],
+  },
+  {
+    type: "saladLeaf",
+    fill: "#8fcd68",
+    stroke: "#4f7d34",
+    radius: [7, 11],
+  },
+  {
+    type: "moldBread",
+    fill: "#dbc39d",
+    stroke: "#82674a",
+    radius: [9, 13],
+  },
+  {
+    type: "paperCup",
+    fill: "#ede5d5",
+    stroke: "#8f7d65",
+    radius: [8, 12],
+  },
+  {
+    type: "plasticCutlery",
+    fill: "#eef2f2",
+    stroke: "#98a4a6",
+    radius: [7, 10],
+  },
+  {
+    type: "plate",
+    fill: "#f1f3ef",
+    stroke: "#a7b0aa",
+    radius: [10, 14],
+  },
+  {
+    type: "glass",
+    fill: "#b9eef3",
+    stroke: "#5e8f97",
+    radius: [8, 12],
+  },
+  {
+    type: "pasta",
+    fill: "#f0c45a",
+    stroke: "#a46f1d",
+    radius: [7, 11],
+  },
+  {
+    type: "pot",
+    fill: "#8e989f",
+    stroke: "#50585f",
+    radius: [10, 14],
+  },
+  {
+    type: "pan",
+    fill: "#6f7880",
+    stroke: "#3b4247",
+    radius: [10, 14],
+  },
+  {
     type: "toothbrush",
     fill: "#ff8ea1",
     stroke: "#944458",
     radius: [7, 10],
   },
 ];
+
+const trashTypeLookup = Object.fromEntries(trashTypes.map((style) => [style.type, style]));
+const scrapHeavyTypes = [
+  "gear",
+  "circuitBoard",
+  "microchip",
+  "computer",
+  "laptop",
+  "phone",
+  "brakeDisc",
+  "piston",
+  "bearing",
+  "bolt",
+];
+
+const trashWaveFamilies = [
+  {
+    key: "plastic",
+    weight: 1,
+    types: ["bottle", "cup", "barrel", "milkJug", "detergent", "duck", "pool", "swimRing", "bag", "tray", "wrapper", "cap", "lid", "toothbrush", "plasticCutlery"],
+  },
+  {
+    key: "paper",
+    weight: 0.8,
+    types: ["box", "paper", "magazine", "newspaper", "envelope", "tissue", "paperCup"],
+  },
+  {
+    key: "metal-tech",
+    weight: 1.9,
+    types: ["can", "tinCan", "lamp", "gear", "circuitBoard", "laptop", "phone", "computer", "microchip", "bearing", "bolt"],
+  },
+  {
+    key: "auto-metal",
+    weight: 1.7,
+    types: ["tire", "bigTire", "brakeDisc", "piston", "bearing", "bolt", "gear", "lamp"],
+  },
+  {
+    key: "glass",
+    weight: 0.6,
+    types: ["glassBottle", "shard"],
+  },
+  {
+    key: "rubber-textile",
+    weight: 0.9,
+    types: ["tire", "bigTire", "shoe", "sock"],
+  },
+  {
+    key: "bio",
+    weight: 0.9,
+    types: ["appleCore", "apple", "bananaPeel", "veggie", "saladLeaf", "moldBread", "crumb", "pasta"],
+  },
+  {
+    key: "kitchen",
+    weight: 1.15,
+    types: ["paperCup", "plasticCutlery", "plate", "glass", "pasta", "pot", "pan", "cup"],
+  },
+]
+  .map((family) => ({
+    ...family,
+    styles: family.types.map((type) => trashTypeLookup[type]).filter(Boolean),
+  }))
+  .filter((family) => family.styles.length > 0);
+
+function pickRandomTrashStyle(excludedTypes = [], preferredTypes = null) {
+  const excluded = new Set(excludedTypes);
+  let candidates = preferredTypes
+    ? preferredTypes
+        .map((type) => trashTypeLookup[type])
+        .filter((style) => style && !excluded.has(style.type))
+    : [];
+  if (candidates.length === 0) {
+    candidates = trashTypes.filter((style) => !excluded.has(style.type));
+  }
+  return candidates[Math.floor(Math.random() * candidates.length)] || trashTypes[0];
+}
+
+function pickWeightedTrashFamily() {
+  let totalWeight = 0;
+  for (const family of trashWaveFamilies) {
+    totalWeight += family.weight || 1;
+  }
+  let roll = Math.random() * totalWeight;
+  for (const family of trashWaveFamilies) {
+    roll -= family.weight || 1;
+    if (roll <= 0) {
+      return family;
+    }
+  }
+  return trashWaveFamilies[0];
+}
+
+function createTrashWaveProfile(count = 12) {
+  const roll = Math.random();
+  if (count >= 14 && roll < 0.26) {
+    const dominant = Math.random() < 0.62
+      ? pickRandomTrashStyle([], scrapHeavyTypes)
+      : pickRandomTrashStyle();
+    const accents = [
+      pickRandomTrashStyle([dominant.type]),
+      pickRandomTrashStyle([dominant.type]),
+    ];
+    return { mode: "dominant-type", dominant, accents };
+  }
+  if (count >= 12 && roll < 0.74) {
+    const family = pickWeightedTrashFamily();
+    const accent = pickRandomTrashStyle(family ? family.types : []);
+    return { mode: "family", family, accent };
+  }
+  if (count >= 10 && roll < 0.9) {
+    const duoTypes = Math.random() < 0.58 ? scrapHeavyTypes : null;
+    const primary = pickRandomTrashStyle([], duoTypes);
+    const secondary = pickRandomTrashStyle([primary.type], duoTypes);
+    return { mode: "duo", pair: [primary, secondary] };
+  }
+  return { mode: "mixed" };
+}
+
+function pickTrashStyleForWave(profile, index) {
+  if (!profile || profile.mode === "mixed") {
+    return pickRandomTrashStyle();
+  }
+  if (profile.mode === "dominant-type") {
+    if (index % 7 === 6 && profile.accents[0]) {
+      return profile.accents[0];
+    }
+    if (index % 11 === 8 && profile.accents[1]) {
+      return profile.accents[1];
+    }
+    return Math.random() < 0.82 ? profile.dominant : (profile.accents[Math.floor(Math.random() * profile.accents.length)] || profile.dominant);
+  }
+  if (profile.mode === "family") {
+    if (!profile.family || profile.family.styles.length === 0) {
+      return pickRandomTrashStyle();
+    }
+    if (profile.accent && (index % 9 === 7 || index % 13 === 4)) {
+      return profile.accent;
+    }
+    return profile.family.styles[Math.floor(Math.random() * profile.family.styles.length)];
+  }
+  if (profile.mode === "duo") {
+    return profile.pair[index % profile.pair.length] || profile.pair[0] || pickRandomTrashStyle();
+  }
+  return pickRandomTrashStyle();
+}
 
 function random(min, max) {
   return Math.random() * (max - min) + min;
@@ -649,19 +894,19 @@ function getFlowRelief(pressure = getCurrentPressure()) {
 function getFlowProfile(phase = world.flow.phase) {
   if (phase === "push") {
     return {
-      delayMul: 0.82,
-      batchMul: 1.16,
-      powerupDelayMul: 0.8,
-      powerupBias: 0.12,
+      delayMul: 0.74,
+      batchMul: 1.24,
+      powerupDelayMul: 0.88,
+      powerupBias: 0.08,
       pauseShift: -1,
     };
   }
   if (phase === "recovery") {
     return {
-      delayMul: 1.34,
-      batchMul: 0.78,
-      powerupDelayMul: 0.88,
-      powerupBias: 0.18,
+      delayMul: 1.18,
+      batchMul: 0.9,
+      powerupDelayMul: 0.96,
+      powerupBias: 0.12,
       pauseShift: 1,
     };
   }
@@ -684,14 +929,14 @@ function setFlowPhase(phase, duration = 0) {
   world.flow.timer = duration;
 
   if (phase === "push") {
-    world.spawnTimer = Math.min(world.spawnTimer, Math.floor(random(40, 74)));
+    world.spawnTimer = Math.min(world.spawnTimer, Math.floor(random(26, 54)));
     showPowerupNotice("MUELLWELLE", "#ffd39b");
     return;
   }
 
   if (phase === "recovery") {
-    world.spawnPauseTimer = Math.max(world.spawnPauseTimer, Math.floor(random(90, 180)));
-    world.powerupSpawnTimer = Math.min(world.powerupSpawnTimer, 210);
+    world.spawnPauseTimer = Math.max(world.spawnPauseTimer, Math.floor(random(90, 150)));
+    world.powerupSpawnTimer = Math.min(world.powerupSpawnTimer, 260);
     showPowerupNotice("LUFTFENSTER", "#9feaff");
   }
 }
@@ -700,55 +945,61 @@ function updateFlowPhase(pressure = getCurrentPressure()) {
   world.flow.timer -= 1;
 
   if (world.flow.phase === "push") {
-    if (pressure > 1.14 || world.loadRatio > 0.76) {
-      setFlowPhase("recovery", Math.floor(random(220, 360)));
+    if (pressure > 1.22 || world.loadRatio > 0.82) {
+      setFlowPhase("recovery", Math.floor(random(180, 280)));
       return;
     }
     if (world.flow.timer <= 0) {
-      setFlowPhase("steady", Math.floor(random(180, 280)));
+      setFlowPhase("steady", Math.floor(random(150, 240)));
     }
     return;
   }
 
   if (world.flow.phase === "recovery") {
-    if (pressure > 1.2 && world.flow.timer < 120) {
-      world.flow.timer = 160;
+    if (pressure > 1.26 && world.flow.timer < 90) {
+      world.flow.timer = 130;
     }
     if (world.flow.timer <= 0) {
-      setFlowPhase("steady", Math.floor(random(180, 320)));
+      setFlowPhase("steady", Math.floor(random(140, 220)));
     }
     return;
   }
 
-  if (pressure > 1.06 && world.loadRatio > 0.62) {
-    setFlowPhase("recovery", Math.floor(random(220, 340)));
+  if (pressure > 1.2 && world.loadRatio > 0.76) {
+    setFlowPhase("recovery", Math.floor(random(170, 250)));
     return;
   }
 
   if (world.flow.timer <= 0) {
-    if (pressure < 0.84 && Math.random() < 0.62) {
-      setFlowPhase("push", Math.floor(random(220, 380)));
-    } else if (pressure >= 0.84 || Math.random() < 0.38) {
-      setFlowPhase("recovery", Math.floor(random(180, 300)));
+    if (pressure < 0.72 && Math.random() < 0.72) {
+      setFlowPhase("push", Math.floor(random(210, 360)));
+    } else if (pressure >= 1.02 && world.loadRatio > 0.66 && Math.random() < 0.44) {
+      setFlowPhase("recovery", Math.floor(random(150, 240)));
+    } else if (Math.random() < 0.58) {
+      setFlowPhase("push", Math.floor(random(170, 310)));
     } else {
-      world.flow.timer = Math.floor(random(160, 280));
+      world.flow.timer = Math.floor(random(120, 210));
     }
   }
 }
 
 function randomSpawnDelay(level, pressure = 0) {
   const flow = getFlowProfile();
-  const curve = 1 - Math.exp(-level / 7.5);
+  const earlyCurve = 1 - Math.exp(-level / 5.8);
+  const lateRamp = Math.max(0, level - 10);
   const relief = clamp(pressure, 0, 1);
-  const minDelay = Math.round((104 - curve * 42 + relief * 54) * flow.delayMul);
-  const maxDelay = Math.round((168 - curve * 58 + relief * 74) * flow.delayMul);
-  return Math.floor(random(minDelay, maxDelay));
+  const minDelay = Math.round((92 - earlyCurve * 34 - lateRamp * 1.7 + relief * 44) * flow.delayMul);
+  const maxDelay = Math.round((148 - earlyCurve * 48 - lateRamp * 2.15 + relief * 58) * flow.delayMul);
+  const clampedMin = Math.max(22, minDelay);
+  const clampedMax = Math.max(clampedMin + 14, maxDelay);
+  return Math.floor(random(clampedMin, clampedMax));
 }
 
 function getTrashDropCount(level = world.level) {
   const flow = getFlowProfile();
-  const curve = 1 / (1 + Math.exp(-(level - 7) / 3));
-  return Math.max(10, Math.round((12 + curve * 16) * flow.batchMul));
+  const earlyCurve = 1 - Math.exp(-level / 5.4);
+  const lateRamp = Math.max(0, level - 6) * 0.52;
+  return Math.max(11, Math.round((12 + earlyCurve * 7 + lateRamp) * flow.batchMul));
 }
 
 function getEffectiveTrashCount() {
@@ -1428,8 +1679,9 @@ function createTrashItem(style, x, y, id) {
 
 function spawnTrash(count = 22, source = "default", originX = null) {
   const lanes = [380, 560, 760, 940, 1110];
+  const waveProfile = createTrashWaveProfile(count);
   for (let i = 0; i < count; i += 1) {
-    const style = trashTypes[Math.floor(Math.random() * trashTypes.length)];
+    const style = pickTrashStyleForWave(waveProfile, i);
     const laneX = lanes[Math.floor(Math.random() * lanes.length)];
     const x =
       source === "pipe" && originX !== null
@@ -1642,8 +1894,8 @@ function nextPowerupDelay() {
   const flow = getFlowProfile();
   const relief = getFlowRelief();
   return Math.max(
-    150,
-    (700 - world.level * 22 - relief * 170) * flow.powerupDelayMul + Math.floor(random(-60, 110))
+    210,
+    (820 - world.level * 18 - relief * 120) * flow.powerupDelayMul + Math.floor(random(-40, 130))
   );
 }
 
@@ -2068,8 +2320,14 @@ function triggerRefillPipe() {
   if (world.refillPipe.active) {
     return;
   }
+  const pipeLanes = [172, Math.round(world.width * 0.5), world.width - 172];
+  let laneX = pipeLanes[Math.floor(Math.random() * pipeLanes.length)];
+  if (pipeLanes.length > 1 && Math.abs(laneX - world.refillPipe.x) < 40) {
+    laneX = pipeLanes[(pipeLanes.indexOf(laneX) + 1 + Math.floor(Math.random() * 2)) % pipeLanes.length];
+  }
   world.refillPipe.active = true;
   world.refillPipe.phase = "descending";
+  world.refillPipe.x = laneX;
   world.refillPipe.y = -120;
   world.refillPipe.timer = 0;
   world.refillPipe.spawned = false;
@@ -2085,7 +2343,7 @@ function resizeGameStage() {
   const scale = Math.min(viewportWidth / 1280, viewportHeight / 720);
   gameStageEl.style.setProperty("--game-scale", String(scale));
 
-  if (!gameShellEl || !touchControlsEl || !driveFieldEl || !suctionControlEl || !mobileResetEl) {
+  if (!gameShellEl || !touchControlsEl || !driveFieldEl || !suctionControlEl) {
     return;
   }
 
@@ -2125,9 +2383,6 @@ function resizeGameStage() {
   suctionControlEl.style.top = `${suctionTop}px`;
   suctionControlEl.style.width = `${suctionWidth}px`;
   suctionControlEl.style.height = `${suctionHeight}px`;
-
-  mobileResetEl.style.left = `${driveLeft}px`;
-  mobileResetEl.style.top = `${Math.max(12, driveTop - 56)}px`;
 }
 
 function triggerPressAction() {
@@ -5612,6 +5867,31 @@ function drawTrash(item) {
       ctx.stroke();
     }
     ctx.lineWidth = 3;
+  } else if (item.trashType === "circuitBoard") {
+    ctx.beginPath();
+    ctx.roundRect(-item.radius, -item.radius * 0.78, item.radius * 2, item.radius * 1.56, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#86d9a9";
+    ctx.fillRect(-item.radius * 0.62, -item.radius * 0.32, item.radius * 0.44, item.radius * 0.3);
+    ctx.fillRect(item.radius * 0.12, -item.radius * 0.18, item.radius * 0.34, item.radius * 0.22);
+    ctx.fillStyle = "#263137";
+    ctx.beginPath();
+    ctx.roundRect(-item.radius * 0.08, -item.radius * 0.46, item.radius * 0.46, item.radius * 0.62, 3);
+    ctx.fill();
+    ctx.strokeStyle = "#94d7b2";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.78, item.radius * 0.2);
+    ctx.lineTo(-item.radius * 0.12, item.radius * 0.2);
+    ctx.lineTo(0, item.radius * 0.04);
+    ctx.lineTo(item.radius * 0.54, item.radius * 0.04);
+    ctx.moveTo(-item.radius * 0.52, -item.radius * 0.08);
+    ctx.lineTo(-item.radius * 0.18, -item.radius * 0.08);
+    ctx.lineTo(item.radius * 0.02, -item.radius * 0.28);
+    ctx.lineTo(item.radius * 0.34, -item.radius * 0.28);
+    ctx.stroke();
+    ctx.lineWidth = 3;
   } else if (item.trashType === "tissue") {
     ctx.beginPath();
     ctx.moveTo(-item.radius, item.radius * 0.24);
@@ -5818,6 +6098,90 @@ function drawTrash(item) {
     ctx.beginPath();
     ctx.arc(0, 0, item.radius * 0.34, 0, Math.PI * 2);
     ctx.fill();
+  } else if (item.trashType === "brakeDisc") {
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius * 0.42, 0, Math.PI * 2);
+    ctx.fill();
+    for (let i = 0; i < 4; i += 1) {
+      const angle = (Math.PI * 2 * i) / 4 + 0.4;
+      ctx.beginPath();
+      ctx.arc(Math.cos(angle) * item.radius * 0.54, Math.sin(angle) * item.radius * 0.54, item.radius * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = item.color.stroke;
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius * 0.42, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (item.trashType === "bearing") {
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius * 0.54, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle = item.color.stroke;
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius * 0.54, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = "#707a83";
+    for (let i = 0; i < 6; i += 1) {
+      const angle = (Math.PI * 2 * i) / 6;
+      ctx.beginPath();
+      ctx.arc(Math.cos(angle) * item.radius * 0.72, Math.sin(angle) * item.radius * 0.72, item.radius * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (item.trashType === "piston") {
+    ctx.save();
+    ctx.rotate(0.35);
+    ctx.beginPath();
+    ctx.roundRect(-item.radius * 0.48, -item.radius * 0.9, item.radius * 0.96, item.radius * 0.84, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillRect(-item.radius * 0.14, -item.radius * 0.08, item.radius * 0.28, item.radius * 0.98);
+    ctx.beginPath();
+    ctx.roundRect(-item.radius * 0.58, item.radius * 0.72, item.radius * 1.16, item.radius * 0.28, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#d6dce1";
+    ctx.fillRect(-item.radius * 0.28, -item.radius * 0.66, item.radius * 0.56, item.radius * 0.14);
+    ctx.restore();
+  } else if (item.trashType === "bolt") {
+    ctx.save();
+    ctx.rotate(0.5);
+    ctx.beginPath();
+    for (let i = 0; i < 6; i += 1) {
+      const angle = (Math.PI * 2 * i) / 6;
+      const px = Math.cos(angle) * item.radius * 0.46;
+      const py = Math.sin(angle) * item.radius * 0.46 - item.radius * 0.54;
+      if (i === 0) {
+        ctx.moveTo(px, py);
+      } else {
+        ctx.lineTo(px, py);
+      }
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillRect(-item.radius * 0.18, -item.radius * 0.16, item.radius * 0.36, item.radius * 1.2);
+    ctx.strokeRect(-item.radius * 0.18, -item.radius * 0.16, item.radius * 0.36, item.radius * 1.2);
+    ctx.strokeStyle = "rgba(236, 241, 245, 0.4)";
+    ctx.beginPath();
+    for (let i = 0; i < 4; i += 1) {
+      const y = item.radius * (0.08 + i * 0.22);
+      ctx.moveTo(-item.radius * 0.18, y);
+      ctx.lineTo(item.radius * 0.18, y + item.radius * 0.08);
+    }
+    ctx.stroke();
+    ctx.restore();
   } else if (item.trashType === "toothbrush") {
     ctx.save();
     ctx.rotate(-0.35);
@@ -6178,6 +6542,44 @@ function drawRobot() {
   ctx.fill();
   ctx.stroke();
 
+  const rustAlpha = pressActive ? 0.22 + pressWear * 0.14 : 0.3;
+  const rustSpots = [
+    { x: -42, y: -6, r: 7 },
+    { x: -26, y: 16, r: 9 },
+    { x: -2, y: -10, r: 6 },
+    { x: 18, y: 12, r: 8 },
+    { x: 36, y: -2, r: 5 },
+  ];
+  ctx.fillStyle = `rgba(145, 82, 40, ${rustAlpha})`;
+  for (const spot of rustSpots) {
+    ctx.beginPath();
+    ctx.arc(spot.x, spot.y, spot.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = `rgba(94, 50, 23, ${rustAlpha * 0.82})`;
+    ctx.beginPath();
+    ctx.arc(spot.x + 1.5, spot.y + 1, Math.max(2, spot.r * 0.42), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = `rgba(145, 82, 40, ${rustAlpha})`;
+  }
+
+  ctx.strokeStyle = `rgba(73, 56, 42, ${pressActive ? 0.18 : 0.28})`;
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  ctx.moveTo(-46, -10);
+  ctx.lineTo(-38, 22);
+  ctx.moveTo(-14, -14);
+  ctx.lineTo(-6, 18);
+  ctx.moveTo(12, -12);
+  ctx.lineTo(18, 20);
+  ctx.moveTo(34, -8);
+  ctx.lineTo(40, 16);
+  ctx.stroke();
+
+  ctx.fillStyle = "rgba(42, 50, 54, 0.18)";
+  ctx.fillRect(-48, 14, 26, 10);
+  ctx.fillRect(-10, -14, 20, 7);
+  ctx.fillRect(18, 8, 16, 8);
+
   if (pressActive) {
     ctx.fillStyle = `rgba(150, 82, 40, ${0.08 + pressWear * 0.28})`;
     ctx.beginPath();
@@ -6213,6 +6615,18 @@ function drawRobot() {
   ctx.fillStyle = "rgba(146, 78, 38, 0.22)";
   ctx.fillRect(-46, 12, 24, 8);
   ctx.fillRect(6, -12, 16, 7);
+
+  ctx.save();
+  ctx.scale(robot.facing, 1);
+  ctx.fillStyle = "rgba(221, 235, 242, 0.86)";
+  ctx.font = "700 12px Trebuchet MS";
+  ctx.textAlign = "center";
+  ctx.fillText("AMQ-4", -2 * robot.facing, 4);
+  ctx.strokeStyle = "rgba(38, 49, 58, 0.55)";
+  ctx.lineWidth = 1.8;
+  ctx.strokeText("AMQ-4", -2 * robot.facing, 4);
+  ctx.textAlign = "start";
+  ctx.restore();
 
   ctx.fillStyle = "#566a78";
   ctx.fillRect(4, -28, 8, 16);
@@ -6917,20 +7331,6 @@ if (suctionControlEl) {
   });
   suctionControlEl.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
   suctionControlEl.addEventListener("contextmenu", (event) => event.preventDefault());
-}
-
-if (mobileResetEl) {
-  mobileResetEl.addEventListener("pointerdown", (event) => {
-    event.preventDefault();
-    if (!world.started) {
-      beginRun();
-      return;
-    }
-    resetYard();
-    startIntroSequence();
-  });
-  mobileResetEl.addEventListener("touchstart", (event) => event.preventDefault(), { passive: false });
-  mobileResetEl.addEventListener("contextmenu", (event) => event.preventDefault());
 }
 
 resizeGameStage();

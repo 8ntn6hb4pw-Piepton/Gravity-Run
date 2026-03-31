@@ -160,22 +160,6 @@ button {
   display: none !important;
 }
 
-.touch-reset {
-  position: absolute;
-  z-index: 2;
-  min-width: 92px;
-  min-height: 48px;
-  padding: 0 16px;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #f5fbff;
-  background: linear-gradient(180deg, rgba(114, 54, 49, 0.96), rgba(82, 33, 29, 0.96));
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(8px);
-  pointer-events: auto;
-  touch-action: none;
-}
-
 .touch-drive-field {
   position: absolute;
   width: 146px;
@@ -350,12 +334,6 @@ button {
 
   .touch-controls {
     inset: 0;
-  }
-
-  .touch-reset {
-    min-width: 76px;
-    min-height: 42px;
-    font-size: 0.88rem;
   }
 
   .touch-drive-field {
