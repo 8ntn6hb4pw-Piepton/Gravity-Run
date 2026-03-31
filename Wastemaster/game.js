@@ -1,9 +1,11 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const gameStageEl = document.getElementById("gameStage");
+const gameShellEl = document.querySelector(".game-shell");
 
 const startScreenEl = document.getElementById("startScreen");
 const startButtonEl = document.getElementById("startButton");
+const touchControlsEl = document.getElementById("touchControls");
 const driveFieldEl = document.getElementById("driveField");
 const driveThumbEl = document.getElementById("driveThumb");
 const suctionControlEl = document.getElementById("suctionControl");
@@ -2078,10 +2080,54 @@ function syncHud() {
 }
 
 function resizeGameStage() {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportWidth = gameShellEl ? gameShellEl.clientWidth : window.innerWidth;
+  const viewportHeight = gameShellEl ? gameShellEl.clientHeight : window.innerHeight;
   const scale = Math.min(viewportWidth / 1280, viewportHeight / 720);
   gameStageEl.style.setProperty("--game-scale", String(scale));
+
+  if (!gameShellEl || !touchControlsEl || !driveFieldEl || !suctionControlEl || !mobileResetEl) {
+    return;
+  }
+
+  const stageWidth = 1280 * scale;
+  const stageHeight = 720 * scale;
+  const stageLeft = (viewportWidth - stageWidth) * 0.5;
+  const stageTop = (viewportHeight - stageHeight) * 0.5;
+  const rightGutter = viewportWidth - stageLeft - stageWidth;
+  const leftGutter = stageLeft;
+  const sideWidth = clamp(Math.min(leftGutter, rightGutter) - 28, 98, 170);
+  const driveWidth = sideWidth;
+  const driveHeight = clamp(stageHeight * 0.24, 110, 146);
+  const suctionWidth = clamp(sideWidth + 12, 110, 182);
+  const suctionHeight = clamp(stageHeight * 0.42, 206, 286);
+  const driveLeft = Math.max(12, stageLeft - driveWidth - 14);
+  const suctionLeft = Math.min(
+    viewportWidth - suctionWidth - 12,
+    stageLeft + stageWidth + 14
+  );
+  const driveTop = clamp(
+    stageTop + stageHeight - driveHeight - 10,
+    stageTop + 18,
+    viewportHeight - driveHeight - 12
+  );
+  const suctionTop = clamp(
+    stageTop + stageHeight - suctionHeight - 8,
+    stageTop + 12,
+    viewportHeight - suctionHeight - 12
+  );
+
+  driveFieldEl.style.left = `${driveLeft}px`;
+  driveFieldEl.style.top = `${driveTop}px`;
+  driveFieldEl.style.width = `${driveWidth}px`;
+  driveFieldEl.style.height = `${driveHeight}px`;
+
+  suctionControlEl.style.left = `${suctionLeft}px`;
+  suctionControlEl.style.top = `${suctionTop}px`;
+  suctionControlEl.style.width = `${suctionWidth}px`;
+  suctionControlEl.style.height = `${suctionHeight}px`;
+
+  mobileResetEl.style.left = `${driveLeft}px`;
+  mobileResetEl.style.top = `${Math.max(12, driveTop - 56)}px`;
 }
 
 function triggerPressAction() {
@@ -3039,16 +3085,23 @@ function updateCubeVacuum() {
       cube.y < world.floorY + 20;
     if (cube.vacuuming || withinBeam) {
       cube.vacuuming = true;
-      const targetY = world.cubeVacuum.y + 18;
-      const dx = world.cubeVacuum.x - cube.x;
+      const targetX = world.cubeVacuum.x;
+      const targetY = world.cubeVacuum.y + 17;
+      const dx = targetX - cube.x;
       const dy = targetY - cube.y;
-      cube.vx = cube.vx * 0.58 + dx * 0.055;
-      cube.vy = cube.vy * 0.5 + dy * 0.05 - 0.08;
-      cube.vacuumScale = clamp((Math.abs(dx) + Math.abs(dy)) / 180, 0.14, 1);
+      const distance = Math.hypot(dx, dy);
+      const funnel = clamp(1 - distance / 180, 0, 1);
+      cube.vx = cube.vx * 0.42 + dx * (0.07 + funnel * 0.12);
+      cube.vy = cube.vy * 0.38 + dy * (0.065 + funnel * 0.14) - 0.1;
+      cube.vacuumScale = clamp(distance / 180, 0.12, 1);
       cube.x += cube.vx;
       cube.y += cube.vy;
+      if (distance < 42) {
+        cube.x += (targetX - cube.x) * 0.38;
+        cube.y += (targetY - cube.y) * 0.42;
+      }
       cube.spin += dx * 0.0009 + cube.vx * 0.003;
-      if (Math.abs(dx) < 14 && Math.abs(dy) < 16) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 10) {
         sendCubeToSpace(cube);
         continue;
       }
@@ -6646,6 +6699,9 @@ function beginRun() {
   ensureAudio();
   world.started = true;
   startScreenEl.classList.add("hidden");
+  if (touchControlsEl) {
+    touchControlsEl.classList.remove("is-hidden");
+  }
   resetYard();
   startIntroSequence();
 }

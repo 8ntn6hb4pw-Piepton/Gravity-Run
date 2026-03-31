@@ -14,22 +14,6 @@
         </div>
         <div class="game-stage" id="gameStage">
           <canvas id="game" width="1280" height="720" aria-label="Spielbereich"></canvas>
-          <section class="touch-controls" aria-label="Touch-Steuerung">
-            <button class="touch-reset" id="mobileReset" type="button">Reset</button>
-            <div class="touch-drive-field" id="driveField" aria-label="Fahrfeld">
-              <div class="drive-track"></div>
-              <div class="drive-thumb" id="driveThumb"></div>
-              <p class="drive-caption">Unten wischen zum Fahren</p>
-            </div>
-            <div class="touch-suction-control" id="suctionControl" aria-label="Saugen und Pressen">
-              <div class="suction-lane"></div>
-              <div class="suction-pull" id="suctionPull"></div>
-              <div class="suction-core" id="suctionCore">
-                <span class="suction-title">Saugen</span>
-                <span class="suction-hint">nach unten ziehen = pressen</span>
-              </div>
-            </div>
-          </section>
           <section class="start-screen" id="startScreen">
             <div class="start-card">
               <p class="eyebrow">Schrottsammler</p>
@@ -50,6 +34,22 @@
             </div>
           </section>
         </div>
+        <section class="touch-controls is-hidden" id="touchControls" aria-label="Touch-Steuerung">
+          <button class="touch-reset" id="mobileReset" type="button">Reset</button>
+          <div class="touch-drive-field" id="driveField" aria-label="Fahrfeld">
+            <div class="drive-track"></div>
+            <div class="drive-thumb" id="driveThumb"></div>
+            <p class="drive-caption">Fahrfeld</p>
+          </div>
+          <div class="touch-suction-control" id="suctionControl" aria-label="Saugen und Pressen">
+            <div class="suction-lane"></div>
+            <div class="suction-pull" id="suctionPull"></div>
+            <div class="suction-core" id="suctionCore">
+              <span class="suction-title">Saugen</span>
+              <span class="suction-hint">runter = pressen</span>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
 
