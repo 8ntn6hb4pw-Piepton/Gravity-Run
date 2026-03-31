@@ -2349,29 +2349,35 @@ function resizeGameStage() {
 
   const stageWidth = 1280 * scale;
   const stageHeight = 720 * scale;
+  const shellStyles = gameShellEl ? window.getComputedStyle(gameShellEl) : null;
+  const safeLeft = shellStyles ? parseFloat(shellStyles.getPropertyValue("--safe-left")) || 0 : 0;
+  const safeRight = shellStyles ? parseFloat(shellStyles.getPropertyValue("--safe-right")) || 0 : 0;
+  const safeTop = shellStyles ? parseFloat(shellStyles.getPropertyValue("--safe-top")) || 0 : 0;
+  const safeBottom = shellStyles ? parseFloat(shellStyles.getPropertyValue("--safe-bottom")) || 0 : 0;
   const stageLeft = (viewportWidth - stageWidth) * 0.5;
   const stageTop = (viewportHeight - stageHeight) * 0.5;
-  const rightGutter = viewportWidth - stageLeft - stageWidth;
-  const leftGutter = stageLeft;
-  const sideWidth = clamp(Math.min(leftGutter, rightGutter) - 28, 98, 170);
+  const rightGutter = viewportWidth - stageLeft - stageWidth - safeRight;
+  const leftGutter = stageLeft - safeLeft;
+  const sideWidth = clamp(Math.min(leftGutter, rightGutter) - 22, 98, 170);
   const driveWidth = sideWidth;
   const driveHeight = clamp(stageHeight * 0.24, 110, 146);
   const suctionWidth = clamp(sideWidth + 12, 110, 182);
   const suctionHeight = clamp(stageHeight * 0.42, 206, 286);
-  const driveLeft = Math.max(12, stageLeft - driveWidth - 14);
+  const edgeGap = 14;
+  const driveLeft = Math.max(12 + safeLeft, stageLeft - driveWidth - edgeGap);
   const suctionLeft = Math.min(
-    viewportWidth - suctionWidth - 12,
-    stageLeft + stageWidth + 14
+    viewportWidth - suctionWidth - 12 - safeRight,
+    stageLeft + stageWidth + edgeGap
   );
   const driveTop = clamp(
     stageTop + stageHeight - driveHeight - 10,
-    stageTop + 18,
-    viewportHeight - driveHeight - 12
+    stageTop + 18 + safeTop * 0.2,
+    viewportHeight - driveHeight - 12 - safeBottom
   );
   const suctionTop = clamp(
     stageTop + stageHeight - suctionHeight - 8,
-    stageTop + 12,
-    viewportHeight - suctionHeight - 12
+    stageTop + 12 + safeTop * 0.2,
+    viewportHeight - suctionHeight - 12 - safeBottom
   );
 
   driveFieldEl.style.left = `${driveLeft}px`;
@@ -6182,6 +6188,153 @@ function drawTrash(item) {
     }
     ctx.stroke();
     ctx.restore();
+  } else if (item.trashType === "bananaPeel") {
+    for (const dir of [-1, 0, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(dir * item.radius * 0.28, -item.radius * 0.3, dir * item.radius * 0.76, dir === 0 ? item.radius * 0.92 : item.radius * 0.72);
+      ctx.lineTo(dir * item.radius * 0.36, item.radius * 0.34);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#7fa34a";
+    ctx.fillRect(-item.radius * 0.08, -item.radius * 0.38, item.radius * 0.16, item.radius * 0.42);
+  } else if (item.trashType === "apple") {
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius * 0.86, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#8bc36b";
+    ctx.beginPath();
+    ctx.ellipse(item.radius * 0.26, -item.radius * 0.88, item.radius * 0.3, item.radius * 0.18, -0.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#5a7a37";
+    ctx.beginPath();
+    ctx.moveTo(0, -item.radius * 0.44);
+    ctx.lineTo(item.radius * 0.08, -item.radius * 0.86);
+    ctx.stroke();
+  } else if (item.trashType === "veggie") {
+    ctx.beginPath();
+    ctx.arc(0, item.radius * 0.12, item.radius * 0.58, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    for (const offset of [-0.46, 0, 0.46]) {
+      ctx.beginPath();
+      ctx.arc(offset * item.radius, -item.radius * 0.34, item.radius * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.fillStyle = "#5e8a42";
+    ctx.fillRect(-item.radius * 0.12, item.radius * 0.18, item.radius * 0.24, item.radius * 0.34);
+  } else if (item.trashType === "saladLeaf") {
+    ctx.beginPath();
+    ctx.moveTo(0, -item.radius);
+    ctx.bezierCurveTo(item.radius * 0.98, -item.radius * 0.52, item.radius * 0.88, item.radius * 0.82, 0, item.radius);
+    ctx.bezierCurveTo(-item.radius * 0.88, item.radius * 0.82, -item.radius * 0.98, -item.radius * 0.52, 0, -item.radius);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = "#5c8437";
+    ctx.beginPath();
+    ctx.moveTo(0, -item.radius * 0.82);
+    ctx.lineTo(0, item.radius * 0.82);
+    ctx.moveTo(0, -item.radius * 0.08);
+    ctx.lineTo(item.radius * 0.44, item.radius * 0.28);
+    ctx.moveTo(0, item.radius * 0.08);
+    ctx.lineTo(-item.radius * 0.4, item.radius * 0.42);
+    ctx.stroke();
+  } else if (item.trashType === "moldBread") {
+    ctx.beginPath();
+    ctx.roundRect(-item.radius * 0.82, -item.radius * 0.72, item.radius * 1.64, item.radius * 1.44, 7);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#7cad78";
+    for (const spot of [[-0.24, -0.12, 0.22], [0.22, 0.1, 0.18], [-0.06, 0.26, 0.16]]) {
+      ctx.beginPath();
+      ctx.arc(spot[0] * item.radius, spot[1] * item.radius, spot[2] * item.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (item.trashType === "paperCup") {
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.62, -item.radius);
+    ctx.lineTo(item.radius * 0.62, -item.radius);
+    ctx.lineTo(item.radius * 0.4, item.radius);
+    ctx.lineTo(-item.radius * 0.4, item.radius);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = "#bf7b56";
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.32, -item.radius * 0.16);
+    ctx.lineTo(item.radius * 0.32, -item.radius * 0.16);
+    ctx.moveTo(-item.radius * 0.22, item.radius * 0.18);
+    ctx.lineTo(item.radius * 0.22, item.radius * 0.18);
+    ctx.stroke();
+  } else if (item.trashType === "plasticCutlery") {
+    ctx.save();
+    ctx.rotate(-0.45);
+    ctx.fillRect(-item.radius * 0.12, -item.radius, item.radius * 0.24, item.radius * 1.56);
+    ctx.strokeRect(-item.radius * 0.12, -item.radius, item.radius * 0.24, item.radius * 1.56);
+    for (let i = -1; i <= 1; i += 1) {
+      ctx.fillRect(i * item.radius * 0.1 - item.radius * 0.03, -item.radius * 1.24, item.radius * 0.06, item.radius * 0.28);
+    }
+    ctx.restore();
+  } else if (item.trashType === "plate") {
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = "#c5cdca";
+    ctx.beginPath();
+    ctx.arc(0, 0, item.radius * 0.62, 0, Math.PI * 2);
+    ctx.stroke();
+  } else if (item.trashType === "glass") {
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.52, -item.radius);
+    ctx.lineTo(item.radius * 0.52, -item.radius);
+    ctx.lineTo(item.radius * 0.34, item.radius);
+    ctx.lineTo(-item.radius * 0.34, item.radius);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,0.42)";
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.18, -item.radius * 0.72);
+    ctx.lineTo(-item.radius * 0.08, item.radius * 0.7);
+    ctx.stroke();
+  } else if (item.trashType === "pasta") {
+    ctx.strokeStyle = item.color.stroke;
+    ctx.lineWidth = 2.6;
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.92, -item.radius * 0.12);
+    ctx.bezierCurveTo(-item.radius * 0.54, -item.radius * 0.72, -item.radius * 0.14, item.radius * 0.76, item.radius * 0.18, 0);
+    ctx.bezierCurveTo(item.radius * 0.42, -item.radius * 0.54, item.radius * 0.72, item.radius * 0.54, item.radius * 0.94, -item.radius * 0.08);
+    ctx.stroke();
+    ctx.lineWidth = 3;
+  } else if (item.trashType === "pot") {
+    ctx.beginPath();
+    ctx.roundRect(-item.radius * 0.84, -item.radius * 0.42, item.radius * 1.68, item.radius * 1.08, 5);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillRect(-item.radius * 1.06, -item.radius * 0.12, item.radius * 0.22, item.radius * 0.26);
+    ctx.fillRect(item.radius * 0.84, -item.radius * 0.12, item.radius * 0.22, item.radius * 0.26);
+    ctx.beginPath();
+    ctx.arc(0, -item.radius * 0.7, item.radius * 0.28, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = "#d7dce0";
+    ctx.beginPath();
+    ctx.moveTo(-item.radius * 0.42, -item.radius * 0.44);
+    ctx.lineTo(item.radius * 0.42, -item.radius * 0.44);
+    ctx.stroke();
+  } else if (item.trashType === "pan") {
+    ctx.beginPath();
+    ctx.arc(-item.radius * 0.12, 0, item.radius * 0.72, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillRect(item.radius * 0.28, -item.radius * 0.12, item.radius * 0.98, item.radius * 0.24);
+    ctx.strokeRect(item.radius * 0.28, -item.radius * 0.12, item.radius * 0.98, item.radius * 0.24);
   } else if (item.trashType === "toothbrush") {
     ctx.save();
     ctx.rotate(-0.35);
