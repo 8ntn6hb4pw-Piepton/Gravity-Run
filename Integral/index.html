@@ -406,6 +406,7 @@
 
     function createConstruction(ggbApi) {
       ggbApi.setRepaintingActive(false);
+      ggbApi.setPerspective("G");
       ggbApi.setAxesVisible(true, true);
       ggbApi.setGridVisible(true);
       ggbApi.evalCommand(
@@ -493,6 +494,7 @@
       showFullscreenButton: true,
       enableRightClick: false,
       enableShiftDragZoom: false,
+      perspective: "G",
       useBrowserForJS: true,
       scaleContainerClass: "ggb-wrap",
       autoHeight: false,
