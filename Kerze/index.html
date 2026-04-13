@@ -1,1 +1,551 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Kerzenuhr Demo</title>
+    <style>
+      :root {
+        --paper: #f6f0e4;
+        --paper-strong: #efe5d2;
+        --card: rgba(255, 252, 246, 0.92);
+        --ink: #302820;
+        --muted: #6e6258;
+        --line: #c9bba7;
+        --shadow: rgba(61, 43, 23, 0.14);
+        --red: #e77b73;
+        --red-dark: #c85b54;
+        --blue: #8ba7ea;
+        --blue-dark: #5f7ecd;
+        --gold: #d59e2f;
+        --slider: #ab6f39;
+      }
 
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: "Avenir Next", "Trebuchet MS", "Gill Sans", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top, rgba(255, 255, 255, 0.8), transparent 36%),
+          linear-gradient(180deg, #f7efe2 0%, #efe2ce 100%);
+      }
+
+      body {
+        padding: 18px 14px 28px;
+      }
+
+      .app {
+        max-width: 520px;
+        margin: 0 auto;
+      }
+
+      .hero,
+      .panel,
+      .controls {
+        background: var(--card);
+        border: 1px solid rgba(120, 95, 67, 0.16);
+        border-radius: 24px;
+        box-shadow: 0 16px 38px var(--shadow);
+        backdrop-filter: blur(8px);
+      }
+
+      .hero {
+        padding: 18px 18px 14px;
+      }
+
+      .eyebrow {
+        margin: 0 0 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--slider);
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+        font-size: clamp(1.7rem, 5vw, 2.3rem);
+        line-height: 1.06;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        font-size: 0.98rem;
+        line-height: 1.45;
+        color: var(--muted);
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .meta-chip {
+        padding: 10px 12px;
+        border-radius: 16px;
+        background: var(--paper);
+        border: 1px solid rgba(120, 95, 67, 0.12);
+        font-size: 0.92rem;
+      }
+
+      .panel {
+        margin-top: 16px;
+        padding: 16px 14px 14px;
+      }
+
+      .scene-wrap {
+        position: relative;
+        margin-bottom: 12px;
+        padding: 10px 6px 2px;
+        border-radius: 20px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(245, 236, 220, 0.8));
+        border: 1px solid rgba(120, 95, 67, 0.1);
+      }
+
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .legend {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .legend-card {
+        padding: 12px;
+        border-radius: 18px;
+        background: var(--paper);
+        border: 1px solid rgba(120, 95, 67, 0.12);
+      }
+
+      .legend-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 10px;
+        font-size: 1rem;
+        font-weight: 700;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+      }
+
+      .dot.red {
+        background: var(--red);
+      }
+
+      .dot.blue {
+        background: var(--blue);
+      }
+
+      .data-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 5px 0;
+        font-size: 0.92rem;
+        border-top: 1px solid rgba(120, 95, 67, 0.1);
+      }
+
+      .data-row:first-of-type {
+        border-top: 0;
+      }
+
+      .controls {
+        position: sticky;
+        bottom: 10px;
+        margin-top: 16px;
+        padding: 16px 16px 14px;
+      }
+
+      .controls-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+      }
+
+      .controls-head h2 {
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .time-output {
+        font-variant-numeric: tabular-nums;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--slider);
+      }
+
+      .range-wrap {
+        margin-top: 14px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        margin: 0;
+        accent-color: var(--slider);
+      }
+
+      .axis {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        margin-top: 7px;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      .axis span {
+        text-align: center;
+      }
+
+      .jump-list {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        margin-top: 12px;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+
+      .jump-list::-webkit-scrollbar {
+        display: none;
+      }
+
+      .jump-button {
+        flex: 0 0 auto;
+        padding: 9px 12px;
+        border: 0;
+        border-radius: 999px;
+        background: #eadac0;
+        color: var(--ink);
+        font: inherit;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
+      .jump-button.active {
+        background: var(--slider);
+        color: #fff;
+      }
+
+      .helper {
+        margin-top: 12px;
+        font-size: 0.88rem;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+
+      .flame {
+        transform-origin: center bottom;
+        animation: flicker 1.6s ease-in-out infinite;
+      }
+
+      @keyframes flicker {
+        0%,
+        100% {
+          transform: scale(1) rotate(-1.5deg);
+        }
+
+        50% {
+          transform: scale(1.08, 0.96) rotate(1.8deg);
+        }
+      }
+
+      @media (max-width: 420px) {
+        body {
+          padding: 14px 12px 24px;
+        }
+
+        .hero,
+        .panel,
+        .controls {
+          border-radius: 20px;
+        }
+
+        .meta,
+        .legend {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .flame {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <p class="eyebrow">Kerzenuhr</p>
+        <h1>Quader und Prisma brennen sichtbar ab</h1>
+        <p class="subtitle">
+          Unten kannst du die Zeit verschieben. Die rote Kerze ist ein Quader und brennt
+          <strong>2&nbsp;cm pro Stunde</strong> ab. Die blaue Kerze ist ein Prisma und brennt
+          <strong>4&nbsp;cm pro Stunde</strong> ab.
+        </p>
+        <div class="meta">
+          <div class="meta-chip"><strong>Quader:</strong> Grundfläche 12&nbsp;cm²</div>
+          <div class="meta-chip"><strong>Prisma:</strong> Grundfläche 6&nbsp;cm²</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="scene-wrap">
+          <svg viewBox="0 0 420 350" aria-label="Zwei abbrennende Kerzen">
+            <defs>
+              <linearGradient id="bgGlow" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#fff9ef"/>
+                <stop offset="100%" stop-color="#efe0c7"/>
+              </linearGradient>
+            </defs>
+
+            <rect x="12" y="12" width="396" height="326" rx="22" fill="url(#bgGlow)"/>
+            <ellipse cx="118" cy="288" rx="52" ry="10" fill="rgba(74, 52, 25, 0.12)"/>
+            <ellipse cx="302" cy="288" rx="52" ry="10" fill="rgba(74, 52, 25, 0.12)"/>
+
+            <g opacity="0.22">
+              <path d="M74 76 L154 76 L172 62 L92 62 Z" fill="#d8cfc2"/>
+              <rect x="74" y="76" width="80" height="210" fill="#d8cfc2"/>
+              <path d="M154 76 L172 62 L172 272 L154 286 Z" fill="#c7baaa"/>
+            </g>
+
+            <g opacity="0.22">
+              <path d="M236 76 L298 76 L268 60 Z" fill="#d8cfc2"/>
+              <rect x="236" y="76" width="62" height="210" fill="#d8cfc2"/>
+              <path d="M298 76 L322 64 L322 274 L298 286 Z" fill="#c7baaa"/>
+            </g>
+
+            <g id="quad-live"></g>
+            <g id="prism-live"></g>
+
+            <g fill="#5f554d" font-size="12" font-weight="700">
+              <text x="114" y="315" text-anchor="middle">Quader</text>
+              <text x="298" y="315" text-anchor="middle">Prisma</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="legend">
+          <article class="legend-card">
+            <h2 class="legend-title"><span class="dot red"></span>Rote Kerze</h2>
+            <div class="data-row"><span>Höhe</span><strong id="quad-height">24 cm</strong></div>
+            <div class="data-row"><span>Volumen</span><strong id="quad-volume">288 cm³</strong></div>
+            <div class="data-row"><span>Status</span><strong id="quad-status">brennt</strong></div>
+          </article>
+          <article class="legend-card">
+            <h2 class="legend-title"><span class="dot blue"></span>Blaue Kerze</h2>
+            <div class="data-row"><span>Höhe</span><strong id="prism-height">24 cm</strong></div>
+            <div class="data-row"><span>Volumen</span><strong id="prism-volume">144 cm³</strong></div>
+            <div class="data-row"><span>Status</span><strong id="prism-status">brennt</strong></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="controls">
+        <div class="controls-head">
+          <h2>Zeitachse</h2>
+          <div class="time-output"><span id="time-value">0,0</span> h</div>
+        </div>
+
+        <div class="range-wrap">
+          <input id="time-range" type="range" min="0" max="12" step="0.25" value="0" aria-label="Zeit in Stunden">
+          <div class="axis" aria-hidden="true">
+            <span>0 h</span>
+            <span>2 h</span>
+            <span>4 h</span>
+            <span>6 h</span>
+            <span>8 h</span>
+            <span>10 h</span>
+            <span>12 h</span>
+          </div>
+        </div>
+
+        <div class="jump-list" id="jump-list">
+          <button class="jump-button active" type="button" data-hours="0">0 h</button>
+          <button class="jump-button" type="button" data-hours="2">2 h</button>
+          <button class="jump-button" type="button" data-hours="4">4 h</button>
+          <button class="jump-button" type="button" data-hours="6">6 h</button>
+          <button class="jump-button" type="button" data-hours="8">8 h</button>
+          <button class="jump-button" type="button" data-hours="10">10 h</button>
+          <button class="jump-button" type="button" data-hours="12">12 h</button>
+        </div>
+
+        <p class="helper">
+          Die blaue Kerze ist wegen ihrer kleineren Grundfläche schneller heruntergebrannt.
+          Beide Kerzen verlieren pro Stunde gleich viel Wachs: <strong>24 cm³</strong>.
+        </p>
+      </section>
+    </main>
+
+    <script>
+      const slider = document.getElementById("time-range");
+      const timeValue = document.getElementById("time-value");
+      const jumpButtons = [...document.querySelectorAll(".jump-button")];
+
+      const totalHeightCm = 24;
+      const candleHeightPx = 210;
+      const baseY = 286;
+
+      const formatter = new Intl.NumberFormat("de-DE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1
+      });
+
+      function buildFlame(x, y) {
+        return `
+          <g class="flame" transform="translate(${x} ${y})">
+            <path d="M0 0 C-8 10 -8 22 0 28 C8 22 8 10 0 0 Z" fill="#f4a431"></path>
+            <path d="M0 6 C-4 12 -4 19 0 23 C4 19 4 12 0 6 Z" fill="#fff3a7"></path>
+          </g>
+        `;
+      }
+
+      function tickLines(x1, x2, topY, count, spacing, labelX, labelStart) {
+        let lines = "";
+
+        for (let i = 1; i <= count; i += 1) {
+          const y = baseY - spacing * i;
+          if (y <= topY + 2) {
+            continue;
+          }
+
+          lines += `
+            <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#8f8478" stroke-width="1"></line>
+            <line x1="${labelX}" y1="${y}" x2="${labelX + 8}" y2="${y}" stroke="#8f8478" stroke-width="1"></line>
+            <text x="${labelX + 10}" y="${y + 4}" fill="#6d635b" font-size="8">${labelStart + i - 1}</text>
+          `;
+        }
+
+        return lines;
+      }
+
+      function renderQuad(hours) {
+        const group = document.getElementById("quad-live");
+        const remainingHeight = Math.max(totalHeightCm - 2 * hours, 0);
+        const liveHeight = candleHeightPx * (remainingHeight / totalHeightCm);
+        const topY = baseY - liveHeight;
+        const wickX = 114;
+
+        if (remainingHeight <= 0) {
+          group.innerHTML = "";
+          return;
+        }
+
+        const topBackY = topY - 14;
+
+        group.innerHTML = `
+          <rect x="74" y="${topY}" width="80" height="${liveHeight}" fill="var(--red)" opacity="0.92"></rect>
+          <path d="M154 ${topY} L172 ${topBackY} L172 272 L154 286 Z" fill="var(--red-dark)" opacity="0.92"></path>
+          <path d="M74 ${topY} L154 ${topY} L172 ${topBackY} L92 ${topBackY} Z" fill="#f0b4af"></path>
+          <path d="M74 ${topY} L74 286 L154 286 L154 ${topY}" fill="none" stroke="#805852" stroke-width="2"></path>
+          <path d="M154 ${topY} L172 ${topBackY} L172 272 L154 286" fill="none" stroke="#805852" stroke-width="2"></path>
+          <path d="M74 ${topY} L92 ${topBackY} L172 ${topBackY}" fill="none" stroke="#805852" stroke-width="2"></path>
+          <line x1="${wickX}" y1="${topBackY - 4}" x2="${wickX}" y2="${topBackY - 18}" stroke="#2d241f" stroke-width="2"></line>
+          ${buildFlame(wickX, topBackY - 38)}
+          ${tickLines(74, 154, topY, 12, candleHeightPx / 12, 170, 1)}
+          <line x1="58" y1="76" x2="58" y2="286" stroke="#4f463f" stroke-width="1.5"></line>
+          <line x1="54" y1="76" x2="62" y2="76" stroke="#4f463f" stroke-width="1.5"></line>
+          <line x1="54" y1="286" x2="62" y2="286" stroke="#4f463f" stroke-width="1.5"></line>
+          <text x="49" y="186" fill="#4f463f" font-size="10" transform="rotate(-90 49 186)">24 cm</text>
+        `;
+      }
+
+      function renderPrism(hours) {
+        const group = document.getElementById("prism-live");
+        const remainingHeight = Math.max(totalHeightCm - 4 * hours, 0);
+        const liveHeight = candleHeightPx * (remainingHeight / totalHeightCm);
+        const topY = baseY - liveHeight;
+        const ridgeX = 268;
+
+        if (remainingHeight <= 0) {
+          group.innerHTML = "";
+          return;
+        }
+
+        const topPeakY = topY - 16;
+        const wickY1 = topPeakY - 3;
+        const wickY2 = topPeakY - 18;
+
+        group.innerHTML = `
+          <rect x="236" y="${topY}" width="62" height="${liveHeight}" fill="var(--blue)" opacity="0.9"></rect>
+          <path d="M298 ${topY} L322 ${topY - 12} L322 274 L298 286 Z" fill="var(--blue-dark)" opacity="0.92"></path>
+          <path d="M236 ${topY} L298 ${topY} L268 ${topPeakY} Z" fill="#bfd0f8"></path>
+          <path d="M298 ${topY} L322 ${topY - 12} L268 ${topPeakY} Z" fill="#9ab4f1"></path>
+          <path d="M236 ${topY} L236 286 L298 286 L298 ${topY}" fill="none" stroke="#4f628f" stroke-width="2"></path>
+          <path d="M236 ${topY} L268 ${topPeakY} L298 ${topY}" fill="none" stroke="#4f628f" stroke-width="2"></path>
+          <path d="M298 ${topY} L322 ${topY - 12} L322 274 L298 286" fill="none" stroke="#4f628f" stroke-width="2"></path>
+          <line x1="${ridgeX}" y1="${wickY1}" x2="${ridgeX}" y2="${wickY2}" stroke="#2d241f" stroke-width="2"></line>
+          ${buildFlame(ridgeX, wickY2 - 20)}
+          ${tickLines(236, 298, topY, 6, candleHeightPx / 6, 324, 1)}
+          <line x1="220" y1="76" x2="220" y2="286" stroke="#4f463f" stroke-width="1.5"></line>
+          <line x1="216" y1="76" x2="224" y2="76" stroke="#4f463f" stroke-width="1.5"></line>
+          <line x1="216" y1="286" x2="224" y2="286" stroke="#4f463f" stroke-width="1.5"></line>
+          <text x="211" y="186" fill="#4f463f" font-size="10" transform="rotate(-90 211 186)">24 cm</text>
+        `;
+      }
+
+      function setText(id, value) {
+        document.getElementById(id).textContent = value;
+      }
+
+      function setActiveButtons(hours) {
+        jumpButtons.forEach((button) => {
+          const buttonHours = Number(button.dataset.hours);
+          button.classList.toggle("active", buttonHours === hours);
+        });
+      }
+
+      function updateScene() {
+        const hours = Number(slider.value);
+        const quadHeight = Math.max(totalHeightCm - 2 * hours, 0);
+        const prismHeight = Math.max(totalHeightCm - 4 * hours, 0);
+        const quadVolume = quadHeight * 12;
+        const prismVolume = prismHeight * 6;
+
+        timeValue.textContent = formatter.format(hours);
+
+        setText("quad-height", `${formatter.format(quadHeight)} cm`);
+        setText("quad-volume", `${formatter.format(quadVolume)} cm³`);
+        setText("quad-status", quadHeight > 0 ? "brennt" : "aus");
+
+        setText("prism-height", `${formatter.format(prismHeight)} cm`);
+        setText("prism-volume", `${formatter.format(prismVolume)} cm³`);
+        setText("prism-status", prismHeight > 0 ? "brennt" : "aus");
+
+        renderQuad(hours);
+        renderPrism(hours);
+        setActiveButtons(hours);
+      }
+
+      slider.addEventListener("input", updateScene);
+
+      jumpButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          slider.value = button.dataset.hours;
+          updateScene();
+        });
+      });
+
+      updateScene();
+    </script>
+  </body>
+</html>
