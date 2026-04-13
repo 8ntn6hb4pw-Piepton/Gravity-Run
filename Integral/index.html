@@ -1,1 +1,515 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GeoGebra: Aufgabe 8 interaktiv</title>
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+  <style>
+    :root {
+      --bg: #f7f1e7;
+      --panel: rgba(255, 250, 241, 0.92);
+      --text: #213547;
+      --muted: #586877;
+      --accent: #0f8fa6;
+      --accent-2: #d65a31;
+      --line: #d7c7b2;
+      --ok: #1f7a4a;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(15, 143, 166, 0.15), transparent 32%),
+        radial-gradient(circle at right 15%, rgba(214, 90, 49, 0.15), transparent 24%),
+        linear-gradient(180deg, #fbf7ef 0%, #f4ecdf 100%);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid rgba(145, 118, 89, 0.18);
+      border-radius: 22px;
+      box-shadow: 0 18px 42px rgba(71, 51, 25, 0.09);
+      backdrop-filter: blur(6px);
+    }
+
+    .intro {
+      padding: 26px 24px;
+    }
+
+    .intro h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 3rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.55;
+      max-width: 60ch;
+    }
+
+    .info {
+      padding: 22px 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(15, 143, 166, 0.1);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      width: fit-content;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .controls {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .control-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 0.97rem;
+    }
+
+    select,
+    input[type="range"] {
+      width: 100%;
+    }
+
+    select {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    input[type="range"] {
+      accent-color: var(--accent-2);
+    }
+
+    .value-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .formula-box,
+    .stats {
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(145, 118, 89, 0.14);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .formula-box strong,
+    .stats strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.98rem;
+    }
+
+    .formula {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-size: 1.12rem;
+      color: var(--accent);
+    }
+
+    .stats {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      font-variant-numeric: tabular-nums;
+      border-bottom: 1px solid rgba(145, 118, 89, 0.18);
+      padding-bottom: 10px;
+    }
+
+    .stat:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .stat-label {
+      color: var(--muted);
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .status {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(31, 122, 74, 0.08);
+      color: var(--ok);
+      font-weight: 600;
+      line-height: 1.4;
+      min-height: 3.4em;
+    }
+
+    .applet-card {
+      padding: 16px;
+    }
+
+    #ggb-element {
+      width: 100%;
+      min-height: 640px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(145, 118, 89, 0.12);
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 960px) {
+      .hero,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+
+      #ggb-element {
+        min-height: 480px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="card intro">
+        <div class="badge">GeoGebra-Tool zu Aufgabe 8</div>
+        <h1>Flaechen live sehen und mit <code>x = a</code> verschieben</h1>
+        <p>
+          Waehle Aufgabe 1 oder 2, verschiebe den Wert <code>a</code> und beobachte,
+          wie sich die gelb markierten Flaechen <code>A1</code> und <code>A2</code> veraendern.
+          Die Werte werden unterhalb der Steuerung direkt mitgerechnet.
+        </p>
+      </div>
+
+      <div class="card info">
+        <div>
+          <strong>Farben im Diagramm</strong>
+          <div class="small">Orange markiert <code>A1</code>, Gelb markiert <code>A2</code>, Rot zeigt die Gerade <code>x = a</code>.</div>
+        </div>
+        <div>
+          <strong>Didaktischer Einsatz</strong>
+          <div class="small">Besonders hilfreich fuer Teil b) und c): Lernende sehen sofort, ab welchem <code>a</code> beide Flaechen gleich gross werden.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <aside class="card controls">
+        <div class="control-group">
+          <label for="task-select">Aufgabe</label>
+          <select id="task-select">
+            <option value="1">Aufgabe 1: f(x) = (x - 2)^2 - 4</option>
+            <option value="2">Aufgabe 2: f(x) = (x + 1)^2 - 9</option>
+          </select>
+        </div>
+
+        <div class="formula-box">
+          <strong>Aktuelle Funktion</strong>
+          <div id="formula" class="formula">f(x) = (x - 2)^2 - 4</div>
+        </div>
+
+        <div class="control-group">
+          <label for="a-slider">Gerade <code>x = a</code></label>
+          <input id="a-slider" type="range" min="4" max="7" step="0.1" value="5">
+          <div class="value-row">
+            <span>aktueller Wert</span>
+            <strong id="a-value">a = 5.0</strong>
+          </div>
+        </div>
+
+        <div class="stats">
+          <strong>Flaecheninhalte</strong>
+          <div class="stat">
+            <span class="stat-label">A1</span>
+            <span class="stat-value" id="a1-value">-</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">A2</span>
+            <span class="stat-value" id="a2-value">-</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Differenz</span>
+            <span class="stat-value" id="diff-value">-</span>
+          </div>
+        </div>
+
+        <div id="status" class="status">
+          Das Applet wird geladen.
+        </div>
+
+        <div class="small">
+          Tipp: Stelle bei Aufgabe 1 <code>a = 5</code> und bei Aufgabe 2 <code>a = 4</code> ein,
+          um direkt die Teilaufgabe b) nachzuvollziehen.
+        </div>
+      </aside>
+
+      <section class="card applet-card">
+        <div id="ggb-element" class="ggb-wrap"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const TASKS = {
+      1: {
+        label: "Aufgabe 1",
+        formula: "f(x) = (x - 2)^2 - 4",
+        h: 2,
+        q: 2,
+        defaultA: 5,
+        minA: 4,
+        maxA: 7,
+        view: { xmin: -1.5, xmax: 7.5, ymin: -5.5, ymax: 7.5 }
+      },
+      2: {
+        label: "Aufgabe 2",
+        formula: "f(x) = (x + 1)^2 - 9",
+        h: -1,
+        q: 3,
+        defaultA: 4,
+        minA: 2,
+        maxA: 7,
+        view: { xmin: -6.5, xmax: 7.5, ymin: -10.5, ymax: 12.5 }
+      }
+    };
+
+    const taskSelect = document.getElementById("task-select");
+    const slider = document.getElementById("a-slider");
+    const formulaEl = document.getElementById("formula");
+    const aValueEl = document.getElementById("a-value");
+    const a1ValueEl = document.getElementById("a1-value");
+    const a2ValueEl = document.getElementById("a2-value");
+    const diffValueEl = document.getElementById("diff-value");
+    const statusEl = document.getElementById("status");
+
+    let api = null;
+    let currentTask = "1";
+
+    function formatNumber(value) {
+      return Number(value).toLocaleString("de-DE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 3
+      });
+    }
+
+    function setStatus(message, equal) {
+      statusEl.textContent = message;
+      statusEl.style.background = equal ? "rgba(31, 122, 74, 0.12)" : "rgba(15, 143, 166, 0.08)";
+      statusEl.style.color = equal ? "var(--ok)" : "var(--accent)";
+    }
+
+    function updateReadout() {
+      if (!api) {
+        return;
+      }
+
+      const a = api.getValue("a");
+      const area1 = api.getValue("A1");
+      const area2 = api.getValue("A2");
+      const diff = Math.abs(area1 - area2);
+
+      aValueEl.textContent = "a = " + formatNumber(a);
+      a1ValueEl.textContent = formatNumber(area1);
+      a2ValueEl.textContent = formatNumber(area2);
+      diffValueEl.textContent = formatNumber(diff);
+
+      if (diff < 0.02) {
+        setStatus("A1 und A2 sind hier praktisch gleich gross.", true);
+      } else if (area2 < area1) {
+        setStatus("A2 ist noch kleiner als A1. Verschiebe a weiter nach rechts.", false);
+      } else {
+        setStatus("A2 ist bereits groesser als A1.", false);
+      }
+    }
+
+    function syncSliderFromApplet() {
+      if (!api) {
+        return;
+      }
+      const a = api.getValue("a");
+      slider.value = String(a);
+      updateReadout();
+    }
+
+    function createConstruction(ggbApi) {
+      ggbApi.setRepaintingActive(false);
+      ggbApi.setAxesVisible(true, true);
+      ggbApi.setGridVisible(true);
+      ggbApi.evalCommand(
+        [
+          "axis(x)=0",
+          "h=2",
+          "q=2",
+          "a=5",
+          "f(x)=(x-h)^2-q^2",
+          "xLeft=h-q",
+          "xRight=h+q",
+          "g:x=a",
+          "A1=IntegralBetween(axis,f,xLeft,xRight)",
+          "A2=IntegralBetween(f,axis,xRight,a)"
+        ].join("\n")
+      );
+
+      ggbApi.setCoordSystem(-1.5, 7.5, -5.5, 7.5);
+      ggbApi.setColor("f", 15, 143, 166);
+      ggbApi.setColor("g", 214, 90, 49);
+      ggbApi.setColor("A1", 240, 173, 78);
+      ggbApi.setColor("A2", 246, 199, 95);
+      ggbApi.setLineThickness("f", 7);
+      ggbApi.setLineThickness("g", 6);
+      ggbApi.setFilling("A1", 0.45);
+      ggbApi.setFilling("A2", 0.62);
+      ggbApi.setLabelVisible("f", true);
+      ggbApi.setLabelVisible("g", true);
+      ggbApi.setLabelVisible("A1", false);
+      ggbApi.setLabelVisible("A2", false);
+      ggbApi.setLabelStyle("f", 0);
+      ggbApi.setLabelStyle("g", 0);
+      ggbApi.registerObjectUpdateListener("a", syncSliderFromApplet);
+      ggbApi.setRepaintingActive(true);
+      updateReadout();
+    }
+
+    function applyTask(taskKey, withSliderReset) {
+      currentTask = taskKey;
+      const task = TASKS[taskKey];
+
+      formulaEl.textContent = task.formula;
+      slider.min = String(task.minA);
+      slider.max = String(task.maxA);
+      slider.step = "0.1";
+
+      if (withSliderReset) {
+        slider.value = String(task.defaultA);
+      }
+
+      if (!api) {
+        aValueEl.textContent = "a = " + formatNumber(slider.value);
+        return;
+      }
+
+      api.setRepaintingActive(false);
+      api.setValue("h", task.h);
+      api.setValue("q", task.q);
+      api.setValue("a", Number(slider.value));
+      api.setCoordSystem(task.view.xmin, task.view.xmax, task.view.ymin, task.view.ymax);
+      api.setRepaintingActive(true);
+      updateReadout();
+    }
+
+    slider.addEventListener("input", () => {
+      aValueEl.textContent = "a = " + formatNumber(slider.value);
+      if (api) {
+        api.setValue("a", Number(slider.value));
+      }
+    });
+
+    taskSelect.addEventListener("change", (event) => {
+      applyTask(event.target.value, true);
+    });
+
+    const params = {
+      appName: "graphing",
+      width: 860,
+      height: 640,
+      showToolBar: false,
+      showMenuBar: false,
+      showAlgebraInput: false,
+      showResetIcon: false,
+      showZoomButtons: true,
+      showFullscreenButton: true,
+      enableRightClick: false,
+      enableShiftDragZoom: false,
+      useBrowserForJS: true,
+      scaleContainerClass: "ggb-wrap",
+      autoHeight: false,
+      allowUpscale: false,
+      borderColor: "#dbcbb5",
+      borderRadius: 18,
+      appletOnLoad(apiRef) {
+        api = apiRef;
+        createConstruction(api);
+        applyTask(currentTask, true);
+      }
+    };
+
+    const applet = new GGBApplet(params, true);
+    window.addEventListener("load", () => {
+      applet.inject("ggb-element");
+    });
+  </script>
+</body>
+</html>
