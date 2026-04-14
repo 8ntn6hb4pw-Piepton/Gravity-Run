@@ -15,6 +15,7 @@
       --accent-2: #d65a31;
       --line: #d7c7b2;
       --ok: #1f7a4a;
+      --mobile-dock: 220px;
     }
 
     * {
@@ -226,17 +227,120 @@
     }
 
     @media (max-width: 960px) {
-      .hero,
+      .page {
+        padding: 10px 10px calc(var(--mobile-dock) + 18px);
+      }
+
+      .hero {
+        display: none;
+      }
+
       .grid {
         grid-template-columns: 1fr;
+        gap: 10px;
       }
 
       .controls {
-        position: static;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        z-index: 30;
+        width: min(100%, 1000px);
+        margin: 0 auto;
+        padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+        gap: 10px;
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 -14px 36px rgba(56, 40, 20, 0.18);
+        backdrop-filter: blur(20px);
+        background: rgba(255, 250, 241, 0.97);
+      }
+
+      .formula-box,
+      .info,
+      .small {
+        display: none;
+      }
+
+      .control-group {
+        gap: 6px;
+      }
+
+      label {
+        font-size: 0.9rem;
+      }
+
+      select {
+        padding: 11px 12px;
+        border-radius: 12px;
+      }
+
+      .value-row {
+        font-size: 0.88rem;
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .stats strong {
+        display: none;
+      }
+
+      .stat {
+        border-bottom: 0;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.82);
+        display: grid;
+        gap: 3px;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+      }
+
+      .stat-value {
+        font-size: 1rem;
+      }
+
+      .status {
+        min-height: 0;
+        padding: 9px 10px;
+        font-size: 0.86rem;
+      }
+
+      .applet-card {
+        padding: 10px;
+        border-radius: 20px;
       }
 
       #ggb-element {
-        min-height: 480px;
+        min-height: clamp(320px, calc(100vh - var(--mobile-dock) - 28px), 520px);
+        height: clamp(320px, calc(100vh - var(--mobile-dock) - 28px), 520px);
+        border-radius: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --mobile-dock: 236px;
+      }
+
+      .controls {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .stats {
+        padding: 10px;
+      }
+
+      .stat {
+        padding: 7px 8px;
       }
     }
   </style>
@@ -360,8 +464,8 @@
 
     function formatNumber(value) {
       return Number(value).toLocaleString("de-DE", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 3
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
       });
     }
 
