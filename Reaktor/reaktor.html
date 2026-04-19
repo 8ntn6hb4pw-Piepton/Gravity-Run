@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Springfield Reaktor</title>
+<link rel="stylesheet" href="reaktor.css">
+</head>
+<body>
+<div id="mflash"></div>
+
+<!-- HEADER -->
+<div id="hdr">
+  <div class="logo">Springfield <em>Reaktor</em></div>
+  <div class="hbar">
+    <div class="hstat"><span class="hl">LAUFZEIT</span><span class="hv" id="hTime">00:00</span></div>
+    <div class="hstat"><span class="hl">TEMP</span><span class="hv" id="hTemp">—</span></div>
+    <div class="hstat"><span class="hl">DRUCK</span><span class="hv" id="hPres">—</span></div>
+    <div class="hstat"><span class="hl">LEISTUNG</span><span class="hv" id="hPow">—</span></div>
+    <div class="hstat" id="hXeWrap" style="display:none"><span class="hl">XENON</span><span class="hv c" id="hXe">—</span></div>
+  </div>
+  <div id="abanner" class="ao">◆ NORMAL</div>
+  <button id="modeSwitchBtn" class="modebadge bc" style="border-color:rgba(0,212,255,.35);color:var(--c)">→ Expertenmodus</button>
+</div>
+
+<!-- SCHÜLER MODE -->
+<div id="schuelerApp" style="display:flex;flex-direction:column;flex:1">
+<div id="schuelerMain">
+  <div id="schuelerLeft">
+    <div class="pan">
+      <div class="ph">
+        <span class="pht">Reaktorkern</span>
+        <span id="sStateLabel" style="font-family:var(--mono);font-size:.7rem;color:var(--g)">KRITISCH</span>
+      </div>
+      <canvas id="scv" width="600" height="240"></canvas>
+    </div>
+
+    <div class="pan">
+      <div class="ph"><span class="pht">Ursache → Wirkung</span></div>
+      <div id="causalBox">
+        <div class="cchain" id="chainRods">
+          <div class="cnode" id="cn_rods">Steuerstäbe</div>
+          <div class="carr" id="ca1">→</div>
+          <div class="cnode" id="cn_abs">Absorption↑</div>
+          <div class="carr" id="ca2">→</div>
+          <div class="cnode" id="cn_neu">Neutronen↓</div>
+          <div class="carr" id="ca3">→</div>
+          <div class="cnode" id="cn_keff">kEff↓</div>
+          <div class="carr" id="ca4">→</div>
+          <div class="cnode" id="cn_pow">Leistung↓</div>
+          <div class="carr" id="ca5">→</div>
+          <div class="cnode" id="cn_temp">Temp↓</div>
+        </div>
+        <div class="cexpl" id="causalText">Bewege einen Regler und beobachte wie sich die Kettenreaktion ändert.</div>
+      </div>
+    </div>
+
+    <div class="pan">
+      <div class="ph"><span class="pht">Ereignislog</span><span id="slcnt" style="font-family:var(--mono);font-size:.6rem;color:var(--mut)">0</span></div>
+      <div class="logwrap" id="slw"></div>
+    </div>
+  </div>
+
+  <div id="schuelerRight">
+    <div class="pan">
+      <div class="ph"><span class="pht">Szenarien</span></div>
+      <div class="scenlist" id="scenList"></div>
+    </div>
+
+    <div class="pan">
+      <div class="ph"><span class="pht">Bedienung</span></div>
+      <div style="padding:10px">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--mut);margin-bottom:3px">TEMP</div>
+            <div style="font-family:var(--mono);font-size:1.1rem;color:var(--g)" id="sTempBig">—</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--mut);margin-bottom:3px">kEff</div>
+            <div style="font-family:var(--mono);font-size:1.1rem;color:var(--g)" id="sKeffBig">—</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:var(--mono);font-size:.58rem;color:var(--mut);margin-bottom:3px">KÜHLUNG</div>
+            <div style="font-family:var(--mono);font-size:1.1rem;color:var(--c)" id="sCoolBig">—</div>
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-family:var(--mono);font-size:.65rem;color:var(--mut);margin-bottom:5px;display:flex;justify-content:space-between">
+            <span>⚛ STEUERSTÄBE (eingefahren)</span><span style="color:var(--c)" id="sRodVal">60%</span>
+          </div>
+          <input type="range" id="sRodSl" min="0" max="100" value="60">
+          <div class="fx" id="sRodFx" style="margin-top:5px">—</div>
+        </div>
+        <div style="margin-bottom:12px">
+          <div style="font-family:var(--mono);font-size:.65rem;color:var(--mut);margin-bottom:5px;display:flex;justify-content:space-between">
+            <span>🌊 KÜHLPUMPE</span><span style="color:var(--c)" id="sPumpVal">58%</span>
+          </div>
+          <input type="range" id="sPumpSl" min="5" max="100" value="58">
+          <div class="fx" id="sPumpFx" style="margin-top:5px">—</div>
+        </div>
+        <div class="b2">
+          <button id="sScramBtn" class="br">SCRAM</button>
+          <button id="sDieselBtn" class="bg">Notstrom AN</button>
+        </div>
+        <div class="b2">
+          <button id="sRestartBtn" class="bn">↺ Neustart</button>
+          <button id="sSoundBtn" class="bn">🔊 Ton: AN</button>
+        </div>
+        <div id="sStartupWrap" style="display:none;margin-top:6px">
+          <button id="sStartupBtn" class="by bfull">▶ Reaktor neu starten</button>
+        </div>
+        <div class="key-hint" style="margin-top:8px"><kbd>Leertaste</kbd> SCRAM &nbsp; <kbd>D</kbd> Diesel</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- EXPERTE MODE -->
+<div id="experteApp" style="display:none;flex-direction:column;flex:1">
+<div id="experteMain">
+  <div id="experteLeft">
+    <div class="pan">
+      <div class="ph"><span class="pht">Messinstrumente</span></div>
+      <div id="ggrid"></div>
+    </div>
+    <div class="pan">
+      <div class="ph"><span class="pht">Systemstatus</span><span id="edlbl" style="font-family:var(--mono);font-size:.6rem;color:var(--mut)">NORMAL</span></div>
+      <div class="sg">
+        <div class="sc"><div class="scl">kEff</div><div class="scv" id="evkeff">—</div></div>
+        <div class="sc"><div class="scl">Xenon-135</div>
+          <div class="scv" id="evxe">—</div>
+          <div class="meterbar"><div id="exefill" class="meterfill meterfill-xe"></div></div>
+        </div>
+        <div class="sc"><div class="scl">Neutronen</div><div class="scv" id="evneu">—</div></div>
+        <div class="sc"><div class="scl">Restwärme</div><div class="scv" id="evdec">—</div></div>
+        <div class="sc"><div class="scl">Ext. Netz</div><div id="evgrid"></div></div>
+        <div class="sc"><div class="scl">Notstrom</div><div id="evdiesel"></div></div>
+        <div class="sc"><div class="scl">Pumpenwirk.</div><div class="scv" id="evpump">—</div></div>
+        <div class="sc"><div class="scl">Ventilstatus</div><div class="scv" id="evvalve">—</div></div>
+        <div class="sc"><div class="scl">Turbine</div><div id="evturb"></div></div>
+        <div class="sc">
+          <div class="scl">Brennstäbe</div>
+          <div class="scv" id="evburn">—</div>
+          <div class="meterbar"><div id="eburnfill" class="meterfill meterfill-burn"></div></div>
+        </div>
+        <div class="sc"><div class="scl">Materialstress</div><div class="scv" id="evstress">—</div></div>
+        <div class="sc">
+          <div class="scl">Strahlung</div>
+          <div class="scv" id="evrad">—</div>
+          <div class="meterbar"><div id="eradfill" class="meterfill meterfill-rad"></div></div>
+        </div>
+        <div class="sc"><div class="scl">Diagnose</div><div class="scv" id="evdiag">—</div></div>
+        <div class="sc"><div class="scl">Autopilot</div><div class="scv" id="evauto">AUS</div></div>
+        <div class="sc"><div class="scl">Score</div><div class="scv g" id="evscore">—</div></div>
+        <div class="sc"><div class="scl">Ereignis</div><div id="evevt" style="font-family:var(--mono);font-size:.72rem">—</div></div>
+        <div class="sc scw"><div class="scl">Stabile Zeit · Rekord</div><div class="scv g" id="evstable">0 s · Rekord: 0 s</div></div>
+      </div>
+    </div>
+    <div class="pan">
+      <div class="ph"><span class="pht">Steuerstab-Alterung</span></div>
+      <div class="rod-grid" id="rodGrid"></div>
+      <div style="padding:0 8px 6px;font-family:var(--mono);font-size:.6rem;color:var(--mut)" id="rodWearNote">—</div>
+    </div>
+  </div>
+
+  <div id="experteCenter">
+    <div class="pan">
+      <div class="ph">
+        <span class="pht">Reaktorkern</span>
+        <span id="eStateLabel" style="font-family:var(--mono);font-size:.7rem;color:var(--g)">KRITISCH</span>
+      </div>
+      <canvas id="ecv" width="640" height="250"></canvas>
+      <div class="nb">
+        <span class="nbl">Netzforderung</span>
+        <div class="nbt" id="enbt"><div class="nbd" id="enbd"></div><div class="nba" id="enba"></div><div class="nbm" id="enbm"></div></div>
+        <span class="nbv" id="enbv">—</span>
+      </div>
+    </div>
+    <div class="pan">
+      <div class="ph">
+        <span class="pht">Temperaturverlauf</span>
+        <span style="font-family:var(--mono);font-size:.6rem;color:var(--mut)">letzte 60 s</span>
+      </div>
+      <canvas id="sparkCanvas" width="640" height="55"></canvas>
+    </div>
+    <div class="pan">
+      <div class="ph">
+        <span class="pht">Krisenlage</span>
+        <span id="eScenarioTag" style="font-family:var(--mono);font-size:.62rem;color:var(--c)">Freies Spiel</span>
+      </div>
+      <div class="opsbox">
+        <div id="eScenarioDesc" class="ops-summary">Die Leitwarte meldet ruhigen Betrieb.</div>
+        <div id="eAlertList" class="alert-list"></div>
+      </div>
+    </div>
+    <div class="pan">
+      <div class="ph"><span class="pht">Krisen- & Ergebnislog</span><span id="elcnt" style="font-family:var(--mono);font-size:.6rem;color:var(--mut)">0</span></div>
+      <div class="logwrap prominent" id="elw"></div>
+    </div>
+  </div>
+
+  <div id="experteRight">
+    <div class="pan" style="padding:10px">
+      <div class="ph" style="margin:-10px -10px 10px">
+        <span class="pht">Bedienung</span>
+        <button id="ehbtn" class="bn" style="padding:2px 8px;font-size:.6rem">HILFE</button>
+      </div>
+
+      <div class="cg">
+        <div class="cgh"><div class="cdot" style="background:var(--g);box-shadow:0 0 5px var(--g)"></div>Steuerstäbe</div>
+        <div class="chain">Einfahren → Absorption↑ → Neutronen↓ → kEff↓ → Leistung↓ → Temp↓</div>
+        <div class="slrw"><span class="sico">▽</span><input type="range" id="eRodSl" min="0" max="100" value="60" style="flex:1"><span class="sico">△</span><span class="sv" id="eRodV">60%</span></div>
+        <div class="fx" id="eRodFx">—</div>
+      </div>
+      <div class="cg">
+        <div class="cgh"><div class="cdot" style="background:var(--c);box-shadow:0 0 5px var(--c)"></div>Kühlpumpe</div>
+        <div class="chain">Pumpe↑ → Wärmeabfuhr↑ → Temp↓ → Druck↓</div>
+        <div class="slrw"><span class="sico">↓</span><input type="range" id="ePumpSl" min="5" max="100" value="58" style="flex:1"><span class="sico">↑</span><span class="sv" id="ePumpV">58%</span></div>
+        <div class="fx" id="ePumpFx">—</div>
+      </div>
+      <div class="cg">
+        <div class="cgh"><div class="cdot" style="background:var(--y);box-shadow:0 0 5px var(--y)"></div>Borsäure</div>
+        <div class="chain">Bor↑ → chem. Absorption↑ → kEff↓ (unabh. von Stäben)</div>
+        <div class="slrw"><span class="sico">↓</span><input type="range" id="eBorSl" min="0" max="100" value="20" style="flex:1"><span class="sico">↑</span><span class="sv" id="eBorV">20%</span></div>
+        <div class="fx" id="eBorFx">—</div>
+      </div>
+      <div class="cg">
+        <div class="cgh"><div class="cdot" style="background:var(--o);box-shadow:0 0 5px var(--o)"></div>Druckhalter-Heizung</div>
+        <div class="chain">Heizung↑ → Druck↑ → Siedeschutz↑ (zu viel → Ventil öffnet)</div>
+        <div class="slrw"><span class="sico">↓</span><input type="range" id="ePhSl" min="0" max="100" value="50" style="flex:1"><span class="sico">↑</span><span class="sv" id="ePhV">50%</span></div>
+        <div class="fx" id="ePhFx">—</div>
+      </div>
+
+      <div id="ehb" style="display:none;margin-bottom:10px;border-top:1px solid rgba(255,255,255,.05);padding-top:8px">
+        <div style="display:grid;gap:5px">
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--mut);line-height:1.4;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:var(--c)">Brennstoff</span> sinkt langsam mit Leistung, Hitze und Krisendauer. Niedriger Abbrand macht den Reaktor träger und drückt die Reaktivitätsreserve.</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--mut);line-height:1.4;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:var(--c)">Steuerstäbe</span> altern durch harte Stellfahrten, SCRAMs und Hitzestress. Sie reagieren dann verzögert und bremsen schwächer.</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--mut);line-height:1.4;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="color:var(--c)">Diagnose</span> findet Lecks, Sensorfehler und degradierte Systeme nicht immer sicher. Scans liefern Hinweise, keine Allwissenheit.</div>
+          <div style="font-family:var(--mono);font-size:.64rem;color:var(--mut);line-height:1.4;padding:4px 0"><span style="color:var(--c)">Strahlung & Venting</span> Druckablass kann kontaminierten Dampf freisetzen. Lecks und geschwächte Einschlussbarrieren erzeugen zusätzliche Strahlungsrisiken und Score-Mali.</div>
+        </div>
+      </div>
+
+      <div class="cg">
+        <div class="cgh"><div class="cdot" style="background:var(--r);box-shadow:0 0 5px var(--r)"></div>Schnelleingriffe</div>
+        <div class="action-grid">
+          <button id="eScramBtn" class="br">SCRAM</button>
+          <button id="eStartupBtn" class="by" style="display:none">▶ Neustart</button>
+          <button id="eDieselBtn" class="bg">Notstrom AN</button>
+          <button id="ePumpFixBtn" class="bc">⚙ Reservepumpe</button>
+          <button id="eEmergencyBtn" class="br">❄ Notkühlung</button>
+          <button id="eVentBtn" class="br">⇲ Druck ablassen</button>
+          <button id="eDiagBtn" class="bc">⌁ Diagnose / Scan</button>
+          <button id="eMaintModeBtn" class="by">🔧 Wartungsmodus</button>
+          <button id="eAutopilotBtn" class="bc">🤖 Autopilot AUS</button>
+        </div>
+        <div class="action-state" id="eActionState">Leitwarte bereit. Keine Sondermaßnahme aktiv.</div>
+        <div class="b2" style="margin-top:6px">
+          <button id="eRestartBtn" class="bn">↺ Neustart</button>
+          <button id="eDiffBtn" class="bn">Schwierigkeit</button>
+        </div>
+        <button id="eSoundBtn" class="bfull bn">🔊 Alarmton: AN</button>
+        <div class="key-hint"><kbd>Leertaste</kbd> SCRAM &nbsp; <kbd>D</kbd> Diesel &nbsp; <kbd>R</kbd> Neustart</div>
+      </div>
+    </div>
+
+    <div class="pan">
+      <div class="ph"><span class="pht">Wartung</span><span id="eMaintBadge" style="font-family:var(--mono);font-size:.62rem;color:var(--mut)">inaktiv</span></div>
+      <div class="maintwrap">
+        <div class="maint-status" id="eMaintStatus">Sicherer Stillstand erforderlich: SCRAM, Temp unter 360°C, Druck unter 138 bar, geringe Restwärme.</div>
+        <div class="maint-grid">
+          <button id="eFuelSwapBtn" class="by">BE-Tausch</button>
+          <button id="eRodReplBtn" class="by">Stab-Tausch</button>
+          <button id="ePumpSwapBtn" class="bc">Pumpen tauschen</button>
+          <button id="eValveSwapBtn" class="bc">Ventil tauschen</button>
+          <button id="eLeakSealBtn" class="bc">Leck abdichten</button>
+          <button id="eSensorCalBtn" class="bc">Sensoren kalibrieren</button>
+          <button id="eTurbineBtn" class="bn">⚡ Turbine koppeln</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pan">
+      <div class="ph"><span class="pht">Score & Rekorde</span></div>
+      <div class="scorewrap">
+        <div id="eScoreBreakdown" class="score-grid"></div>
+        <div id="eRecordList" class="record-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODUS-AUSWAHL OVERLAY -->
+<div id="modeOvl" class="overlay">
+  <div class="modal">
+    <div class="mlogo">Springfield <em>Reaktor</em></div>
+    <p class="msub">Wähle deinen Modus. Du kannst jederzeit wechseln.</p>
+    <div class="mdiffs">
+      <button class="bg" id="chooseSchueler" style="padding:16px;font-size:1rem">
+        🎓 Schüler-Modus<br>
+        <span style="font-family:var(--mono);font-size:.65rem;color:var(--mut);font-weight:400;text-transform:none">Klasse 10 · Geführte Szenarien · Kausalkette sichtbar</span>
+      </button>
+      <button class="bc" id="chooseExperte" style="padding:16px;font-size:1rem">
+        ⚡ Expertenmodus<br>
+        <span style="font-family:var(--mono);font-size:.65rem;color:var(--mut);font-weight:400;text-transform:none">Schwieriger Betrieb · komplexere Situationen · freie Leitwarte</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPERTE START OVERLAY -->
+<div id="eStartOvl" class="overlay" hidden>
+  <div class="modal" style="max-width:680px">
+    <div class="mlogo">Expertenmodus</div>
+    <p class="msub">Der Expertenmodus ist die anspruchsvollere Leitwarte. In höheren Schwierigkeitsgraden kommen komplexere und stärker gekoppelte Situationen schneller und dichter herein.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <button class="bg" id="eFreeEasy" style="padding:12px;font-size:.85rem">Leicht</button>
+      <button class="bc" id="eFreeNormal" style="padding:12px;font-size:.85rem">Normal</button>
+      <button class="br" id="eFreeHard" style="padding:12px;font-size:.85rem">Schwer</button>
+      <button class="bn" id="eStartBack" style="padding:12px;font-size:.85rem">← Zurück</button>
+    </div>
+    <div class="mrules" style="margin-bottom:12px">
+      <div class="mrule">Mehr Leistung erzeugt mehr Hitze, mehr Hitze erzeugt mehr Verschleiß und Materialstress.</div>
+      <div class="mrule">Notmaßnahmen retten akut, kosten aber Score und schaden langfristig dem Zustand des Systems.</div>
+      <div class="mrule">Wartung und alle Tauschmaßnahmen sind nur unter sicheren Bedingungen möglich.</div>
+      <div class="mrule">Druckablass und Lecks können radioaktive Freisetzungen verursachen.</div>
+    </div>
+    <div id="eStartRecords" class="record-list" style="margin-bottom:12px"></div>
+  </div>
+</div>
+
+<!-- EXPERTE ENDE OVERLAY -->
+<div id="eEndOvl" class="overlay" hidden>
+  <div class="modal">
+    <div class="mres" id="eEndTitle" style="color:var(--r)">💥 Kernschmelze</div>
+    <div class="mitems" id="eEndItems"></div>
+    <div class="mbtns">
+      <button class="bg" id="eEndRestart">↺ Gleiche Schwierigkeit</button>
+      <button class="bc" id="eEndChange">Andere Schwierigkeit</button>
+    </div>
+  </div>
+</div>
+
+<script src="reaktor.js"></script>
+</body>
+</html>
