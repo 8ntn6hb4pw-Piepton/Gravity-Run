@@ -1,1 +1,93 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schulsozialindex Zielscheibe</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="setup-screen" id="setupScreen" aria-label="Eigene Schule auswählen">
+        <div class="setup-header">
+          <p class="eyebrow">Schulsozialindex 2025/26</p>
+          <h1>Welche Schule ist deine?</h1>
+          <p id="setupCount">Keine Schule ausgewählt</p>
+        </div>
+        <div class="school-picker" id="schoolPicker"></div>
+        <button id="startButton" class="start-button" type="button">
+          Spiel starten
+        </button>
+      </section>
 
+      <section class="topbar" aria-label="Spielstand">
+        <div>
+          <p class="eyebrow">Schulsozialindex 2025/26</p>
+          <h1>Zielscheibe</h1>
+        </div>
+        <div class="score-row">
+          <div class="score-box">
+            <span id="roundCounter">1 / 10</span>
+            <small>Runde</small>
+          </div>
+          <div class="score-box">
+            <span id="scoreCounter">0</span>
+            <small>Punkte</small>
+          </div>
+          <button id="restartButton" class="icon-button" type="button" title="Neue Runde" aria-label="Neue Runde">
+            <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="progress-strip" aria-label="Fortschritt">
+        <div class="progress-copy">
+          <span id="progressText">0 von 10 beantwortet</span>
+          <strong id="progressScore">0 / 100 Punkte</strong>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </section>
+
+      <section class="play-area">
+        <article class="school-panel" aria-label="Aktuelle Schule">
+          <div class="card-stack">
+            <div class="school-card" id="schoolCard">
+              <p id="schoolCity" class="school-meta">Wuppertal · Gymnasium</p>
+              <h2 id="schoolName">Gymnasium Sedanstr.</h2>
+              <p id="schoolNumber" class="school-number">Schulnr. 165475</p>
+            </div>
+          </div>
+          <div class="feedback" id="feedback" aria-live="polite"></div>
+        </article>
+
+        <article class="target-panel" aria-label="Zielscheibe">
+          <svg id="target" class="target" viewBox="0 0 560 560" role="img" aria-label="Zielscheibe Sozialindex 1 bis 9">
+            <g id="targetRings"></g>
+          </svg>
+        </article>
+
+        <article class="results-panel" aria-label="Auswertung">
+          <div class="meter">
+            <svg viewBox="0 0 160 160" aria-hidden="true">
+              <circle cx="80" cy="80" r="66"></circle>
+              <circle id="accuracyRing" cx="80" cy="80" r="66"></circle>
+            </svg>
+            <div>
+              <strong id="accuracyText">0%</strong>
+              <span>Trefferquote</span>
+            </div>
+          </div>
+          <div class="result-copy">
+            <h2 id="resultTitle">Noch keine Wertung</h2>
+            <p id="resultText">Die erste Schule liegt bereit.</p>
+          </div>
+          <ol id="historyList" class="history-list"></ol>
+        </article>
+      </section>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
