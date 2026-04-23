@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Schulsozialindex Zielscheibe</title>
+    <title>Schulsozialindex Regler</title>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
@@ -23,7 +23,7 @@
       <section class="topbar" aria-label="Spielstand">
         <div>
           <p class="eyebrow">Schulsozialindex 2025/26</p>
-          <h1>Zielscheibe</h1>
+          <h1>Sozialindex-Regler</h1>
         </div>
         <div class="score-row">
           <div class="score-box">
@@ -62,10 +62,36 @@
           <div class="feedback" id="feedback" aria-live="polite"></div>
         </article>
 
-        <article class="target-panel" aria-label="Zielscheibe">
-          <svg id="target" class="target" viewBox="0 0 560 560" role="img" aria-label="Zielscheibe Sozialindex 1 bis 9">
-            <g id="targetRings"></g>
-          </svg>
+        <article class="slider-panel" aria-label="Sozialindex wählen">
+          <div class="slider-stage" id="sliderStage">
+            <div class="slider-ticks" aria-hidden="true">
+              <span>9</span>
+              <span>8</span>
+              <span>7</span>
+              <span>6</span>
+              <span>5</span>
+              <span>4</span>
+              <span>3</span>
+              <span>2</span>
+              <span>1</span>
+            </div>
+            <div class="slider-rail" aria-hidden="true"></div>
+            <button
+              id="sliderThumb"
+              class="slider-thumb"
+              type="button"
+              role="slider"
+              aria-label="Sozialindex"
+              aria-valuemin="1"
+              aria-valuemax="9"
+              aria-valuenow="1"
+            >
+              <span id="sliderValue">1</span>
+            </button>
+          </div>
+          <button id="submitButton" class="submit-button" type="button">
+            Antwort geben
+          </button>
         </article>
 
         <article class="results-panel" aria-label="Auswertung">

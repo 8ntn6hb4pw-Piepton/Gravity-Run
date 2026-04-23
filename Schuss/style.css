@@ -266,7 +266,7 @@ h1 {
 }
 
 .school-panel,
-.target-panel,
+.slider-panel,
 .results-panel {
   min-height: 610px;
 }
@@ -280,9 +280,11 @@ h1 {
   padding: 18px;
 }
 
-.target-panel {
+.slider-panel {
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 18px;
   padding: 8px;
 }
 
@@ -362,33 +364,84 @@ h1 {
   color: var(--muted);
 }
 
-.target {
-  width: min(100%, 620px);
-  aspect-ratio: 1;
-  filter: drop-shadow(0 20px 28px rgba(36, 44, 55, 0.18));
+.slider-stage {
+  position: relative;
+  width: min(100%, 280px);
+  height: min(58vh, 520px);
+  min-height: 390px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.82);
+  box-shadow: var(--shadow);
+  touch-action: none;
+  user-select: none;
 }
 
-.ring {
-  cursor: pointer;
-  transition: opacity 0.14s ease, transform 0.14s ease;
-  transform-origin: center;
+.slider-rail {
+  position: absolute;
+  top: 28px;
+  bottom: 28px;
+  left: 50%;
+  width: 16px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #244e85, #d9ebff);
+  transform: translateX(-50%);
+  box-shadow: inset 0 1px 4px rgba(27, 37, 51, 0.22);
 }
 
-.ring:hover {
-  opacity: 0.78;
-  transform: scale(1.01);
+.slider-ticks {
+  position: absolute;
+  inset: 24px auto 24px 16px;
+  display: grid;
+  grid-template-rows: repeat(9, 1fr);
+  color: var(--muted);
+  font-weight: 900;
 }
 
-.ring-label {
-  pointer-events: none;
-  fill: white;
-  paint-order: stroke;
-  stroke: rgba(27, 37, 51, 0.52);
-  stroke-width: 4px;
-  font-size: 20px;
+.slider-ticks span {
+  display: grid;
+  align-items: center;
+}
+
+.slider-thumb {
+  position: absolute;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #6d91c4;
+  color: white;
+  cursor: grab;
+  font-size: 2rem;
   font-weight: 950;
-  text-anchor: middle;
-  dominant-baseline: middle;
+  box-shadow: 0 14px 26px rgba(36, 44, 55, 0.24);
+  transform: translateX(-50%);
+  transition: width 0.14s ease, height 0.14s ease, background 0.14s ease, top 0.14s ease;
+  touch-action: none;
+}
+
+.slider-thumb:active {
+  cursor: grabbing;
+}
+
+.slider-thumb:focus-visible {
+  outline: 4px solid rgba(31, 95, 143, 0.35);
+  outline-offset: 3px;
+}
+
+.submit-button {
+  min-height: 54px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue);
+  color: white;
+  cursor: pointer;
+  padding: 0 24px;
+  font-weight: 950;
+  box-shadow: 0 12px 22px rgba(36, 44, 55, 0.14);
 }
 
 .meter {
@@ -514,13 +567,9 @@ h1 {
   }
 
   .school-panel,
-  .target-panel,
+  .slider-panel,
   .results-panel {
     min-height: auto;
-  }
-
-  .target {
-    width: min(100%, 560px);
   }
 }
 

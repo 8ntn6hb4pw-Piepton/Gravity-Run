@@ -38,7 +38,10 @@ const setupScreen = document.querySelector("#setupScreen");
 const schoolPicker = document.querySelector("#schoolPicker");
 const setupCount = document.querySelector("#setupCount");
 const startButton = document.querySelector("#startButton");
-const targetRings = document.querySelector("#targetRings");
+const sliderStage = document.querySelector("#sliderStage");
+const sliderThumb = document.querySelector("#sliderThumb");
+const sliderValue = document.querySelector("#sliderValue");
+const submitButton = document.querySelector("#submitButton");
 const schoolCity = document.querySelector("#schoolCity");
 const schoolName = document.querySelector("#schoolName");
 const schoolNumber = document.querySelector("#schoolNumber");
@@ -55,15 +58,18 @@ const resultTitle = document.querySelector("#resultTitle");
 const resultText = document.querySelector("#resultText");
 const restartButton = document.querySelector("#restartButton");
 
-const colors = ["#eef6ff", "#d9ebff", "#c2ddfb", "#a9cdf2", "#8fbbe8", "#73a7dc", "#568fc8", "#3c73ad", "#244e85"];
+const sliderColors = ["#d9ebff", "#cde4fb", "#c2ddfb", "#a9cdf2", "#8fbbe8", "#73a7dc", "#568fc8", "#3c73ad", "#244e85"];
 const circumference = 2 * Math.PI * 66;
 const roundSize = 10;
+const typeQuota = 5;
 const selectedOwnSchools = new Set();
 let deck = [];
 let current = 0;
 let score = 0;
 let history = [];
 let locked = false;
+let selectedIndex = 1;
+let sliderDragging = false;
 
 const praise = [
   "Stark getroffen!",
@@ -118,38 +124,9 @@ function toggleOwnSchool(number) {
   updateSetupCount();
 }
 
-function buildTarget() {
-  targetRings.innerHTML = "";
-  for (let index = 9; index >= 1; index -= 1) {
-    const radius = 30 + index * 25;
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circle.setAttribute("cx", "280");
-    circle.setAttribute("cy", "280");
-    circle.setAttribute("r", radius);
-    circle.setAttribute("fill", colors[index - 1]);
-    circle.setAttribute("stroke", "#fffdf8");
-    circle.setAttribute("stroke-width", "3");
-    circle.classList.add("ring");
-    circle.dataset.index = String(index);
-    circle.setAttribute("tabindex", "0");
-    circle.setAttribute("role", "button");
-    circle.setAttribute("aria-label", `Sozialindex ${index}`);
-    targetRings.append(circle);
-  }
-
-  for (let index = 1; index <= 9; index += 1) {
-    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    label.classList.add("ring-label");
-    label.setAttribute("x", "280");
-    label.setAttribute("y", String(280 - (42 + (index - 1) * 25)));
-    label.textContent = String(index);
-    targetRings.append(label);
-  }
-}
-
 function startGame() {
   const availableSchools = schools.filter((school) => !selectedOwnSchools.has(school.number));
-  deck = shuffle(availableSchools).slice(0, Math.min(roundSize, availableSchools.length));
+  deck = buildRoundDeck(availableSchools);
   current = 0;
   score = 0;
   history = [];
@@ -173,7 +150,13 @@ function startGame() {
   renderCurrent();
   updateStats();
   resultTitle.textContent = "Spiel läuft";
-  resultText.textContent = "Wähle den Ring mit dem vermuteten Sozialindex.";
+  resultText.textContent = "Schiebe den Kreis auf den vermuteten Sozialindex.";
+}
+
+function buildRoundDeck(availableSchools) {
+  const comprehensiveSchools = shuffle(availableSchools.filter((school) => school.type === "Gesamtschule")).slice(0, typeQuota);
+  const grammarSchools = shuffle(availableSchools.filter((school) => school.type === "Gymnasium")).slice(0, typeQuota);
+  return shuffle([...comprehensiveSchools, ...grammarSchools]).slice(0, roundSize);
 }
 
 function renderCurrent() {
@@ -184,13 +167,15 @@ function renderCurrent() {
   roundCounter.textContent = `${current + 1} / ${deck.length}`;
   feedback.textContent = "";
   feedback.className = "feedback";
+  updateSlider(1);
 }
 
-function submitGuess(guess) {
+function submitGuess() {
   if (locked || current >= deck.length) return;
   locked = true;
 
   const school = deck[current];
+  const guess = selectedIndex;
   const exact = guess === school.index;
   const distance = Math.abs(guess - school.index);
   const roundPoints = pointsForDistance(distance);
@@ -271,24 +256,62 @@ function finishGame() {
     resultText.textContent = `Du hast ${exactHits} von ${history.length} Schulen exakt getroffen und ${score} von ${maxScore} Punkten geholt.`;
   } else if (score >= maxScore * 0.5) {
     resultTitle.textContent = "Solide Runde";
-    resultText.textContent = `Du hast ${score} von ${maxScore} Punkten geholt. Die Zielscheibe wird schon vertrauter.`;
+    resultText.textContent = `Du hast ${score} von ${maxScore} Punkten geholt. Der Sozialindex-Regler wird schon vertrauter.`;
   } else {
     resultTitle.textContent = "Noch Luft nach oben";
     resultText.textContent = `Du hast ${score} von ${maxScore} Punkten geholt. Eine neue Runde mischt wieder 10 Schulen.`;
   }
 }
 
-function handleRingEvent(event) {
-  const ring = event.target.closest(".ring");
-  if (!ring) return;
-  submitGuess(Number(ring.dataset.index));
+function updateSlider(value) {
+  selectedIndex = Math.min(9, Math.max(1, value));
+  const progress = (selectedIndex - 1) / 8;
+  const size = 76 + (selectedIndex - 1) * 8;
+  const stageHeight = sliderStage.clientHeight || 420;
+  const top = (1 - progress) * (stageHeight - size);
+  sliderValue.textContent = String(selectedIndex);
+  sliderThumb.setAttribute("aria-valuenow", String(selectedIndex));
+  sliderThumb.style.width = `${size}px`;
+  sliderThumb.style.height = `${size}px`;
+  sliderThumb.style.top = `${top}px`;
+  sliderThumb.style.background = sliderColors[selectedIndex - 1];
+  sliderThumb.style.color = selectedIndex <= 3 ? "#1b2533" : "white";
 }
 
-targetRings.addEventListener("click", handleRingEvent);
-targetRings.addEventListener("keydown", (event) => {
-  if (event.key !== "Enter" && event.key !== " ") return;
-  event.preventDefault();
-  handleRingEvent(event);
+function valueFromPointer(clientY) {
+  const rect = sliderStage.getBoundingClientRect();
+  const ratio = 1 - Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+  return Math.round(ratio * 8) + 1;
+}
+
+sliderStage.addEventListener("pointerdown", (event) => {
+  if (locked) return;
+  sliderDragging = true;
+  sliderStage.setPointerCapture(event.pointerId);
+  updateSlider(valueFromPointer(event.clientY));
+});
+
+sliderStage.addEventListener("pointermove", (event) => {
+  if (!sliderDragging || locked) return;
+  updateSlider(valueFromPointer(event.clientY));
+});
+
+sliderStage.addEventListener("pointerup", (event) => {
+  sliderDragging = false;
+  if (sliderStage.hasPointerCapture(event.pointerId)) {
+    sliderStage.releasePointerCapture(event.pointerId);
+  }
+});
+
+sliderThumb.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowUp" || event.key === "ArrowRight") {
+    event.preventDefault();
+    updateSlider(selectedIndex + 1);
+  }
+  if (event.key === "ArrowDown" || event.key === "ArrowLeft") {
+    event.preventDefault();
+    updateSlider(selectedIndex - 1);
+  }
 });
 
 schoolPicker.addEventListener("click", (event) => {
@@ -299,7 +322,9 @@ schoolPicker.addEventListener("click", (event) => {
 
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", startGame);
+submitButton.addEventListener("click", submitGuess);
+window.addEventListener("resize", () => updateSlider(selectedIndex));
 
 buildSchoolPicker();
-buildTarget();
+updateSlider(1);
 updateSetupCount();
