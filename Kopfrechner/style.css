@@ -37,7 +37,7 @@ input {
   position: relative;
   display: grid;
   min-height: 100svh;
-  padding: max(1rem, env(safe-area-inset-top)) max(4.5rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  padding: max(1rem, env(safe-area-inset-top)) max(3.2rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
   place-items: center;
 }
 
@@ -211,6 +211,25 @@ h2 {
   outline: none;
 }
 
+.answer-button {
+  display: block;
+  width: min(100%, 16rem);
+  margin: 1rem auto 0;
+  border: 0;
+  border-radius: 1.2rem;
+  padding: 1rem 1.2rem;
+  color: #101820;
+  background: var(--accent);
+  box-shadow: 0 0.7rem 2rem var(--shadow);
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.answer-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
 .hint {
   margin: 1rem 0 0;
   font-size: 0.95rem;
@@ -256,10 +275,76 @@ h2 {
 
 @media (max-width: 420px) {
   .game-shell {
-    padding-right: max(3.5rem, env(safe-area-inset-right));
+    padding: max(0.75rem, env(safe-area-inset-top)) max(2.25rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.65rem, env(safe-area-inset-left));
+  }
+
+  h1 {
+    font-size: clamp(2.45rem, 15vw, 3.6rem);
+  }
+
+  .intro {
+    margin: 1rem auto 1.35rem;
+    font-size: 1rem;
+  }
+
+  .topline {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+    margin-bottom: 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .problem-card {
+    border-radius: 1.35rem;
+    padding: 1rem 0.8rem;
+  }
+
+  .problem {
+    margin-bottom: 0.85rem;
+    font-size: clamp(2.25rem, 14vw, 3.8rem);
+    letter-spacing: -0.06em;
+  }
+
+  .answer-input {
+    width: min(100%, 12.5rem);
+    font-size: clamp(2.1rem, 12vw, 3.2rem);
+  }
+
+  .answer-button {
+    width: min(100%, 12.5rem);
+    margin-top: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    font-size: 1.08rem;
+  }
+
+  .hint {
+    margin-top: 0.7rem;
+    font-size: 0.82rem;
   }
 
   .time-rail {
-    width: 0.95rem;
+    top: max(0.75rem, env(safe-area-inset-top));
+    right: max(0.55rem, env(safe-area-inset-right));
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    width: 0.7rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .game-shell {
+    padding-right: max(1.7rem, env(safe-area-inset-right));
+  }
+
+  .topline {
+    font-size: 0.7rem;
+  }
+
+  .topline span {
+    padding: 0.28rem 0.15rem;
+  }
+
+  .problem {
+    font-size: clamp(2rem, 13vw, 3.2rem);
   }
 }

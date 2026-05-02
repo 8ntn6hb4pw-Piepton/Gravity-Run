@@ -48,6 +48,7 @@ const changeModeButton = document.querySelector('#changeModeButton');
 const problemCard = document.querySelector('#problemCard');
 const problemEl = document.querySelector('#problem');
 const answerInput = document.querySelector('#answerInput');
+const answerButton = document.querySelector('#answerButton');
 const modeLabel = document.querySelector('#modeLabel');
 const survivalTimeEl = document.querySelector('#survivalTime');
 const scoreEl = document.querySelector('#score');
@@ -291,6 +292,10 @@ modeButtons.forEach((button) => {
 
 restartButton.addEventListener('click', () => startGame(activeMode));
 changeModeButton.addEventListener('click', () => showScreen('start'));
+answerButton.addEventListener('click', () => {
+  checkAnswer();
+  answerInput.focus({ preventScroll: true });
+});
 
 answerInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
