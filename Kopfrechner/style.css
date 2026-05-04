@@ -113,7 +113,7 @@ h2 {
 .mode-buttons {
   display: grid;
   gap: 0.8rem;
-  margin: 0 auto;
+  margin: 1rem auto 0;
   width: min(100%, 18rem);
 }
 
@@ -146,6 +146,35 @@ h2 {
   box-shadow: 0 0.7rem 2rem var(--shadow);
   font-weight: 700;
   cursor: pointer;
+}
+
+.qr-toggle {
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.qr-panel {
+  width: min(100%, 17rem);
+  margin: 0.9rem auto 0;
+  border: 1px solid rgba(247, 240, 220, 0.18);
+  border-radius: 1.3rem;
+  padding: 0.85rem;
+  background: rgba(247, 240, 220, 0.08);
+  box-shadow: 0 0.8rem 2.2rem var(--shadow);
+}
+
+.qr-panel img {
+  display: block;
+  width: 100%;
+  border-radius: 0.85rem;
+  background: #fff;
+}
+
+.qr-panel p {
+  margin: 0.65rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .primary-button:active {

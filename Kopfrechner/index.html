@@ -12,8 +12,13 @@
     <section class="stage" id="startScreen">
       <p class="eyebrow">Kopfrechen-Sprint</p>
       <h1>Kopfrechentrainer</h1>
-      <p class="course-label">Gesamtschule · Grundkurs</p>
+      <p class="course-label">Gesamtschule</p>
       <p class="intro">Rechne so lange, bis der Zeitbalken leer ist. Jede Aufgabe kommt nur einmal pro Runde.</p>
+      <button class="secondary-button qr-toggle" id="qrToggleButton" type="button" aria-expanded="false" aria-controls="qrPanel">QR-Code anzeigen</button>
+      <div class="qr-panel is-hidden" id="qrPanel">
+        <img src="assets/qr-code.png" alt="QR-Code zum GitHub-Link des Kopfrechentrainers">
+        <p>Scannen und direkt starten</p>
+      </div>
       <div class="mode-buttons" aria-label="Spielmodus wählen">
         <button class="primary-button mode-noob" data-mode="noob" type="button">Noob</button>
         <button class="primary-button mode-pro" data-mode="pro" type="button">Pro</button>

@@ -42,6 +42,8 @@ const screens = {
   end: document.querySelector('#endScreen'),
 };
 
+const qrToggleButton = document.querySelector('#qrToggleButton');
+const qrPanel = document.querySelector('#qrPanel');
 const modeButtons = document.querySelectorAll('[data-mode]');
 const restartButton = document.querySelector('#restartButton');
 const changeModeButton = document.querySelector('#changeModeButton');
@@ -77,6 +79,12 @@ let activeMode = 'noob';
 function showScreen(name) {
   Object.values(screens).forEach((screen) => screen.classList.add('is-hidden'));
   screens[name].classList.remove('is-hidden');
+}
+
+function toggleQrPanel() {
+  const isHidden = qrPanel.classList.toggle('is-hidden');
+  qrToggleButton.textContent = isHidden ? 'QR-Code anzeigen' : 'QR-Code ausblenden';
+  qrToggleButton.setAttribute('aria-expanded', String(!isHidden));
 }
 
 function makeTask(id, text, answer) {
@@ -290,6 +298,7 @@ modeButtons.forEach((button) => {
   button.addEventListener('click', () => startGame(button.dataset.mode));
 });
 
+qrToggleButton.addEventListener('click', toggleQrPanel);
 restartButton.addEventListener('click', () => startGame(activeMode));
 changeModeButton.addEventListener('click', () => showScreen('start'));
 answerButton.addEventListener('click', () => {
