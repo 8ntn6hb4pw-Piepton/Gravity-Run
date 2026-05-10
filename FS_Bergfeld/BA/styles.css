@@ -553,7 +553,7 @@ h1 {
   position: relative;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 20;
   background: var(--surface);
   display: grid;
   gap: 6px;
@@ -566,6 +566,7 @@ h1 {
 .detail-nav-button {
   position: absolute;
   top: 0;
+  z-index: 22;
   width: 44px;
   height: 44px;
   border: 2px solid color-mix(in srgb, var(--active-color, var(--primary)) 30%, var(--line));
@@ -573,6 +574,7 @@ h1 {
   background: color-mix(in srgb, var(--active-color, var(--primary)) 7%, white);
   color: color-mix(in srgb, var(--active-color, var(--primary)) 82%, #172126);
   cursor: pointer;
+  pointer-events: auto;
   font-size: 1.45rem;
   line-height: 1;
   font-weight: 950;
