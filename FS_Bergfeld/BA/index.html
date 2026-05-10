@@ -1,1 +1,101 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beobachtungsassistent Tiefenstruktur</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="vendor/chart.umd.min.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="app-shell" aria-labelledby="appTitle">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Reflexionsinstrument</p>
+          <h1 id="appTitle">Beobachtungsassistent Tiefenstruktur</h1>
+        </div>
+        <div class="toolbar" aria-label="Datei und Speicherung">
+          <button class="button button-secondary" id="newSessionBtn" type="button">Neu</button>
+          <button class="button button-secondary" id="loadLatestBtn" type="button">Browserstand laden</button>
+          <button class="button button-secondary" id="saveBtn" type="button">Im Browser speichern</button>
+          <button class="button button-secondary" id="exportBtn" type="button">JSON sichern</button>
+          <label class="button button-secondary import-label" for="importFile">JSON öffnen</label>
+          <input id="importFile" class="sr-only" type="file" accept="application/json,.json">
+        </div>
+      </header>
 
+      <nav class="view-tabs" aria-label="Hauptansichten">
+        <button class="tab-button active" id="observeTab" type="button">Beobachten</button>
+        <button class="tab-button" id="evaluateTab" type="button">Auswerten</button>
+        <button class="tab-button" id="protocolTab" type="button">Protokoll</button>
+      </nav>
+
+      <section id="observeView" class="view-panel" aria-label="Beobachten">
+        <section id="chartPanel" class="chart-panel" aria-labelledby="chartTitle">
+          <div class="panel-heading">
+            <div>
+              <h2 id="chartTitle">Unterkategorien</h2>
+            </div>
+            <div id="saveState" class="save-state" aria-live="polite"></div>
+          </div>
+          <div class="mode-bar" aria-label="Beobachtungsmodus">
+            <button class="mode-button active" id="multiModeBtn" type="button">Multimodus</button>
+            <button class="mode-button" id="singleModeBtn" type="button">Single Modus</button>
+          </div>
+          <div id="singleControls" class="single-controls hidden" aria-label="Single Modus Auswahl">
+            <div id="singleDimensionButtons" class="single-row"></div>
+            <div id="singleSubcategoryButtons" class="single-row"></div>
+          </div>
+          <div id="dimensionStrip" class="dimension-strip" aria-label="Hauptdimensionen"></div>
+          <div class="chart-wrap">
+            <canvas id="radarChart" aria-label="Klickbares Spiderdiagramm der Unterkategorien"></canvas>
+            <div id="chartNav" class="chart-nav" aria-label="Unterkategorien direkt auswählen"></div>
+            <div id="bucketView" class="bucket-view hidden" aria-label="Single Modus Sammelansicht"></div>
+          </div>
+        </section>
+
+        <aside id="detailPanel" class="detail-panel hidden" aria-live="polite"></aside>
+      </section>
+
+      <section id="evaluateView" class="view-panel hidden" aria-label="Auswerten">
+        <div class="evaluation-grid">
+          <section class="evaluation-section" aria-labelledby="evidenceTitle">
+            <h2 id="evidenceTitle">Lerntragende Wirkungen</h2>
+            <div id="evidenceCards" class="evaluation-list"></div>
+          </section>
+          <section class="evaluation-section" aria-labelledby="developmentTitle">
+            <h2 id="developmentTitle">Entwicklungspotenziale</h2>
+            <div id="developmentCards" class="evaluation-list"></div>
+          </section>
+        </div>
+        <aside id="hiddenStack" class="hidden-stack" aria-label="Ausgeblendete Karten"></aside>
+      </section>
+
+      <section id="protocolView" class="view-panel hidden" aria-label="Protokoll">
+        <section class="protocol-panel">
+          <div class="panel-heading">
+            <h2>Protokoll</h2>
+            <button class="button button-secondary" id="printProtocolBtn" type="button">Drucken / Als PDF sichern</button>
+          </div>
+          <div id="protocolContent" class="protocol-content"></div>
+        </section>
+      </section>
+
+      <div id="newSessionDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="newDialogTitle">
+        <div class="modal-panel">
+          <h2 id="newDialogTitle">Neue Beobachtung beginnen?</h2>
+          <p>Der aktuelle Stand liegt im Browser. Du kannst ihn vorher speichern oder verwerfen.</p>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="saveAndNewBtn" type="button">Speichern und neu</button>
+            <button class="button button-secondary" id="discardAndNewBtn" type="button">Verwerfen und neu</button>
+            <button class="button button-secondary" id="cancelNewBtn" type="button">Abbruch</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <a class="source-link" href="https://ibbw-bw.de/%2CLde/Startseite/Bildungsforschung/Unterrichtsfeedbackbogen_Tiefenstrukturen" target="_blank" rel="noopener noreferrer">
+      Quelle: UFB Tiefenstrukturen
+    </a>
+  </body>
+</html>
