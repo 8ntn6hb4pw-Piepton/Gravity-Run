@@ -20,6 +20,7 @@
           <button class="button button-secondary" id="loadLatestBtn" type="button">Browserstand laden</button>
           <button class="button button-secondary" id="saveBtn" type="button">Im Browser speichern</button>
           <button class="button button-secondary" id="exportBtn" type="button">JSON sichern</button>
+          <button class="button button-secondary" id="shareBtn" type="button">Teilen</button>
           <label class="button button-secondary import-label" for="importFile">JSON öffnen</label>
           <input id="importFile" class="sr-only" type="file" accept="application/json,.json">
         </div>
@@ -90,6 +91,22 @@
             <button class="button button-secondary" id="saveAndNewBtn" type="button">Speichern und neu</button>
             <button class="button button-secondary" id="discardAndNewBtn" type="button">Verwerfen und neu</button>
             <button class="button button-secondary" id="cancelNewBtn" type="button">Abbruch</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="observationNoteDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="observationNoteTitle">
+        <div class="modal-panel note-modal-panel">
+          <div class="modal-heading">
+            <h2 id="observationNoteTitle">Beobachtungsnotiz</h2>
+            <button class="close-button inline-close" id="closeObservationNoteBtn" type="button" aria-label="Notiz schließen">×</button>
+          </div>
+          <p id="observationNoteItem" class="note-item-text"></p>
+          <label class="card-note-label" for="observationNoteText">Kurze Beobachtungsnotiz</label>
+          <textarea id="observationNoteText" class="card-note observation-note-text" placeholder="Kurz notieren, was sichtbar oder hörbar war"></textarea>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="saveObservationNoteBtn" type="button">Notiz speichern</button>
+            <button class="button button-secondary" id="clearObservationNoteBtn" type="button">Leeren</button>
           </div>
         </div>
       </div>

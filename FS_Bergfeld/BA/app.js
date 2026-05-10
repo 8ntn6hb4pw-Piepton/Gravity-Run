@@ -204,6 +204,8 @@ let observeMode = "multi";
 let singleDimensionId = dimensions[0].id;
 let singleSubcategoryId = dimensions[0].subcategories[0].id;
 let recentlySortedKey = null;
+let itemMoveSnapshot = null;
+let activeObservationNoteKey = null;
 
 const detailPanel = document.querySelector("#detailPanel");
 const saveState = document.querySelector("#saveState");
@@ -228,6 +230,9 @@ const singleControls = document.querySelector("#singleControls");
 const singleDimensionButtons = document.querySelector("#singleDimensionButtons");
 const singleSubcategoryButtons = document.querySelector("#singleSubcategoryButtons");
 const newSessionDialog = document.querySelector("#newSessionDialog");
+const observationNoteDialog = document.querySelector("#observationNoteDialog");
+const observationNoteItem = document.querySelector("#observationNoteItem");
+const observationNoteText = document.querySelector("#observationNoteText");
 
 document.addEventListener("DOMContentLoaded", () => {
   session = loadStoredSession() ?? createEmptySession();
@@ -256,6 +261,7 @@ function bindEvents() {
   });
 
   document.querySelector("#exportBtn").addEventListener("click", exportSession);
+  document.querySelector("#shareBtn").addEventListener("click", shareSummary);
   importFile.addEventListener("change", importSession);
 
   observeTab.addEventListener("click", () => {
@@ -295,6 +301,22 @@ function bindEvents() {
   });
   document.querySelector("#discardAndNewBtn").addEventListener("click", resetSession);
   document.querySelector("#cancelNewBtn").addEventListener("click", () => newSessionDialog.classList.add("hidden"));
+  document.querySelector("#closeObservationNoteBtn").addEventListener("click", closeObservationNote);
+  document.querySelector("#saveObservationNoteBtn").addEventListener("click", saveObservationNote);
+  document.querySelector("#clearObservationNoteBtn").addEventListener("click", () => {
+    observationNoteText.value = "";
+    saveObservationNote();
+  });
+  observationNoteText.addEventListener("input", () => {
+    if (!activeObservationNoteKey) {
+      return;
+    }
+    cardMeta(activeObservationNoteKey).observationNote = observationNoteText.value;
+    if (!cardMeta(activeObservationNoteKey).note?.trim()) {
+      cardMeta(activeObservationNoteKey).note = observationNoteText.value;
+    }
+    persistSession();
+  });
 }
 
 function createEmptySession() {
@@ -486,27 +508,116 @@ function renderDetailPanel() {
   document.querySelector("#nextDetailBtn").addEventListener("click", () => moveDetailSelection(1));
 
   detailPanel.querySelectorAll(".scale-button").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
       const key = button.dataset.key;
       const previousValue = session.observations[key] ?? 0;
       const nextValue = Number(button.dataset.value);
+      const willMoveDown = previousValue === 0 && nextValue !== 0;
+      itemMoveSnapshot = willMoveDown ? captureItemPositions() : null;
       session.observations[key] = nextValue;
-      recentlySortedKey = previousValue === 0 && nextValue !== 0 ? key : null;
+      recentlySortedKey = willMoveDown ? key : null;
       session.updatedAt = new Date().toISOString();
       persistSession();
       render();
     });
   });
 
-  if (recentlySortedKey) {
-    const animatedKey = recentlySortedKey;
-    window.setTimeout(() => {
-      detailPanel.querySelector(`[data-key="${animatedKey}"]`)?.classList.remove("just-sorted");
-      if (recentlySortedKey === animatedKey) {
-        recentlySortedKey = null;
-      }
-    }, 520);
+  detailPanel.querySelectorAll(".item-card").forEach((card) => {
+    card.addEventListener("click", () => openObservationNote(card.dataset.key));
+  });
+
+  if (itemMoveSnapshot) {
+    animateItemReorder(itemMoveSnapshot, recentlySortedKey);
+    itemMoveSnapshot = null;
   }
+}
+
+function openObservationNote(key) {
+  const item = itemByKey(key);
+  if (!item) {
+    return;
+  }
+  activeObservationNoteKey = key;
+  observationNoteItem.textContent = item.text;
+  observationNoteText.value = cardMeta(key).observationNote ?? "";
+  observationNoteDialog.classList.remove("hidden");
+  observationNoteText.focus();
+}
+
+function closeObservationNote() {
+  if (activeObservationNoteKey) {
+    cardMeta(activeObservationNoteKey).observationNote = observationNoteText.value.trim();
+    persistSession();
+  }
+  activeObservationNoteKey = null;
+  observationNoteDialog.classList.add("hidden");
+}
+
+function saveObservationNote() {
+  if (!activeObservationNoteKey) {
+    return;
+  }
+  cardMeta(activeObservationNoteKey).observationNote = observationNoteText.value.trim();
+  if (!cardMeta(activeObservationNoteKey).note?.trim()) {
+    cardMeta(activeObservationNoteKey).note = observationNoteText.value.trim();
+  }
+  persistSession();
+  closeObservationNote();
+  render();
+}
+
+function captureItemPositions() {
+  const positions = {};
+  detailPanel.querySelectorAll(".item-card[data-key]").forEach((card) => {
+    positions[card.dataset.key] = card.getBoundingClientRect().top;
+  });
+  return positions;
+}
+
+function animateItemReorder(previousPositions, movedKey) {
+  const cards = Array.from(detailPanel.querySelectorAll(".item-card[data-key]"));
+  const animatedCards = [];
+
+  cards.forEach((card) => {
+    const oldTop = previousPositions[card.dataset.key];
+    if (typeof oldTop !== "number") {
+      return;
+    }
+
+    const newTop = card.getBoundingClientRect().top;
+    const delta = oldTop - newTop;
+    if (Math.abs(delta) < 2) {
+      return;
+    }
+
+    card.style.transition = "none";
+    card.style.transform = `translateY(${delta}px)`;
+    card.classList.add("reordering");
+    card.classList.toggle("moving-down", card.dataset.key === movedKey);
+    card.classList.toggle("making-room", card.dataset.key !== movedKey);
+    animatedCards.push(card);
+  });
+
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      animatedCards.forEach((card) => {
+        card.style.transition = "transform 2300ms cubic-bezier(0.16, 0.72, 0.18, 1)";
+        card.style.transform = "translateY(0)";
+      });
+    });
+  });
+
+  window.setTimeout(() => {
+    animatedCards.forEach((card) => {
+      card.style.transition = "";
+      card.style.transform = "";
+      card.classList.remove("reordering", "moving-down", "making-room", "just-sorted");
+    });
+    if (recentlySortedKey === movedKey) {
+      recentlySortedKey = null;
+    }
+  }, 2400);
 }
 
 function moveDetailSelection(direction) {
@@ -550,9 +661,10 @@ function renderItem(subcategory, item, index) {
   const key = itemKey(subcategory.id, index);
   const value = session.observations[key] ?? 0;
   const state = states[value];
+  const meta = cardMeta(key);
   const sortedClass = key === recentlySortedKey ? "just-sorted" : "";
   return `
-    <article class="item-card ${state.className} ${sortedClass}" data-key="${key}">
+    <article class="item-card ${state.className} ${sortedClass} ${meta.observationNote ? "has-note" : ""}" data-key="${key}" title="Für Beobachtungsnotiz antippen">
       <p class="item-title">${item}</p>
       <div class="item-scale wheel" aria-label="Farbskala für Item">
         ${scaleValues.map((scaleValue) => {
@@ -573,6 +685,7 @@ function renderItem(subcategory, item, index) {
         }).join("")}
       </div>
       <p class="item-state">${state.label}</p>
+      ${meta.observationNote ? `<span class="item-note-indicator">Notiz</span>` : ""}
     </article>
   `;
 }
@@ -707,9 +820,9 @@ function renderEvaluation() {
     ? renderDimensionEvaluation(development, "development")
     : `<p class="empty-state">Noch keine Entwicklungspotenziale markiert.</p>`;
 
-  document.querySelectorAll(".keyword-card").forEach((card) => {
+  document.querySelectorAll(".cluster-card").forEach((card) => {
     card.addEventListener("click", () => {
-      card.classList.toggle("show-question");
+      card.classList.toggle("show-detail");
     });
   });
   document.querySelectorAll("[data-action='hide-card']").forEach((button) => {
@@ -725,6 +838,28 @@ function renderEvaluation() {
       event.stopPropagation();
       const meta = cardMeta(button.dataset.key);
       meta.locked = !meta.locked;
+      persistSession();
+      render();
+    });
+  });
+  document.querySelectorAll("[data-action='hide-cluster']").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      keysFromDataset(button.dataset.keys).forEach((key) => {
+        cardMeta(key).hidden = true;
+      });
+      persistSession();
+      render();
+    });
+  });
+  document.querySelectorAll("[data-action='lock-cluster']").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const keys = keysFromDataset(button.dataset.keys);
+      const shouldLock = !keys.every((key) => cardMeta(key).locked);
+      keys.forEach((key) => {
+        cardMeta(key).locked = shouldLock;
+      });
       persistSession();
       render();
     });
@@ -762,8 +897,14 @@ function renderHiddenStack(hiddenCards) {
 }
 
 function renderDimensionEvaluation(cards, type) {
-  return dimensions.map((dimension) => {
-    const dimensionCards = cards.filter((card) => card.subcategory.dimension.id === dimension.id && !card.meta.hidden);
+  return dimensions
+    .map((dimension, dimensionIndex) => {
+      const dimensionCards = cards.filter((card) => card.subcategory.dimension.id === dimension.id && !card.meta.hidden);
+      return { dimension, dimensionIndex, cards: dimensionCards };
+    })
+    .filter((group) => group.cards.length)
+    .sort((a, b) => bestPriority(a.cards) - bestPriority(b.cards) || a.dimensionIndex - b.dimensionIndex)
+    .map(({ dimension, cards: dimensionCards }) => {
     if (!dimensionCards.length) {
       return "";
     }
@@ -774,12 +915,43 @@ function renderDimensionEvaluation(cards, type) {
           <span>${dimension.title}</span>
           <em>${dimensionCards.length}</em>
         </summary>
-        <div class="keyword-grid">
-          ${dimensionCards.map((card) => renderKeywordCard(card, type)).join("")}
+        <div class="cluster-grid">
+          ${clusterCards(dimensionCards).map((cluster) => renderClusterCard(cluster, type)).join("")}
         </div>
       </details>
     `;
   }).join("");
+}
+
+function clusterCards(cards) {
+  const clusters = new Map();
+  cards.forEach((card) => {
+    const key = `${card.value}|${card.subcategory.id}|${keywordFor(card)}`;
+    if (!clusters.has(key)) {
+      clusters.set(key, {
+        key,
+        value: card.value,
+        state: card.state,
+        keyword: keywordFor(card),
+        subcategory: card.subcategory,
+        cards: []
+      });
+    }
+    clusters.get(key).cards.push(card);
+  });
+  return Array.from(clusters.values()).sort((a, b) =>
+    bestPriority(a.cards) - bestPriority(b.cards)
+    || a.subcategoryIndex - b.subcategoryIndex
+    || a.keyword.localeCompare(b.keyword, "de")
+  );
+}
+
+function bestPriority(cards) {
+  return Math.min(...cards.map((card) => ({ 4: 0, 3: 1, 2: 0, 1: 1 }[card.value] ?? 9)));
+}
+
+function keysFromDataset(value) {
+  return String(value ?? "").split("|").filter(Boolean);
 }
 
 function keywordFor(card) {
@@ -801,8 +973,9 @@ function renderKeywordCard(card) {
   const isDevelopment = card.value === 3 || card.value === 4;
   const keyword = keywordFor(card);
   const developmentText = `Im Bereich „${keyword}“ besteht ${card.value === 4 ? "zentrales" : "mögliches"} Entwicklungspotenzial.`;
+  const noteText = card.meta.note || card.meta.observationNote || "";
   return `
-    <article class="keyword-card ${card.state.className} ${card.meta.locked ? "locked" : ""}" style="--card-color: ${card.subcategory.dimension.color}">
+    <article class="keyword-card ${card.state.className} ${card.meta.locked ? "locked" : ""}" style="--card-color: ${stateColor(card.value)}">
       <span>${keyword}</span>
       <strong>${isDevelopment ? developmentText : card.state.label}</strong>
       <em>${card.subcategory.title}</em>
@@ -812,8 +985,42 @@ function renderKeywordCard(card) {
       </div>
       <div class="keyword-detail">
         <p>${card.item}</p>
+        ${card.meta.observationNote ? `<p><strong>Beobachtungsnotiz:</strong> ${escapeHtml(card.meta.observationNote)}</p>` : ""}
         <label class="card-note-label" for="note-${card.key}">Fachspezifische Anmerkung</label>
-        <textarea id="note-${card.key}" class="card-note" data-key="${card.key}" placeholder="Fachspezifische Anmerkung">${card.meta.note ?? ""}</textarea>
+        <textarea id="note-${card.key}" class="card-note" data-key="${card.key}" placeholder="Fachspezifische Anmerkung">${escapeHtml(noteText)}</textarea>
+      </div>
+    </article>
+  `;
+}
+
+function renderClusterCard(cluster) {
+  const isDevelopment = cluster.value === 3 || cluster.value === 4;
+  const keys = cluster.cards.map((card) => card.key).join("|");
+  const allLocked = cluster.cards.every((card) => card.meta.locked);
+  const label = isDevelopment
+    ? `${cluster.value === 4 ? "Zentrales" : "Mögliches"} Entwicklungspotenzial`
+    : cluster.state.label;
+  return `
+    <article class="cluster-card ${cluster.state.className} ${allLocked ? "locked" : ""}" style="--card-color: ${stateColor(cluster.value)}">
+      <div class="cluster-topline">
+        <span>${cluster.keyword}</span>
+        ${cluster.cards.length > 1 ? `<em>${cluster.cards.length}</em>` : ""}
+      </div>
+      <strong>${label}</strong>
+      <small>${cluster.subcategory.title}</small>
+      <div class="card-actions">
+        <button type="button" data-action="lock-cluster" data-keys="${keys}" title="Fixieren">${allLocked ? "🔒" : "🔓"}</button>
+        <button type="button" data-action="hide-cluster" data-keys="${keys}" title="Verwerfen">×</button>
+      </div>
+      <div class="cluster-detail">
+        ${cluster.cards.map((card) => `
+          <section class="cluster-item">
+            <p>${card.item}</p>
+            ${card.meta.observationNote ? `<p><strong>Beobachtungsnotiz:</strong> ${escapeHtml(card.meta.observationNote)}</p>` : ""}
+            <label class="card-note-label" for="note-${card.key}">Fachspezifische Anmerkung</label>
+            <textarea id="note-${card.key}" class="card-note" data-key="${card.key}" placeholder="Fachspezifische Anmerkung">${escapeHtml(card.meta.note || card.meta.observationNote || "")}</textarea>
+          </section>
+        `).join("")}
       </div>
     </article>
   `;
@@ -876,7 +1083,12 @@ function markedItems() {
 
 function cardMeta(key) {
   session.cardMeta ??= {};
-  session.cardMeta[key] ??= { hidden: false, locked: false, note: "" };
+  session.cardMeta[key] ??= { hidden: false, locked: false, note: "", observationNote: "" };
+  session.cardMeta[key].observationNote ??= "";
+  session.cardMeta[key].note ??= "";
+  if (session.cardMeta[key].observationNote && !session.cardMeta[key].note.trim()) {
+    session.cardMeta[key].note = session.cardMeta[key].observationNote;
+  }
   return session.cardMeta[key];
 }
 
@@ -898,6 +1110,15 @@ function cardSort(a, b) {
   return priority[a.value] - priority[b.value]
     || a.dimensionIndex - b.dimensionIndex
     || a.subcategoryIndex - b.subcategoryIndex;
+}
+
+function stateColor(value) {
+  return {
+    1: "#8bd255",
+    2: "#4a9f2f",
+    3: "#87c7ff",
+    4: "#2369a8"
+  }[value] ?? "#d8dde2";
 }
 
 function renderEvaluationCard(card) {
@@ -935,7 +1156,8 @@ function renderProtocolList(cards) {
       <h3>${keywordFor(card)}</h3>
       <p><strong>${card.subcategory.dimension.title}</strong> · ${card.subcategory.title}</p>
       <p>${card.item}</p>
-      ${card.meta.note ? `<p><strong>Fachspezifische Anmerkung:</strong> ${card.meta.note}</p>` : ""}
+      ${card.meta.observationNote ? `<p><strong>Beobachtungsnotiz:</strong> ${escapeHtml(card.meta.observationNote)}</p>` : ""}
+      ${card.meta.note ? `<p><strong>Fachspezifische Anmerkung:</strong> ${escapeHtml(card.meta.note)}</p>` : ""}
     </article>
   `).join("");
 }
@@ -1039,6 +1261,24 @@ function itemKey(subcategoryId, index) {
   return `${subcategoryId}:${index}`;
 }
 
+function itemByKey(key) {
+  const [subcategoryId, indexText] = key.split(":");
+  const subcategory = subcategories.find((candidate) => candidate.id === subcategoryId);
+  const index = Number(indexText);
+  if (!subcategory || !Number.isInteger(index) || !subcategory.items[index]) {
+    return null;
+  }
+  return { subcategory, index, text: subcategory.items[index] };
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
 function persistSession() {
   session.updatedAt = new Date().toISOString();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
@@ -1079,6 +1319,72 @@ function exportSession() {
   link.click();
   URL.revokeObjectURL(url);
   updateSaveState("Export vorbereitet");
+}
+
+async function shareSummary() {
+  const text = buildShareText();
+  const shareData = {
+    title: "Beobachtungsassistent Tiefenstruktur",
+    text
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      updateSaveState("Teilen geöffnet");
+      return;
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return;
+      }
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    updateSaveState("Zusammenfassung kopiert");
+    alert("Das Teilen-Menü ist in diesem Browser nicht verfügbar. Die Zusammenfassung wurde in die Zwischenablage kopiert.");
+  } catch {
+    alert(text);
+  }
+}
+
+function buildShareText() {
+  const visibleCards = markedItems().filter((card) => !card.meta.hidden).sort(cardSort);
+  const evidence = visibleCards.filter((card) => card.value === 1 || card.value === 2);
+  const development = visibleCards.filter((card) => card.value === 3 || card.value === 4);
+  return [
+    "Beobachtungsassistent Tiefenstruktur",
+    "Strukturierte Gesprächsgrundlage, keine Gesamtbewertung.",
+    "",
+    "Lerntragende Wirkungen",
+    shareSection(evidence),
+    "",
+    "Entwicklungspotenziale",
+    shareSection(development)
+  ].join("\n");
+}
+
+function shareSection(cards) {
+  if (!cards.length) {
+    return "Keine Karten ausgewählt.";
+  }
+
+  return clusterCards(cards).map((cluster) => {
+    const lines = [
+      `- ${cluster.keyword} (${cluster.cards.length}): ${cluster.state.label}`,
+      `  ${cluster.subcategory.title}`
+    ];
+    cluster.cards.forEach((card) => {
+      if (card.meta.observationNote) {
+        lines.push(`  Beobachtungsnotiz: ${card.meta.observationNote}`);
+      }
+      if (card.meta.note) {
+        lines.push(`  Fachspezifische Anmerkung: ${card.meta.note}`);
+      }
+    });
+    return lines.join("\n");
+  }).join("\n");
 }
 
 function importSession(event) {
