@@ -1,1 +1,340 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beobachtungsassistent 1.0</title>
+    <link rel="stylesheet" href="styles.css?v=20260515-spider-logbook-v1">
+    <script src="vendor/chart.umd.min.js" defer></script>
+    <script src="heuristics.js?v=20260511-v2" defer></script>
+    <script src="research-pattern-library-v2.js?v=20260514-v1" defer></script>
+    <script src="research-pattern-library-loader.js?v=20260514-v1" defer></script>
+    <script src="text-normalization.js?v=20260514-live-alias-v1" defer></script>
+    <script src="item-heuristics.js?v=20260514-semantic-v1" defer></script>
+    <script src="item-heuristics-extended.js?v=20260513-full-v1" defer></script>
+    <script src="user-corpus-calibration.js?v=20260514-live-alias-v1" defer></script>
+    <script src="free-observation-anchors.js?v=20260514-hint-scan-v1" defer></script>
+    <script src="learning-profile.js?v=20260513-learning-v1" defer></script>
+    <script src="lesson-timing.js?v=20260513-time-v1" defer></script>
+    <script src="analysis-job-queue.js?v=20260514-v1" defer></script>
+    <script src="phase1-live-logic.js?v=20260514-fast-live-v1" defer></script>
+    <script src="phase2-item-relations.js?v=20260513-relations-v1" defer></script>
+    <script src="phase2-patterns.js?v=20260514-sketch-attach-v1" defer></script>
+    <script src="app.js?v=20260515-spider-logbook-v1" defer></script>
+  </head>
+  <body>
+    <main class="app-shell" aria-labelledby="appTitle">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Reflexionsinstrument</p>
+          <h1 id="appTitle">Beobachtungsassistent 1.0</h1>
+        </div>
+        <button class="button button-secondary tools-toggle" id="toolsToggleBtn" type="button" aria-expanded="false" aria-controls="utilityToolbar">Werkzeuge</button>
+        <div class="toolbar" id="utilityToolbar" aria-label="Datei und Speicherung">
+          <div class="toolbar-header">
+            <strong>Werkzeuge</strong>
+            <button class="close-button" id="closeToolsBtn" type="button" aria-label="Werkzeuge schließen">×</button>
+          </div>
+          <button class="button button-secondary" id="newSessionBtn" type="button">Neu</button>
+          <button class="button button-secondary" id="loadLatestBtn" type="button">Browserstand laden</button>
+          <button class="button button-secondary" id="saveBtn" type="button">Im Browser speichern</button>
+          <button class="button button-secondary" id="exportBtn" type="button">JSON sichern</button>
+          <button class="button button-secondary" id="shareBtn" type="button">Teilen</button>
+          <button class="button button-secondary" id="exportChartBtn" type="button">Spider-Web sichern</button>
+          <a class="button button-secondary" href="reader.html" target="_blank" rel="noopener noreferrer">Reader</a>
+          <label class="button button-secondary import-label" for="importFile">JSON öffnen</label>
+          <input id="importFile" class="sr-only" type="file" accept="application/json,.json">
+        </div>
+      </header>
 
+      <nav class="view-tabs" aria-label="Hauptansichten">
+        <button class="tab-button active" id="observeTab" type="button">Live</button>
+        <button class="tab-button" id="evaluateTab" type="button">Verdichten</button>
+        <button class="tab-button" id="logbookTab" type="button">Nachbesprechung</button>
+        <button class="tab-button" id="protocolTab" type="button">Protokoll</button>
+      </nav>
+
+      <details class="observation-menu">
+        <summary>Beobachtung</summary>
+        <div class="observation-fields">
+          <label>
+            <span>Datum</span>
+            <input id="observationDate" class="text-input" type="date">
+          </label>
+          <label>
+            <span>Ort</span>
+            <input id="observationPlace" class="text-input" placeholder="z. B. Raum, Schule">
+          </label>
+          <label>
+            <span>Name</span>
+            <input id="observationName" class="text-input" placeholder="z. B. LAA / Lehrkraft">
+          </label>
+          <label>
+            <span>Lerngruppe</span>
+            <input id="observationGroup" class="text-input" placeholder="z. B. 8b, EF GK">
+          </label>
+        </div>
+      </details>
+
+      <section id="observeView" class="view-panel observe-workspace" aria-label="Beobachten">
+        <section class="live-panel" aria-labelledby="liveTitle">
+          <div class="section-heading">
+            <div>
+              <h2 id="liveTitle">Live-Beobachtung</h2>
+              <p>Tippen, Vorschlag antippen, Enter. Offenes kann später sortiert werden.</p>
+            </div>
+            <div class="live-head-actions">
+              <button class="mini-button" id="lessonStartBtn" type="button">Beginn</button>
+              <button class="mini-button" id="lessonEndBtn" type="button">Ende</button>
+              <button class="mini-button" id="toggleChartBtn" type="button" aria-expanded="false">Spider-Web</button>
+              <span class="lesson-timing-status" id="lessonTimingStatus"></span>
+              <span class="live-stamp" id="liveTimestamp"></span>
+            </div>
+          </div>
+          <div class="live-grid">
+            <label>
+              <span>Typ</span>
+              <select id="liveType" class="text-input">
+                <option value="observation">Beobachtung</option>
+                <option value="student_quote">Schülerzitat</option>
+                <option value="teacher_quote">Lehrerzitat</option>
+                <option value="free">freie professionelle Beobachtung</option>
+              </select>
+            </label>
+            <label class="phase-select-field">
+              <span>Phase</span>
+              <select id="livePhase" class="text-input"></select>
+            </label>
+            <label>
+              <span>Sozialform</span>
+              <select id="liveSocialForm" class="text-input"></select>
+            </label>
+          </div>
+          <div id="livePhaseButtons" class="live-phase-buttons" aria-label="Phase"></div>
+          <div class="live-text-grid">
+            <label class="live-text-field">
+              <span>Beobachtung</span>
+              <textarea id="liveText" class="card-note live-textarea" spellcheck="true" autocomplete="on" placeholder="Kurz notieren, z. B. „Drei Gruppen warten, Lehrkraft schaut auf Tafel.“"></textarea>
+            </label>
+            <label class="live-text-field">
+              <span>Tipps / Hinweise / Impulse</span>
+              <textarea id="liveHintText" class="card-note live-textarea live-hint-textarea" spellcheck="true" autocomplete="on" placeholder="Optional: Hinweis für die Nachbesprechung, fachlicher Impuls, mögliche Alternative"></textarea>
+            </label>
+          </div>
+          <div id="liveSmartHints" class="live-smart-hints" aria-live="polite"></div>
+          <div id="liveSuggestions" class="live-suggestions" aria-live="polite"></div>
+          <div class="live-actions">
+            <select id="manualItemSelect" class="text-input">
+              <option value="">Item manuell wählen</option>
+            </select>
+            <div class="valence-toggle" aria-label="Wirkung festlegen">
+              <button class="mini-button active" type="button" data-live-valence="neutral">neutral / unklar</button>
+              <button class="mini-button" type="button" data-live-valence="positive">lerntragend</button>
+              <button class="mini-button" type="button" data-live-valence="development">Entwicklungspotenzial</button>
+              <button class="mini-button" type="button" data-live-valence="free">freie Beobachtung</button>
+            </div>
+            <button class="button button-secondary" id="saveLiveObservationBtn" type="button">Beobachtung speichern</button>
+            <button class="button button-secondary" id="openSketchBtn" type="button">Skizze</button>
+          </div>
+          <div id="rawObservationList" class="raw-observation-list"></div>
+        </section>
+
+        <section id="chartPanel" class="chart-panel" aria-labelledby="chartTitle">
+          <div class="panel-heading">
+            <div>
+              <h2 id="chartTitle">Unterkategorien</h2>
+            </div>
+            <div class="chart-head-actions">
+              <div id="saveState" class="save-state" aria-live="polite"></div>
+              <button class="close-button" id="closeChartBtn" type="button" aria-label="Spider-Web schließen">×</button>
+            </div>
+          </div>
+          <div class="mode-bar" aria-label="Beobachtungsmodus">
+            <button class="mode-button active" id="multiModeBtn" type="button">Multimodus</button>
+            <button class="mode-button" id="singleModeBtn" type="button">Single Modus</button>
+          </div>
+          <div id="singleControls" class="single-controls hidden" aria-label="Single Modus Auswahl">
+            <div id="singleDimensionButtons" class="single-row"></div>
+            <div id="singleSubcategoryButtons" class="single-row"></div>
+          </div>
+          <div id="dimensionStrip" class="dimension-strip" aria-label="Hauptdimensionen"></div>
+          <div class="chart-wrap">
+            <canvas id="radarChart" aria-label="Klickbares Spiderdiagramm der Unterkategorien"></canvas>
+            <div id="chartNav" class="chart-nav" aria-label="Unterkategorien direkt auswählen"></div>
+            <div id="bucketView" class="bucket-view hidden" aria-label="Single Modus Sammelansicht"></div>
+          </div>
+        </section>
+
+        <aside id="detailPanel" class="detail-panel hidden" aria-live="polite"></aside>
+
+      <section id="logbookView" class="view-panel hidden logbook-dock" aria-label="Nachbesprechung">
+        <section class="logbook-panel">
+          <div class="panel-heading">
+            <h2>Nachbesprechung</h2>
+            <p class="dimension-label">Nur Fokus- oder gesprächsrelevante Karten. Schreib ruhig im Gespräch weiter im Protokoll.</p>
+          </div>
+          <div id="discussionCards" class="discussion-cards"></div>
+          <div class="hidden" aria-hidden="true">
+            <button id="groupWorkBtn" type="button">Gruppenarbeit</button>
+            <button id="feedbackLogBtn" type="button">Feedback/Unterstützung</button>
+            <button data-quote-type="s-schueler" type="button">Zitat SuS</button>
+            <button data-quote-type="s-lehrkraft" type="button">Zitat LK</button>
+            <input id="phaseDuration">
+            <input id="logbookHeading">
+            <div id="observationFields"><textarea class="observation-input"></textarea></div>
+            <textarea id="logbookAlternative"></textarea>
+            <div id="quoteDrafts"></div>
+            <div id="groupDrafts"></div>
+            <button id="addObservationFieldBtn" type="button">+</button>
+            <button id="addLogEntryBtn" type="button">Eintrag hinzufügen</button>
+            <div id="logbookEntries"></div>
+          </div>
+        </section>
+      </section>
+      </section>
+
+      <section id="evaluateView" class="view-panel hidden" aria-label="Auswerten">
+        <section class="evaluation-section synthesis-section" aria-labelledby="synthesisTitle">
+          <div class="section-heading">
+            <h2 id="synthesisTitle">Übergreifende Gesprächszusammenhänge</h2>
+            <button class="button button-secondary" id="calculateSynthesisBtn" type="button">Zusammenhänge berechnen</button>
+          </div>
+          <div id="synthesisCards" class="synthesis-grid"></div>
+        </section>
+        <div class="evaluation-grid">
+          <section class="evaluation-section" aria-labelledby="evidenceTitle">
+            <div class="section-heading">
+              <h2 id="evidenceTitle">Lerntragende Wirkungen</h2>
+              <button class="add-card-button" id="addEvidenceCardBtn" type="button">+</button>
+            </div>
+            <div id="evidenceCards" class="evaluation-list"></div>
+          </section>
+          <section class="evaluation-section" aria-labelledby="developmentTitle">
+            <div class="section-heading">
+              <h2 id="developmentTitle">Entwicklungsrelevante Wirkungen</h2>
+              <button class="add-card-button" id="addDevelopmentCardBtn" type="button">+</button>
+            </div>
+            <div id="developmentCards" class="evaluation-list"></div>
+          </section>
+        </div>
+        <aside id="hiddenStack" class="hidden-stack" aria-label="Ausgeblendete Karten"></aside>
+      </section>
+
+      <section id="protocolView" class="view-panel hidden" aria-label="Protokoll">
+        <section class="protocol-panel">
+          <div class="panel-heading">
+            <h2>Protokoll</h2>
+            <div class="protocol-actions">
+              <button class="button button-secondary" id="shareProtocolBtn" type="button">Protokoll teilen</button>
+              <button class="button button-secondary" id="fullSessionExportBtn" type="button">Gesamtexport Sitzung</button>
+              <button class="button button-secondary" id="printProtocolBtn" type="button">Drucken / Als PDF sichern</button>
+            </div>
+          </div>
+          <div id="protocolContent" class="protocol-content"></div>
+        </section>
+      </section>
+
+      <div id="newSessionDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="newDialogTitle">
+        <div class="modal-panel">
+          <h2 id="newDialogTitle">Neue Beobachtung beginnen?</h2>
+          <p>Der Browserstand ist der aktuelle Arbeitsstand und wird beim Neustart ersetzt. Sichere die Beobachtung vorher als JSON-Datei, wenn du sie später wieder öffnen willst.</p>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="saveAndNewBtn" type="button">JSON sichern und neu</button>
+            <button class="button button-secondary" id="discardAndNewBtn" type="button">Verwerfen und neu</button>
+            <button class="button button-secondary" id="cancelNewBtn" type="button">Abbruch</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="observationNoteDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="observationNoteTitle">
+        <div class="modal-panel note-modal-panel">
+          <div class="modal-heading">
+            <h2 id="observationNoteTitle">Beobachtungsnotiz</h2>
+            <button class="close-button inline-close" id="closeObservationNoteBtn" type="button" aria-label="Notiz schließen">×</button>
+          </div>
+          <p id="observationNoteItem" class="note-item-text"></p>
+          <label class="card-note-label" for="observationNoteText">Kurze Beobachtungsnotiz</label>
+          <textarea id="observationNoteText" class="card-note observation-note-text" placeholder="Kurz notieren, was sichtbar oder hörbar war"></textarea>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="saveObservationNoteBtn" type="button">Notiz speichern</button>
+            <button class="button button-secondary" id="clearObservationNoteBtn" type="button">Leeren</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="customCardDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="customCardTitle">
+        <div class="modal-panel note-modal-panel">
+          <div class="modal-heading">
+            <h2 id="customCardTitle">Eigene Karte</h2>
+            <button class="close-button inline-close" id="closeCustomCardBtn" type="button" aria-label="Karte schließen">×</button>
+          </div>
+          <label class="card-note-label" for="customCardHeading">Stichpunkt</label>
+          <input id="customCardHeading" class="text-input" placeholder="Kurzer Stichpunkt">
+          <label class="card-note-label" for="customCardNote">Fachspezifische Anmerkung</label>
+          <textarea id="customCardNote" class="card-note observation-note-text" placeholder="Gedanke für die Auswertung"></textarea>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="saveCustomCardBtn" type="button">Karte hinzufügen</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="quoteDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="quoteDialogTitle">
+        <div class="modal-panel note-modal-panel">
+          <div class="modal-heading">
+            <h2 id="quoteDialogTitle">Zitat</h2>
+            <button class="close-button inline-close" id="closeQuoteDialogBtn" type="button" aria-label="Zitat schließen">×</button>
+          </div>
+          <label class="card-note-label" for="quoteName">Name/Rolle optional</label>
+          <input id="quoteName" class="text-input" placeholder="z. B. S1, Gruppe 2, LK">
+          <label class="card-note-label" for="quoteText">Zitat</label>
+          <textarea id="quoteText" class="card-note observation-note-text" placeholder="Wörtlich oder sinngemäß notieren"></textarea>
+          <label class="card-note-label" for="quoteHint">Hinweis</label>
+          <textarea id="quoteHint" class="card-note" placeholder="Warum ist das relevant?"></textarea>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="saveQuoteBtn" type="button">Zitat übernehmen</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="groupDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="groupDialogTitle">
+        <div class="modal-panel note-modal-panel">
+          <div class="modal-heading">
+            <h2 id="groupDialogTitle">Gruppenarbeit</h2>
+            <button class="close-button inline-close" id="closeGroupDialogBtn" type="button" aria-label="Gruppen schließen">×</button>
+          </div>
+          <div id="groupEditorList" class="group-editor-list"></div>
+          <div class="modal-actions">
+            <button class="button button-secondary" id="addGroupBtn" type="button">Gruppe hinzufügen</button>
+            <button class="button button-secondary" id="saveGroupsBtn" type="button">Gruppen übernehmen</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="sketchDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="sketchDialogTitle">
+        <div class="modal-panel sketch-modal-panel">
+          <div class="modal-heading">
+            <div>
+              <h2 id="sketchDialogTitle">Skizze</h2>
+              <p class="modal-subtle">Mit Stift oder Finger kurz festhalten. Speichern hängt die Skizze an die nächste Live-Beobachtung an.</p>
+            </div>
+            <button class="close-button inline-close" id="closeSketchDialogBtn" type="button" aria-label="Skizze schließen">×</button>
+          </div>
+          <canvas id="sketchCanvas" class="sketch-canvas" width="600" height="350" aria-label="Skizzenfläche"></canvas>
+          <div class="sketch-tools" aria-label="Skizzenwerkzeuge">
+            <button class="mini-button active" type="button" data-sketch-tool="pen">Stift</button>
+            <button class="mini-button" type="button" data-sketch-tool="eraser">Radierer</button>
+            <button class="sketch-color active" type="button" data-sketch-color="#18333a" style="--sketch-color: #18333a" aria-label="Schwarz"></button>
+            <button class="sketch-color" type="button" data-sketch-color="#5c3bb0" style="--sketch-color: #5c3bb0" aria-label="Violett"></button>
+            <button class="sketch-color" type="button" data-sketch-color="#42a51f" style="--sketch-color: #42a51f" aria-label="Grün"></button>
+            <button class="sketch-color" type="button" data-sketch-color="#1f6fb8" style="--sketch-color: #1f6fb8" aria-label="Blau"></button>
+            <button class="mini-button" id="clearSketchBtn" type="button">Leeren</button>
+            <button class="button button-secondary" id="saveSketchBtn" type="button">Skizze speichern</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    <a class="source-link" href="https://ibbw-bw.de/%2CLde/Startseite/Bildungsforschung/Unterrichtsfeedbackbogen_Tiefenstrukturen" target="_blank" rel="noopener noreferrer">
+      Quelle: UFB Tiefenstrukturen
+    </a>
+  </body>
+</html>

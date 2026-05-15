@@ -1,0 +1,982 @@
+[
+  {
+    "nr": "1",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Begrüßung, Gäste werden nicht vorgstellt, eingeordnet,",
+    "directionRaw": "Blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "1",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Begrüßung, Gäste werden vorgstellt, eingeordnet, transparenz",
+    "directionRaw": "Blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "1",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Begrüßung, Gäste werden nicht vorgstellt, “die schauen nur auf mich”, quetsch wir schauen auch was die Schüler tun, gehen rum verknüpfen das, bewerten die Schüler aber nicht",
+    "directionRaw": "Blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "1",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Begrüßung “Hi” oder “moin” oder “lets go”  (nicht angemessen)",
+    "directionRaw": "Blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "1",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Begrüßung “Guten morgen alle zusammen” oder “Guten Morgen, ihr Lieben Menschen” (angemessen)",
+    "directionRaw": "grün",
+    "expectedValence": "positive",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "2",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Einstie gals Motivator funktioniert nicht, Bei Videos: es gibt keinen Beobachtungsauftrag, zu komplex, nicht lösbar, pastt nicht zu Stunde, können die Schüler nicht, unklar, übergang verwirrend, was sollen die jetzt machen?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "2",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Worum könnte es heute gehen ? (schrecklich, kein Ratespiel, Zieltransparenz)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "2",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Ich habe da mal was mitgebracht!",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "2",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Ich erkläre euch was wir vorhaben, woran ihr erkennt, dass ihr es verstanden habt",
+    "directionRaw": "grün",
+    "expectedValence": "positive",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "4",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Kurzmarker",
+    "text": "Einstieg past nicht zu Stunde",
+    "directionRaw": "grün",
+    "expectedValence": "positive",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "5",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Kurzmarker",
+    "text": "Arbeitsauftrag nicht abgesichert",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "5",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "Gibt es noch Fragen? (trägt nicht, sichern Sie das ab)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "5",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "“Alles klar?” (nicht sist klar, verschaffen sies ich klarheit)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "5",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Lehrerzitat",
+    "text": "“Wer kann mir noch mal erklären…. “",
+    "directionRaw": "grün",
+    "expectedValence": "positive",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "5",
+    "phase": "Einstieg",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sichert Arbeitsauftrag ab, Auftrag wirkt klar, Diagnose der klarheit paasst, Arbeitsauftrag gut abgesichert",
+    "directionRaw": "grün",
+    "expectedValence": "positive",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "6",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie reden in die Unruhe rein",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "6",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Einwort-Antwort wird akzeptiert",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "6",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie reden in die Unruhe rein",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "6",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie lösen das Selbst, was machen die Schüler?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "6",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Sprache / Fachsprache beachen, Sprache progressive aufbauen und einfordern",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "7",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Schülerzitat",
+    "text": "Sagt nu rein Wort, Lehrer ignoriert",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "7",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Schülerzitat",
+    "text": "“Danke”",
+    "directionRaw": "grün",
+    "expectedValence": "positive",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "8",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Schüler fängt nicht an",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "8",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie bemerken die Meldungen nicht",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "8",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie betreiben keine Diagnose",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "8",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Schüler xy zum vierten Mal",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "8",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Beobachtungsnotiz",
+    "text": "Geringe Beteiligung, wieso?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "9",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Kurzmarker",
+    "text": "Erklär tzu viel",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "9",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Kurzmarker",
+    "text": "Visualiserung ?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "9",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Kurzmarker",
+    "text": "Vorwissen?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "9",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Kurzmarker",
+    "text": "Anschaulichkeit hilft hier nicht weiter",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "9",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Kurzmarker",
+    "text": "Funktion? (Was bringt das?)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "9",
+    "phase": "Erarbeitung",
+    "socialForm": "Unterrichtsgespräch",
+    "type": "Kurzmarker",
+    "text": "Erklärung vorher planen (Vorberietung)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "11",
+    "phase": "Arbeitsphase",
+    "socialForm": "Einzelarbeit",
+    "type": "Lehrerzitat",
+    "text": "“Seid ihr alle Fertig” (wer ist nicht Fertig?!), Diagnose  gehen Sie rum.",
+    "directionRaw": "Blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "12",
+    "phase": "Arbeitsphase",
+    "socialForm": "Einzelarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Einzelarbeit wird nicht konsequenz eingehalten, eingefordert, klar kommuniziert, begrenzt  klarheit hier bitte",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "13",
+    "phase": "Arbeitsphase",
+    "socialForm": "Einzelarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Manche Schüler tauschen sich schon aus.  Die sollen bitte kurz waren, Ruhe ist wichtig hier Fokus.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "14",
+    "phase": "Arbeitsphase",
+    "socialForm": "Einzelarbeit",
+    "type": "Kurzmarker",
+    "text": "Keiner kapiert etwas/ Aufgabe überfordert / Zu viel Text /Sprachlich überfrachtet",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "15",
+    "phase": "Arbeitsphase",
+    "socialForm": "Einzelarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Ein Schüler steht auf",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "16",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Lehrerzitat",
+    "text": "“Setzt euch mal irgenwie zusammen” ( Wer mit wem?)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "17",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Schülerzitat",
+    "text": "“Wir sind Fertig”  Leerlauf?",
+    "directionRaw": "Blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Zusammenarbeit nicht möglich",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Die Tauschen sich nicht aus,",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Aufgabe bedarf keinen Austausch",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Zu laut hier",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Was machen die genau?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Viel zu lang!  Kürzen, straffen, antizipieren",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Partnerarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Xy hat keinen Partner, bitte drum kümmern, sie sind zuständig",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Gruppenarbeit erzeugt keinen Mehrwert",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Gruppen größer 4, viel zu groß",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Kooperationserfarhung?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "In der Gruppe arbeitet jeder für sich  MAterila verknappen, gemeinsame Aufgabe?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "3er-Gruppen wären optimal",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Gruppen sind nicht heterogeny genug",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "In Grupppe xy macht ein Schüler nichts  Intervention",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Zu laut in der Phase, passt nicht.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Überforderung",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Wie sichern sie die Ergebnisse ab, sehr verschieden",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Lehrer hält sich nur bei einer Gruppe auf",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Lehrer geht nicht rum, Diagnose?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Arbeitsauftrag vollkommen unklar, Lehrer lässt dennoch laufen",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "18",
+    "phase": "Arbeitsphase",
+    "socialForm": "Grupenarbeit",
+    "type": "Beobachtungsnotiz",
+    "text": "Schüler gaukeln verständnis vor, arbeiten aber gar nicht.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "21",
+    "phase": "Arbeitsphase",
+    "socialForm": "Gruppenarbeit",
+    "type": "Lehrerzitat",
+    "text": "“Ihr habt aber schon gearbeitet” (Qualität?)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "22",
+    "phase": "Arbeitsphase",
+    "socialForm": "Gruppenarbeit",
+    "type": "Schülerzitat",
+    "text": "“Der so und so macht nicht mit”",
+    "directionRaw": "",
+    "expectedValence": "unknown",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "32",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Schülerzitat",
+    "text": "“Ich habe nichts kapiert”",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Zu kurz, schaffen sie nicht.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Keine Verallgemeinerung erkennbar",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Keine Diagnose, keine Aktivität , Reflexion?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Abschreibzeit?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Zu knapp!",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Zwischensicherung wäre hier sinnvoll, da abhängige Aufgabe",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Es werden nur Ergebnisse gesichert, keine Erkenntnisse",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Was haben die jetzt im Heft/Hefter/Portfolio?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Merksatz zu technsich",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Rückbezug zur Eingangsfrage?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Was ist jetzt mit dem Problem vom Anfang der Stunde.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Könnnen die das jetzt?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie haben nicht richtig zugehört.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Der Schüler meinte ….",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sicherung fehlt",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Zwischensicherung?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sprache",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Darstellungswechsel",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Qualität der Ergbenisse?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie nehmen nur die Optimalllösung",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Umgang mit Fehlern",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Beim Präsentieren sollte der Schüler stehen",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Präsentation nicht angeleitet",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie halten sich zu stark zurück",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Medlekette?",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Sie sagen was man kapieren muss, nicht die Schüler",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Diskussion ufert aus",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Hier ist ein fachlicher Fehler … (Fehler wird erklärt)",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "33",
+    "phase": "Sicherung",
+    "socialForm": "Plenum",
+    "type": "Beobachtungsnotiz",
+    "text": "Fehlerkultur",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "46",
+    "phase": "Freie fachliche Beobachtung",
+    "socialForm": "beliebig",
+    "type": "freie Beobachtung",
+    "text": "Sie fangen zu spat an",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "47",
+    "phase": "Freie fachliche Beobachtung",
+    "socialForm": "beliebig",
+    "type": "freie Beobachtung",
+    "text": "Arbeitsmaterial",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "48",
+    "phase": "Freie fachliche Beobachtung",
+    "socialForm": "beliebig",
+    "type": "freie Beobachtung",
+    "text": "Lustig",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "49",
+    "phase": "Freie fachliche Beobachtung",
+    "socialForm": "beliebig",
+    "type": "Kurzmarker",
+    "text": "Arbeitmaterila",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  },
+  {
+    "nr": "50",
+    "phase": "Freie fachliche Beobachtung",
+    "socialForm": "beliebig",
+    "type": "Notiz",
+    "text": "Fehler an der Tafel.",
+    "directionRaw": "blau",
+    "expectedValence": "development",
+    "source": "Nutzer-Testformulierungen 2026-05-13"
+  }
+]

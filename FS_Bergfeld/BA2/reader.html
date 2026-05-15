@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reader Beobachtungsassistent Tiefenstruktur</title>
+    <link rel="stylesheet" href="styles.css?v=20260511-v2">
+    <script src="vendor/chart.umd.min.js" defer></script>
+    <script src="reader.js?v=20260511-v2" defer></script>
+  </head>
+  <body>
+    <main class="app-shell reader-shell" aria-labelledby="readerTitle">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Schreibgeschützter Reader</p>
+          <h1 id="readerTitle">Beobachtungsassistent Tiefenstruktur</h1>
+        </div>
+        <div class="toolbar">
+          <label class="button button-secondary import-label" for="readerFile">JSON öffnen</label>
+          <input id="readerFile" class="sr-only" type="file" accept="application/json,.json">
+          <button class="button button-secondary" id="printReaderBtn" type="button">Drucken / PDF sichern</button>
+        </div>
+      </header>
+
+      <section class="reader-intro" id="readerIntro">
+        <h2>Beobachtung öffnen</h2>
+        <p>Öffne eine JSON-Datei aus dem Beobachtungsassistenten. Die Ansicht ist schreibgeschützt: Karten, Spider-Web, Logbuch und Protokoll können gelesen und als PDF gedruckt werden.</p>
+      </section>
+
+      <section class="protocol-panel reader-output hidden" id="readerOutput" aria-live="polite">
+        <div id="readerMeta" class="reader-meta"></div>
+        <div class="reader-chart-wrap">
+          <canvas id="readerChart" aria-label="Spider-Web der importierten Beobachtung"></canvas>
+        </div>
+        <div class="protocol-table-wrap">
+          <table class="protocol-table">
+            <thead>
+              <tr>
+                <th>Lerntragende Wirkungen</th>
+                <th>Entwicklungspotenziale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="readerEvidence"></td>
+                <td id="readerDevelopment"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <section id="readerLogbook" class="reader-logbook"></section>
+      </section>
+    </main>
+  </body>
+</html>
