@@ -80,7 +80,7 @@
         <section class="live-panel" aria-labelledby="liveTitle">
           <div class="section-heading">
             <div>
-              <h2 id="liveTitle">Live-Beobachtung</h2>
+              <h2 id="liveTitle">Beobachtungen aus dem Unterricht</h2>
               <p>Tippen, Vorschlag antippen, Enter. Offenes kann später sortiert werden.</p>
             </div>
             <div class="live-head-actions">
@@ -92,23 +92,30 @@
             </div>
           </div>
           <div class="live-grid">
-            <label>
-              <span>Typ</span>
-              <select id="liveType" class="text-input">
-                <option value="observation">Beobachtung</option>
-                <option value="student_quote">Schülerzitat</option>
-                <option value="teacher_quote">Lehrerzitat</option>
-                <option value="free">freie professionelle Beobachtung</option>
-              </select>
-            </label>
+            <div class="live-chip-field">
+              <span class="live-chip-label">Typ</span>
+              <div class="live-chip-group" id="liveTypeChips">
+                <button type="button" class="live-chip active" data-live-type="observation">Beobachtung</button>
+                <button type="button" class="live-chip" data-live-type="student_quote">Schülerzitat</button>
+                <button type="button" class="live-chip" data-live-type="teacher_quote">Lehrerzitat</button>
+                <button type="button" class="live-chip" data-live-type="free">Freie Beobachtung</button>
+              </div>
+            </div>
             <label class="phase-select-field">
               <span>Phase</span>
               <select id="livePhase" class="text-input"></select>
             </label>
-            <label>
-              <span>Sozialform</span>
-              <select id="liveSocialForm" class="text-input"></select>
-            </label>
+            <div class="live-chip-field">
+              <span class="live-chip-label">Sozialform</span>
+              <div class="live-chip-group" id="liveSocialFormChips">
+                <button type="button" class="live-chip active" data-live-social="Plenum">Plenum</button>
+                <button type="button" class="live-chip" data-live-social="Einzelarbeit">Einzelarbeit</button>
+                <button type="button" class="live-chip" data-live-social="Partnerarbeit">PA</button>
+                <button type="button" class="live-chip" data-live-social="Gruppenarbeit">GA</button>
+                <button type="button" class="live-chip" data-live-social="Lehrervortrag">LV</button>
+                <button type="button" class="live-chip" data-live-social="Schülerpräsentation">SuS-Präs.</button>
+              </div>
+            </div>
           </div>
           <div id="livePhaseButtons" class="live-phase-buttons" aria-label="Phase"></div>
           <div class="live-text-grid">
@@ -319,16 +326,35 @@
             </div>
             <button class="close-button inline-close" id="closeSketchDialogBtn" type="button" aria-label="Skizze schließen">×</button>
           </div>
-          <canvas id="sketchCanvas" class="sketch-canvas" width="600" height="350" aria-label="Skizzenfläche"></canvas>
+          <div class="sketch-canvas-wrapper sketch-bg-grid">
+            <canvas id="sketchCanvas" class="sketch-canvas" width="900" height="520" aria-label="Skizzenfläche"></canvas>
+          </div>
           <div class="sketch-tools" aria-label="Skizzenwerkzeuge">
-            <button class="mini-button active" type="button" data-sketch-tool="pen">Stift</button>
-            <button class="mini-button" type="button" data-sketch-tool="eraser">Radierer</button>
-            <button class="sketch-color active" type="button" data-sketch-color="#18333a" style="--sketch-color: #18333a" aria-label="Schwarz"></button>
-            <button class="sketch-color" type="button" data-sketch-color="#5c3bb0" style="--sketch-color: #5c3bb0" aria-label="Violett"></button>
-            <button class="sketch-color" type="button" data-sketch-color="#42a51f" style="--sketch-color: #42a51f" aria-label="Grün"></button>
-            <button class="sketch-color" type="button" data-sketch-color="#1f6fb8" style="--sketch-color: #1f6fb8" aria-label="Blau"></button>
-            <button class="mini-button" id="clearSketchBtn" type="button">Leeren</button>
-            <button class="button button-secondary" id="saveSketchBtn" type="button">Skizze speichern</button>
+            <div class="sketch-tool-group">
+              <button class="mini-button active" type="button" data-sketch-tool="pen">Stift</button>
+              <button class="mini-button" type="button" data-sketch-tool="eraser">Radierer</button>
+            </div>
+            <div class="sketch-tool-group">
+              <button class="sketch-size-btn active" type="button" data-sketch-size="2" aria-label="Dünn"><span></span></button>
+              <button class="sketch-size-btn" type="button" data-sketch-size="4" aria-label="Mittel"><span></span></button>
+              <button class="sketch-size-btn" type="button" data-sketch-size="8" aria-label="Dick"><span></span></button>
+            </div>
+            <div class="sketch-tool-group">
+              <button class="sketch-color active" type="button" data-sketch-color="#18333a" style="--sketch-color: #18333a" aria-label="Schwarz"></button>
+              <button class="sketch-color" type="button" data-sketch-color="#5c3bb0" style="--sketch-color: #5c3bb0" aria-label="Violett"></button>
+              <button class="sketch-color" type="button" data-sketch-color="#42a51f" style="--sketch-color: #42a51f" aria-label="Grün"></button>
+              <button class="sketch-color" type="button" data-sketch-color="#1f6fb8" style="--sketch-color: #1f6fb8" aria-label="Blau"></button>
+              <button class="sketch-color" type="button" data-sketch-color="#c0392b" style="--sketch-color: #c0392b" aria-label="Rot"></button>
+            </div>
+            <div class="sketch-tool-group">
+              <button class="mini-button active" type="button" data-sketch-bg="grid">Kariert</button>
+              <button class="mini-button" type="button" data-sketch-bg="lined">Liniert</button>
+              <button class="mini-button" type="button" data-sketch-bg="white">Weiß</button>
+            </div>
+            <div class="sketch-tool-group">
+              <button class="mini-button" id="clearSketchBtn" type="button">Leeren</button>
+              <button class="button button-secondary" id="saveSketchBtn" type="button">Skizze speichern</button>
+            </div>
           </div>
         </div>
       </div>

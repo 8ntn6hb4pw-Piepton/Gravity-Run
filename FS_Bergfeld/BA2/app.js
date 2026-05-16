@@ -279,6 +279,8 @@ const lessonTimingStatus = document.querySelector("#lessonTimingStatus");
 const liveType = document.querySelector("#liveType");
 const livePhase = document.querySelector("#livePhase");
 const liveSocialForm = document.querySelector("#liveSocialForm");
+let liveTypeValue = "observation";
+let liveSocialFormValue = "Plenum";
 const liveMinute = document.querySelector("#liveMinute");
 const livePanel = document.querySelector(".live-panel");
 const livePhaseButtons = document.querySelector("#livePhaseButtons");
@@ -308,8 +310,14 @@ let liveValence = "neutral";
 let sketchContext = null;
 let sketchTool = "pen";
 let sketchColor = "#18333a";
+let sketchPenSize = 4;
+let sketchBackground = "grid";
 let sketchDrawing = false;
 let sketchLastPoint = null;
+let sketchStartPoint = null;
+let sketchStraightMode = false;
+let sketchStraightTimer = null;
+let sketchSnapshot = null;
 let sketchHasInk = false;
 let pendingLiveSketchDataUrl = "";
 let pendingLiveSketchCreatedAt = null;
@@ -468,6 +476,12 @@ function bindEvents() {
   document.querySelectorAll("[data-sketch-tool]").forEach((button) => {
     button.addEventListener("click", () => setSketchTool(button.dataset.sketchTool));
   });
+  document.querySelectorAll("[data-sketch-size]").forEach((button) => {
+    button.addEventListener("click", () => setSketchPenSize(button.dataset.sketchSize));
+  });
+  document.querySelectorAll("[data-sketch-bg]").forEach((button) => {
+    button.addEventListener("click", () => setSketchBackground(button.dataset.sketchBg));
+  });
   document.querySelectorAll("[data-sketch-color]").forEach((button) => {
     button.addEventListener("click", () => setSketchColor(button.dataset.sketchColor));
   });
@@ -569,6 +583,7 @@ function openSketchDialog() {
   setupSketchCanvas();
   clearSketchCanvas();
   setSketchTool("pen");
+  setSketchBackground(sketchBackground);
   window.setTimeout(() => sketchCanvas.focus?.(), 0);
 }
 
@@ -617,6 +632,46 @@ function clearSketchCanvas() {
   sketchHasInk = false;
 }
 
+function setSketchPenSize(size) {
+  sketchPenSize = Number(size) || 4;
+  document.querySelectorAll("[data-sketch-size]").forEach((btn) => {
+    btn.classList.toggle("active", Number(btn.dataset.sketchSize) === sketchPenSize);
+  });
+}
+
+function setSketchBackground(bg) {
+  sketchBackground = bg;
+  document.querySelectorAll("[data-sketch-bg]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.sketchBg === bg);
+  });
+  const wrapper = sketchCanvas?.parentElement;
+  if (wrapper) {
+    wrapper.className = wrapper.className.replace(/\bsketch-bg-\S+/g, "").trim();
+    wrapper.classList.add(`sketch-bg-${bg}`);
+  }
+}
+
+function drawBackgroundOnCanvas(ctx, width, height) {
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, width, height);
+  if (sketchBackground === "grid") {
+    ctx.strokeStyle = "#ccd8dc";
+    ctx.lineWidth = 0.8;
+    for (let x = 20; x < width; x += 20) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+    }
+    for (let y = 20; y < height; y += 20) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+  } else if (sketchBackground === "lined") {
+    ctx.strokeStyle = "#b0c8cc";
+    ctx.lineWidth = 1;
+    for (let y = 24; y < height; y += 24) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+  }
+}
+
 function sketchPointFromEvent(event) {
   const rect = sketchCanvas.getBoundingClientRect();
   return {
@@ -630,8 +685,30 @@ function startSketchStroke(event) {
   sketchDrawing = true;
   sketchHasInk = true;
   sketchLastPoint = sketchPointFromEvent(event);
+  sketchStartPoint = sketchLastPoint;
+  sketchStraightMode = false;
+  sketchSnapshot = sketchContext.getImageData(0, 0, sketchCanvas.width, sketchCanvas.height);
   sketchCanvas.setPointerCapture?.(event.pointerId);
   drawSketchDot(sketchLastPoint);
+  armStraightLineTimer();
+}
+
+function armStraightLineTimer() {
+  window.clearTimeout(sketchStraightTimer);
+  sketchStraightTimer = window.setTimeout(() => {
+    if (!sketchDrawing || !sketchSnapshot || !sketchStartPoint || !sketchLastPoint) return;
+    sketchContext.putImageData(sketchSnapshot, 0, 0);
+    sketchContext.save();
+    sketchContext.strokeStyle = sketchColor;
+    sketchContext.lineWidth = sketchPenSize;
+    sketchContext.lineCap = "round";
+    sketchContext.beginPath();
+    sketchContext.moveTo(sketchStartPoint.x, sketchStartPoint.y);
+    sketchContext.lineTo(sketchLastPoint.x, sketchLastPoint.y);
+    sketchContext.stroke();
+    sketchContext.restore();
+    sketchStraightMode = true;
+  }, 2000);
 }
 
 function continueSketchStroke(event) {
@@ -640,22 +717,42 @@ function continueSketchStroke(event) {
   }
   event.preventDefault();
   const point = sketchPointFromEvent(event);
+  if (sketchStraightMode && sketchSnapshot && sketchStartPoint) {
+    sketchContext.putImageData(sketchSnapshot, 0, 0);
+    sketchContext.save();
+    sketchContext.strokeStyle = sketchColor;
+    sketchContext.lineWidth = sketchPenSize;
+    sketchContext.lineCap = "round";
+    sketchContext.beginPath();
+    sketchContext.moveTo(sketchStartPoint.x, sketchStartPoint.y);
+    sketchContext.lineTo(point.x, point.y);
+    sketchContext.stroke();
+    sketchContext.restore();
+    sketchLastPoint = point;
+    return;
+  }
   sketchContext.save();
   sketchContext.globalCompositeOperation = sketchTool === "eraser" ? "destination-out" : "source-over";
   sketchContext.strokeStyle = sketchColor;
-  sketchContext.lineWidth = sketchTool === "eraser" ? 28 : 4;
+  sketchContext.lineWidth = sketchTool === "eraser" ? sketchPenSize * 6 : sketchPenSize;
   sketchContext.beginPath();
   sketchContext.moveTo(sketchLastPoint.x, sketchLastPoint.y);
   sketchContext.lineTo(point.x, point.y);
   sketchContext.stroke();
   sketchContext.restore();
   sketchLastPoint = point;
+  armStraightLineTimer();
 }
 
 function endSketchStroke(event) {
   if (!sketchDrawing) {
     return;
   }
+  window.clearTimeout(sketchStraightTimer);
+  sketchStraightTimer = null;
+  sketchStraightMode = false;
+  sketchSnapshot = null;
+  sketchStartPoint = null;
   sketchDrawing = false;
   sketchLastPoint = null;
   if (event?.pointerId !== undefined) {
@@ -667,11 +764,12 @@ function drawSketchDot(point) {
   if (!sketchContext || !point) {
     return;
   }
+  const r = sketchTool === "eraser" ? sketchPenSize * 3 : sketchPenSize / 2;
   sketchContext.save();
   sketchContext.globalCompositeOperation = sketchTool === "eraser" ? "destination-out" : "source-over";
   sketchContext.fillStyle = sketchColor;
   sketchContext.beginPath();
-  sketchContext.arc(point.x, point.y, sketchTool === "eraser" ? 14 : 2.2, 0, Math.PI * 2);
+  sketchContext.arc(point.x, point.y, r, 0, Math.PI * 2);
   sketchContext.fill();
   sketchContext.restore();
 }
@@ -681,7 +779,13 @@ function saveSketchEntry() {
     alert("Noch keine Skizze vorhanden.");
     return;
   }
-  pendingLiveSketchDataUrl = sketchCanvas.toDataURL("image/jpeg", 0.85);
+  const offscreen = document.createElement("canvas");
+  offscreen.width = sketchCanvas.width;
+  offscreen.height = sketchCanvas.height;
+  const offCtx = offscreen.getContext("2d");
+  drawBackgroundOnCanvas(offCtx, offscreen.width, offscreen.height);
+  offCtx.drawImage(sketchCanvas, 0, 0);
+  pendingLiveSketchDataUrl = offscreen.toDataURL("image/jpeg", 0.85);
   pendingLiveSketchCreatedAt = new Date().toISOString();
   session.pendingSketch = {
     dataUrl: pendingLiveSketchDataUrl,
@@ -707,17 +811,25 @@ function bindLiveEvents() {
   quickPhases.forEach((phase) => {
     livePhase.insertAdjacentHTML("beforeend", `<option value="${phase}">${phase}</option>`);
   });
-  (window.UFB_SOCIAL_FORMS ?? []).forEach((form) => {
-    liveSocialForm.insertAdjacentHTML("beforeend", `<option value="${form}">${form}</option>`);
-  });
   livePhase.value = "Arbeitsphase";
-  liveSocialForm.value = "Plenum";
   renderLivePhaseButtons(quickPhases);
+  document.querySelectorAll("[data-live-type]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setLiveTypeValue(btn.dataset.liveType);
+      updateLiveSuggestions();
+    });
+  });
+  document.querySelectorAll("[data-live-social]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setLiveSocialFormValue(btn.dataset.liveSocial);
+      updateLiveSuggestions();
+    });
+  });
   manualItemSelect.innerHTML = `<option value="">Item manuell wählen</option>` + itemCatalog().map((item) =>
     `<option value="${item.id}">${item.id} ${item.shortLabel ?? item.label ?? item.exactText ?? ""}</option>`
   ).join("");
 
-  [liveText, liveHintText, liveType, livePhase, liveSocialForm, liveMinute].filter(Boolean).forEach((input) => {
+  [liveText, liveHintText, livePhase, liveMinute].filter(Boolean).forEach((input) => {
     input.addEventListener("input", updateLiveSuggestions);
     input.addEventListener("change", updateLiveSuggestions);
   });
@@ -743,6 +855,20 @@ function bindLiveEvents() {
     }
   });
   saveLiveObservationBtn.addEventListener("click", saveRawObservation);
+}
+
+function setLiveTypeValue(value) {
+  liveTypeValue = value;
+  document.querySelectorAll("[data-live-type]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.liveType === value);
+  });
+}
+
+function setLiveSocialFormValue(value) {
+  liveSocialFormValue = value;
+  document.querySelectorAll("[data-live-social]").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.liveSocial === value);
+  });
 }
 
 function handleLiveEnterSave(event) {
@@ -869,12 +995,12 @@ function currentLiveObservationDraft() {
     : (timing ? window.getMinuteInLesson?.(timestamp, timing) ?? null : null);
   const input = {
     id: `raw-${Date.now()}`,
-    type: liveType.value,
+    type: liveTypeValue,
     text: liveText.value.trim(),
     hintText: liveHintText?.value.trim() ?? "",
     professionalHint: liveHintText?.value.trim() ?? "",
     phase: livePhase.value,
-    socialForm: liveSocialForm.value,
+    socialForm: liveSocialFormValue,
     timestamp,
     minuteInLesson,
     lessonWindow: timing ? window.getLessonWindow?.(minuteInLesson, timing.durationMinutes) ?? null : null,
@@ -980,8 +1106,8 @@ function applyLiveInputShortcuts() {
   }
   const text = liveText.value;
   const shortcut = socialFormShortcutFromText(text);
-  if (shortcut && liveSocialForm.value !== shortcut) {
-    liveSocialForm.value = shortcut;
+  if (shortcut && liveSocialFormValue !== shortcut) {
+    setLiveSocialFormValue(shortcut);
   }
 }
 
@@ -1027,7 +1153,7 @@ function renderLiveSmartHints() {
     : "";
   liveSmartHints.querySelectorAll("[data-smart-type]").forEach((button) => {
     button.addEventListener("click", () => {
-      liveType.value = button.dataset.smartType;
+      setLiveTypeValue(button.dataset.smartType);
       updateLiveSuggestions();
     });
   });
@@ -1215,7 +1341,7 @@ function saveRawObservation() {
   if (liveMinute) {
     liveMinute.value = "";
   }
-  liveType.value = "observation";
+  setLiveTypeValue("observation");
   manualItemSelect.value = "";
   clearLiveSmartHints();
   persistSession();
@@ -1316,7 +1442,7 @@ function renderRawObservationList() {
         </aside>
       </div>
     `
-    : `<p class="empty-state">Noch keine Live-Beobachtung gespeichert.</p>`;
+    : `<p class="empty-state">Noch keine Beobachtung gespeichert.</p>`;
 
   rawObservationList.querySelectorAll(".raw-observation").forEach((card) => {
     card.addEventListener("click", (event) => {
@@ -1331,7 +1457,11 @@ function renderRawObservationList() {
   rawObservationList.querySelectorAll("[data-live-card-chip]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
-      updateLiveObservationDecision(button.dataset.liveId, button.dataset.liveCardChip);
+      if (button.classList.contains("post")) {
+        updateLiveObservationDecisionInPlace(button, button.dataset.liveId, button.dataset.liveCardChip);
+      } else {
+        updateLiveObservationDecision(button.dataset.liveId, button.dataset.liveCardChip);
+      }
     });
   });
 
@@ -1345,6 +1475,20 @@ function renderRawObservationList() {
         persistSession();
       }
       renderRawObservationListKeepScroll();
+    });
+  });
+
+  rawObservationList.querySelectorAll("[data-live-relevant]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const liveEvent = liveEventById(button.dataset.liveRelevant);
+      if (!liveEvent) return;
+      liveEvent.gespraechsrelevant = !liveEvent.gespraechsrelevant;
+      const meta = cardMeta(liveEvent.id);
+      meta.relevant = liveEvent.gespraechsrelevant;
+      if (liveEvent.gespraechsrelevant) meta.focus = true;
+      persistSession();
+      button.classList.toggle("active", liveEvent.gespraechsrelevant);
     });
   });
 
@@ -1378,6 +1522,7 @@ function renderRawObservationCard(observation) {
   return `
     <article class="raw-observation ${status.className} ${isExpanded ? "selected" : ""} ${recentLiveSavedId === observation.id ? "just-saved" : ""}" data-live-id="${observation.id}" title="Antippen zum Prüfen">
       ${postSuggestions.length ? `<button class="raw-post-star ${observation.postAnalysis?.status === "seen" ? "seen" : ""}" type="button" data-live-post-star="${observation.id}" aria-label="Neue mögliche Lesart">★</button>` : ""}
+      <button class="raw-relevant-btn${observation.gespraechsrelevant ? " active" : ""}" type="button" data-live-relevant="${observation.id}" aria-label="Gesprächsrelevant markieren" title="Für Nachbesprechung vormerken">❗</button>
       <div class="raw-time">${formatTime(observation.timestamp)}</div>
       <div class="raw-main">
         <strong>${typeLabel(observation.type)} · ${escapeHtml(observation.phase ?? "ohne Phase")} · ${escapeHtml(observation.socialForm ?? "ohne Sozialform")}</strong>
@@ -1421,10 +1566,14 @@ function renderRawObservationInspector(observation) {
   const isPositive = status.className === "positive";
   const isDevelopment = status.className === "development";
   const hasValence = isPositive || isDevelopment;
+  const isSpider = !!observation.spiderItemKey;
   return `
     <div class="raw-inspector-header">
       <span>${formatTime(observation.timestamp)} · ${typeLabel(observation.type)}</span>
-      <strong>${escapeHtml(observation.text)}</strong>
+    </div>
+    <div class="raw-inspector-sources">
+      ${isSpider ? `<div class="raw-source-block spider"><span class="raw-source-label">Spider-Web-Notiz</span><p>${escapeHtml(observation.text)}</p></div>` : `<div class="raw-source-block observation"><span class="raw-source-label">Beobachtung</span><p>${escapeHtml(observation.text)}</p></div>`}
+      ${hintText ? `<div class="raw-source-block hint"><span class="raw-source-label">Tipps / Hinweise / Impulse</span><p>${escapeHtml(hintText)}</p></div>` : ""}
     </div>
     <div class="raw-valence-bar">
       <button class="mini-button ${isPositive ? "active" : ""}" type="button"
@@ -1439,12 +1588,6 @@ function renderRawObservationInspector(observation) {
         data-live-manual-valence="${observation.id}" data-manual-valence="neutral"
         title="Bewertung zurücksetzen">✕ zurücksetzen</button>` : ""}
     </div>
-    ${hintText ? `
-      <div class="raw-hint">
-        <strong>Tipps / Hinweise / Impulse</strong>
-        <p>${escapeHtml(hintText)}</p>
-      </div>
-    ` : ""}
     ${sketchImage ? `<img class="raw-sketch-thumb" src="${escapeHtml(sketchImage)}" alt="Skizze">` : ""}
     <div class="raw-item-column">
       <section class="raw-item-section">
@@ -1565,16 +1708,43 @@ function updateLiveObservationDecision(eventId, itemId, forcedValence = null) {
   renderLiveDecisionInPlace();
 }
 
-function renderLiveDecisionInPlace() {
-  const split = rawObservationList?.querySelector(".raw-split");
-  const logbookScroll = split?.querySelector(".raw-logbook-column")?.scrollTop ?? 0;
-  const inspectorScroll = split?.querySelector(".raw-item-inspector")?.scrollTop ?? 0;
-  renderRawObservationList();
-  split?.querySelector(".raw-logbook-column")?.scrollTo({ top: logbookScroll, behavior: "instant" });
-  split?.querySelector(".raw-item-inspector")?.scrollTo({ top: inspectorScroll, behavior: "instant" });
-  if (detailOpen) {
-    renderDetailPanel();
+function updateLiveObservationDecisionInPlace(chipButton, eventId, itemId) {
+  const event = liveEventById(eventId);
+  if (!event) return;
+  const current = event.decisions?.[itemId]?.valence ?? "neutral";
+  const nextValence = nextTapValence(current);
+  event.excluded = false;
+  event.decisions = setDecisionOnMap(event.decisions ?? {}, itemId, nextValence);
+  event.status = liveEventStatusInfo(event).status;
+  decorateLiveEventForLegacy(event);
+  rememberLiveDecision(event);
+  session.updatedAt = new Date().toISOString();
+  persistSession();
+  chipButton.className = `suggestion-chip live-card-chip post ${decisionClass(nextValence)}`;
+  const card = rawObservationList?.querySelector(`[data-live-id="${CSS.escape(eventId)}"]`);
+  if (card) {
+    const status = liveEventStatusInfo(event);
+    const wasSelected = card.classList.contains("selected");
+    const wasSaved = card.classList.contains("just-saved");
+    card.className = `raw-observation ${status.className}${wasSelected ? " selected" : ""}${wasSaved ? " just-saved" : ""}`;
+    const small = card.querySelector("small");
+    if (small) small.textContent = status.label;
   }
+}
+
+function renderLiveDecisionInPlace() {
+  const splitBefore = rawObservationList?.querySelector(".raw-split");
+  const logbookScroll = splitBefore?.querySelector(".raw-logbook-column")?.scrollTop ?? 0;
+  const inspectorScroll = splitBefore?.querySelector(".raw-item-inspector")?.scrollTop ?? 0;
+  const pageScroll = window.scrollY;
+  renderRawObservationList();
+  if (detailOpen) { renderDetailPanel(); }
+  requestAnimationFrame(() => {
+    const split = rawObservationList?.querySelector(".raw-split");
+    split?.querySelector(".raw-logbook-column")?.scrollTo({ top: logbookScroll, behavior: "instant" });
+    split?.querySelector(".raw-item-inspector")?.scrollTo({ top: inspectorScroll, behavior: "instant" });
+    window.scrollTo({ top: pageScroll, behavior: "instant" });
+  });
 }
 
 function renderRawObservationListKeepScroll() {
@@ -2072,12 +2242,19 @@ function renderDetailPanel() {
       itemMoveSnapshot = wasGray ? captureItemPositions() : null;
       session.observations[key] = nextValue;
       recentlySortedKey = wasGray ? key : null;
+      // Sync to logbook
+      if (nextValue === 0) {
+        const existing = (session.rawObservations ?? []).find(
+          (obs) => obs.spiderItemKey === key && !obs.excluded
+        );
+        if (existing) existing.excluded = true;
+      } else {
+        const valence = nextValue <= 2 ? "positive" : "development";
+        createSpiderLogbookEntry(key, valence);
+      }
       session.updatedAt = new Date().toISOString();
       persistSession();
       render();
-      if (wasGray) {
-        openObservationNote(key);
-      }
     });
   });
 
@@ -2103,7 +2280,101 @@ function openObservationNote(key) {
   observationNoteText.focus();
 }
 
+function renderSpiderItem(subcategory, item, index) {
+  const key = itemKey(subcategory.id, index);
+  const itemText = typeof item === "string" ? item : (item.exactText ?? item.text ?? item.label ?? key);
+  const existing = (session.rawObservations ?? []).find(
+    (obs) => obs.spiderItemKey === key && !obs.excluded
+  );
+  const hasComment = existing && existing.text !== itemText;
+  const valence = existing?.manualValence ?? existing?.valence;
+  return `
+    <div class="spider-item-row-detail ${valence === "positive" ? "marked-positive" : valence === "development" ? "marked-development" : ""}">
+      <div class="spider-item-buttons">
+        <button type="button" class="spider-mark-btn positive ${valence === "positive" ? "active" : ""}"
+          data-spider-mark="${escapeHtml(key)}" data-spider-valence="positive" title="Lerntragend">●</button>
+        <button type="button" class="spider-mark-btn development ${valence === "development" ? "active" : ""}"
+          data-spider-mark="${escapeHtml(key)}" data-spider-valence="development" title="Entwicklungspotenzial">●</button>
+      </div>
+      <button type="button" class="spider-item-text-btn ${hasComment ? "has-comment" : ""}"
+        data-spider-comment="${escapeHtml(key)}">
+        <span>${escapeHtml(itemText)}</span>
+        ${hasComment ? `<em class="spider-comment-preview">${escapeHtml(existing.text)}</em>` : ""}
+      </button>
+    </div>
+  `;
+}
+
+function createSpiderLogbookEntry(key, valence) {
+  const item = itemByKey(key);
+  if (!item) return null;
+  const existing = (session.rawObservations ?? []).find(
+    (obs) => obs.spiderItemKey === key && !obs.excluded
+  );
+  if (existing) {
+    if (valence && existing.manualValence !== valence) {
+      existing.manualValence = valence;
+      decorateLiveEventForLegacy(existing);
+      persistSession();
+      renderLiveDecisionInPlace();
+    }
+    return existing;
+  }
+  const itemText = item.exactText ?? item.text ?? item.label ?? key;
+  const obs = {
+    id: `spider-${Date.now()}`,
+    type: "observation",
+    spiderItemKey: key,
+    text: itemText,
+    hintText: "",
+    phase: livePhase?.value ?? "",
+    socialForm: liveSocialFormValue,
+    timestamp: new Date().toISOString(),
+    decisions: { [key]: { valence: valence ?? "positive", confirmedBy: "spider" } },
+    manualValence: valence ?? "positive"
+  };
+  decorateLiveEventForLegacy(obs);
+  session.rawObservations = session.rawObservations ?? [];
+  session.rawObservations.unshift(obs);
+  session.updatedAt = new Date().toISOString();
+  persistSession();
+  renderLiveDecisionInPlace();
+  return obs;
+}
+
+function openSpiderItemComment(key) {
+  const item = itemByKey(key);
+  if (!item) return;
+  activeObservationNoteKey = key;
+  const existing = (session.rawObservations ?? []).find(
+    (obs) => obs.spiderItemKey === key && !obs.excluded
+  );
+  const defaultText = item.exactText ?? item.text ?? item.label ?? key;
+  observationNoteItem.textContent = item.text ?? item.exactText ?? "";
+  observationNoteText.value = (existing && existing.text !== defaultText) ? existing.text : "";
+  observationNoteText.placeholder = defaultText;
+  observationNoteDialog.classList.remove("hidden");
+  observationNoteText.focus();
+  observationNoteDialog.dataset.spiderKey = key;
+}
+
 function closeObservationNote() {
+  const spiderKey = observationNoteDialog.dataset.spiderKey;
+  if (spiderKey) {
+    const existing = (session.rawObservations ?? []).find(
+      (obs) => obs.spiderItemKey === spiderKey && !obs.excluded
+    );
+    if (existing && observationNoteText.value.trim()) {
+      const item = itemByKey(spiderKey);
+      const defaultText = item?.exactText ?? item?.text ?? item?.label ?? spiderKey;
+      existing.text = observationNoteText.value.trim() || defaultText;
+      persistSession();
+    }
+    delete observationNoteDialog.dataset.spiderKey;
+    activeObservationNoteKey = null;
+    observationNoteDialog.classList.add("hidden");
+    return;
+  }
   if (activeObservationNoteKey) {
     cardMeta(activeObservationNoteKey).observationNote = observationNoteText.value.trim();
     persistSession();
@@ -2113,6 +2384,22 @@ function closeObservationNote() {
 }
 
 function saveObservationNote() {
+  const spiderKey = observationNoteDialog.dataset.spiderKey;
+  if (spiderKey) {
+    const existing = (session.rawObservations ?? []).find(
+      (obs) => obs.spiderItemKey === spiderKey && !obs.excluded
+    );
+    if (existing) {
+      const item = itemByKey(spiderKey);
+      const defaultText = item?.exactText ?? item?.text ?? item?.label ?? spiderKey;
+      existing.text = observationNoteText.value.trim() || defaultText;
+      persistSession();
+      renderLiveDecisionInPlace();
+    }
+    delete observationNoteDialog.dataset.spiderKey;
+    observationNoteDialog.classList.add("hidden");
+    return;
+  }
   if (!activeObservationNoteKey) {
     return;
   }
@@ -2147,7 +2434,7 @@ function addSpiderNoteToLogbook(itemKey, noteText) {
     source: "spider",
     text: noteText,
     phase: livePhase?.value ?? "ohne Phase",
-    socialForm: liveSocialForm?.value ?? "Plenum",
+    socialForm: liveSocialFormValue,
     timestamp: new Date().toISOString(),
     decisions: {
       [heuristicId]: {
@@ -2427,9 +2714,14 @@ function renderCondensationMode() {
       ${visibleSections.map((section) => `<span>${section.cards.length} ${escapeHtml(section.title)}</span>`).join("")}
     </div>
   `;
-  evidenceCards.innerHTML = renderPhase2Section(visibleSections.find((section) => section.id === "positive"))
+  const forcedCards = relevantObsAsCards();
+  const forcedPositive = forcedCards.filter((c) => c.direction === "positive").map(renderPhase2Card).join("");
+  const forcedDevelopment = forcedCards.filter((c) => c.direction !== "positive").map(renderPhase2Card).join("");
+  evidenceCards.innerHTML = (forcedPositive ? `<div class="phase2-card-flow forced-relevant-flow">${forcedPositive}</div>` : "")
+    + renderPhase2Section(visibleSections.find((section) => section.id === "positive"))
     + renderPhase2Section(visibleSections.find((section) => section.id === "mixed"));
-  developmentCards.innerHTML = renderPhase2Section(visibleSections.find((section) => section.id === "development"))
+  developmentCards.innerHTML = (forcedDevelopment ? `<div class="phase2-card-flow forced-relevant-flow">${forcedDevelopment}</div>` : "")
+    + renderPhase2Section(visibleSections.find((section) => section.id === "development"))
     + renderPhase2Section(visibleSections.find((section) => section.id === "free"))
     + renderPhase2Section(visibleSections.find((section) => section.id === "open"));
   hiddenStack.innerHTML = renderHiddenPhase2Stack(board.cards);
@@ -2486,26 +2778,66 @@ function renderEvidenceSketch(entry, className = "evidence-sketch-thumb") {
     : "";
 }
 
+function renderEvidenceSourceBlocks(card, { editable = false } = {}) {
+  const allEvidence = (card.evidence ?? []).slice(0, 5);
+  if (!allEvidence.length) return `<div class="evidence-sketch-buttons"><span class="sketch-none">keine Skizze</span></div>`;
+  const meta = cardMeta(card.id);
+  const observations = [];
+  const hints = [];
+  const spiderNotes = [];
+  const sketches = [];
+  allEvidence.forEach((entry, i) => {
+    const obs = liveEventById(entry.id);
+    const text = editable ? (meta.evidenceEdits?.[i] ?? entry.text ?? "") : (entry.text ?? "");
+    const hint = obs?.hintText ?? obs?.professionalHint ?? "";
+    const sketch = evidenceSketchImage(obs ?? {}) || evidenceSketchImage(entry);
+    if (obs?.spiderItemKey) {
+      spiderNotes.push({ text, index: i });
+    } else {
+      observations.push({ text, index: i });
+    }
+    if (hint) hints.push({ text: hint });
+    if (sketch) sketches.push(sketch);
+  });
+  const renderGroup = (items, label) => {
+    if (!items.length) return "";
+    return `
+      <div class="evidence-source-block">
+        <span class="evidence-source-label">${label}</span>
+        ${items.map((item, n) => {
+          const prefix = items.length > 1 ? `${n + 1}) ` : "";
+          if (editable) {
+            return `<div class="evidence-edit-row"><textarea class="evidence-edit-text card-note" spellcheck="true" data-card-id="${escapeHtml(card.id)}" data-evidence-index="${item.index}">${escapeHtml(item.text)}</textarea></div>`;
+          }
+          return `<blockquote>${escapeHtml(prefix + item.text)}</blockquote>`;
+        }).join("")}
+      </div>`;
+  };
+  const sketchHtml = `<div class="evidence-sketch-buttons">
+    ${sketches.length
+      ? sketches.map((url, n) => `<details class="sketch-detail-toggle"><summary>Skizze ${n + 1}</summary><img src="${escapeHtml(url)}" class="sketch-inline-preview" alt="Skizze ${n + 1}"></details>`).join("")
+      : `<span class="sketch-none">keine Skizze</span>`}
+  </div>`;
+  return renderGroup(observations, "Beobachtung")
+    + renderGroup(hints, "Tipps / Hinweise / Impulse")
+    + renderGroup(spiderNotes, "Spider-Web-Notiz")
+    + sketchHtml;
+}
+
 function renderPhase2Card(card) {
   const meta = cardMeta(card.id);
-  const evidence = (card.evidence ?? []).slice(0, 2);
   const direction = sectionForPhase2Card(card);
   return `
     <article class="phase2-card ${direction} ${meta.focus ? "focus" : ""} ${meta.relevant ? "relevant" : ""}" data-phase2-id="${escapeHtml(card.id)}">
       <button class="phase2-archive" type="button" data-phase2-action="archive" data-phase2-id="${escapeHtml(card.id)}" aria-label="Karte ausblenden">×</button>
-      <div class="phase2-topline">
-        <strong>${escapeHtml(card.title)}</strong>
-        <span>${Math.round(card.priority ?? 0)}</span>
-      </div>
+      <input class="phase2-title-input" type="text" data-phase2-title="${escapeHtml(card.id)}" value="${escapeHtml(meta.customTitle ?? card.title)}" placeholder="Titel…">
       <p>${escapeHtml(card.statement ?? "")}</p>
       ${card.impulse ? `<p class="phase2-impulse">${escapeHtml(card.impulse)}</p>` : ""}
       <div class="phase2-detail">
-        ${evidence.map((entry) => `<blockquote>${escapeHtml(entry.text ?? "")}${renderEvidenceSketch(entry)}</blockquote>`).join("")}
-        <small>${escapeHtml((card.itemIds ?? []).join(" · "))} · ${escapeHtml((card.phases ?? []).join(", ") || "ohne Phase")}</small>
+        ${renderEvidenceSourceBlocks(card)}
       </div>
       <div class="card-actions inline-actions">
-        <button type="button" class="${meta.focus ? "active" : ""}" data-phase2-action="focus" data-phase2-id="${escapeHtml(card.id)}">Fokus</button>
-        <button type="button" class="${meta.relevant ? "active" : ""}" data-phase2-action="relevant" data-phase2-id="${escapeHtml(card.id)}">Gesprächsrelevant</button>
+        <button type="button" class="${(meta.focus || meta.relevant) ? "active" : ""}" data-phase2-action="discuss" data-phase2-id="${escapeHtml(card.id)}">In Nachbesprechung</button>
       </div>
     </article>
   `;
@@ -2565,6 +2897,11 @@ function bindPhase2Actions() {
       if (button.dataset.phase2Action === "relevant") {
         meta.relevant = !meta.relevant;
       }
+      if (button.dataset.phase2Action === "discuss") {
+        const isActive = cardMeta(id).focus || cardMeta(id).relevant;
+        cardMeta(id).focus = !isActive;
+        cardMeta(id).relevant = !isActive;
+      }
       if (button.dataset.phase2Action === "archive") {
         meta.archived = true;
       }
@@ -2577,7 +2914,21 @@ function bindPhase2Actions() {
     });
   });
   document.querySelectorAll(".phase2-card").forEach((card) => {
-    card.addEventListener("click", () => card.classList.toggle("show-detail"));
+    card.addEventListener("click", (e) => {
+      if (e.target.closest(".sketch-detail-toggle") || e.target.closest("[data-phase2-title]")) return;
+      card.classList.toggle("show-detail");
+    });
+  });
+  document.querySelectorAll(".sketch-detail-toggle summary").forEach((summary) => {
+    summary.addEventListener("click", (e) => e.stopPropagation());
+  });
+  document.querySelectorAll("[data-phase2-title]").forEach((input) => {
+    input.addEventListener("click", (e) => e.stopPropagation());
+    input.addEventListener("input", () => {
+      const id = input.dataset.phase2Title;
+      cardMeta(id).customTitle = input.value || undefined;
+      persistSession();
+    });
   });
 }
 
@@ -2656,8 +3007,7 @@ function renderCondensationCard(cluster) {
       </ul>
       <small>Phase(n): ${escapeHtml(phases || "offen")}</small>
       <div class="card-actions inline-actions">
-        <button type="button" class="${cluster.meta.focus ? "active" : ""}" data-condense-action="focus" data-key="${cluster.key}">Fokus</button>
-        <button type="button" class="${cluster.meta.relevant ? "active" : ""}" data-condense-action="relevant" data-key="${cluster.key}">Gesprächsrelevant</button>
+        <button type="button" class="${(cluster.meta.focus || cluster.meta.relevant) ? "active" : ""}" data-condense-action="discuss" data-key="${cluster.key}">In Nachbesprechung</button>
         <button type="button" data-condense-action="edit" data-key="${cluster.key}">Bearbeiten</button>
         <button type="button" data-condense-action="archive" data-key="${cluster.key}">Archivieren</button>
       </div>
@@ -2690,6 +3040,11 @@ function bindCondensationActions() {
       }
       if (button.dataset.condenseAction === "relevant") {
         meta.relevant = !meta.relevant;
+      }
+      if (button.dataset.condenseAction === "discuss") {
+        const isActive = meta.focus || meta.relevant;
+        meta.focus = !isActive;
+        meta.relevant = !isActive;
       }
       if (button.dataset.condenseAction === "archive") {
         archiveCondensationCluster(key);
@@ -3181,10 +3536,9 @@ function renderLogbook() {
 
 function flushDiscussionNoteEdits() {
   if (!discussionCards) return;
-  discussionCards.querySelectorAll("[data-edit-note]").forEach((ta) => {
-    const parts = ta.dataset.editNote.split(":");
-    const cardId = parts[0];
-    const index = Number(parts[1]);
+  discussionCards.querySelectorAll("[data-edit-card]").forEach((ta) => {
+    const cardId = ta.dataset.editCard;
+    const index = Number(ta.dataset.editIdx);
     const meta = cardMeta(cardId);
     if (meta.discussionNotes?.[index] !== undefined) {
       meta.discussionNotes[index].text = ta.value;
@@ -3225,7 +3579,13 @@ function renderDiscussion() {
       const meta = cardMeta(key);
       meta.status = button.dataset.discussionState;
       persistSession();
-      renderDiscussion();
+      // Update in place — no full re-render so textarea text is preserved
+      discussionCards.querySelectorAll(`[data-discussion-state][data-key="${CSS.escape(key)}"]`).forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.discussionState === meta.status);
+      });
+      discussionCards.querySelectorAll(`[data-discussion-status-label="${CSS.escape(key)}"]`).forEach((el) => {
+        el.textContent = meta.status === "thematisiert" ? "thematisiert" : meta.status === "nicht_thematisiert" ? "nicht thematisiert" : "relevant";
+      });
       renderProtocol();
     });
   });
@@ -3257,6 +3617,13 @@ function renderDiscussion() {
       renderProtocol();
     });
   });
+  discussionCards.querySelectorAll("[data-show-impulse]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cardMeta(btn.dataset.showImpulse).impulseHidden = false;
+      persistSession();
+      renderDiscussion();
+    });
+  });
   discussionCards.querySelectorAll("[data-spellcheck]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const section = btn.closest(".discussion-evidence-section");
@@ -3283,44 +3650,49 @@ function renderDiscussion() {
       renderDiscussion();
     });
   });
-  discussionCards.querySelectorAll("[data-delete-note]").forEach((btn) => {
+  discussionCards.querySelectorAll("[data-delete-card]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const [cardId, indexStr] = btn.dataset.deleteNote.split(":");
+      const cardId = btn.dataset.deleteCard;
+      const index = Number(btn.dataset.deleteIdx);
       const meta = cardMeta(cardId);
-      meta.discussionNotes = (meta.discussionNotes ?? []).filter((_, i) => i !== Number(indexStr));
+      meta.discussionNotes = (meta.discussionNotes ?? []).filter((_, i) => i !== index);
       persistSession();
       renderDiscussion();
       renderProtocol();
     });
   });
-  discussionCards.querySelectorAll("[data-note-type]").forEach((btn) => {
+  discussionCards.querySelectorAll("[data-note-card]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const parts = btn.dataset.noteType.split(":");
-      const cardId = parts[0];
-      const index = Number(parts[1]);
-      const type = parts[2];
+      const cardId = btn.dataset.noteCard;
+      const index = Number(btn.dataset.noteIdx);
+      const type = btn.dataset.noteKind;
       const meta = cardMeta(cardId);
-      if (meta.discussionNotes?.[index]) {
+      if (meta.discussionNotes?.[index] !== undefined) {
         meta.discussionNotes[index].type = type;
         persistSession();
-        // Update in place — no full re-render so textarea text is preserved
         const editor = btn.closest(".discussion-note-editor");
         if (editor) {
           editor.className = `discussion-note-editor ${type}`;
-          editor.querySelectorAll(".note-type-buttons button").forEach((b) => {
-            const bParts = b.dataset.noteType?.split(":") ?? [];
-            b.classList.toggle("active", bParts[2] === type);
+          editor.querySelectorAll("[data-note-card]").forEach((b) => {
+            b.classList.toggle("active", b.dataset.noteKind === type);
           });
+          const freeInput = editor.querySelector(".note-free-label-input");
+          if (type === "free" && !freeInput) {
+            renderDiscussion();
+            return;
+          }
+          if (type !== "free" && freeInput) {
+            freeInput.remove();
+          }
         }
         renderProtocol();
       }
     });
   });
-  discussionCards.querySelectorAll("[data-edit-note]").forEach((ta) => {
+  discussionCards.querySelectorAll("[data-edit-card]").forEach((ta) => {
     const saveNote = () => {
-      const parts = ta.dataset.editNote.split(":");
-      const cardId = parts[0];
-      const index = Number(parts[1]);
+      const cardId = ta.dataset.editCard;
+      const index = Number(ta.dataset.editIdx);
       const meta = cardMeta(cardId);
       if (meta.discussionNotes?.[index] !== undefined) {
         meta.discussionNotes[index].text = ta.value;
@@ -3329,6 +3701,17 @@ function renderDiscussion() {
     };
     ta.addEventListener("input", saveNote);
     ta.addEventListener("blur", saveNote);
+  });
+  discussionCards.querySelectorAll("[data-free-card]").forEach((input) => {
+    input.addEventListener("input", () => {
+      const cardId = input.dataset.freeCard;
+      const index = Number(input.dataset.freeIdx);
+      const meta = cardMeta(cardId);
+      if (meta.discussionNotes?.[index] !== undefined) {
+        meta.discussionNotes[index].freeLabel = input.value;
+        persistSession();
+      }
+    });
   });
 }
 
@@ -3392,7 +3775,6 @@ function renderDiscussionMiniCard(card, active) {
 function renderDiscussionDetail(card) {
   const meta = cardMeta(card.id);
   const title = meta.customTitle ?? card.title;
-  const evidence = (card.evidence ?? []).slice(0, 4);
   const notes = meta.discussionNotes ?? [];
   return `
     <article class="discussion-detail-card ${sectionForPhase2Card(card)}">
@@ -3401,48 +3783,41 @@ function renderDiscussionDetail(card) {
         value="${escapeHtml(title)}"
         placeholder="Titel…">
       <p class="discussion-interpretation">${escapeHtml(card.statement ?? "")}</p>
-      ${card.impulse && !meta.impulseHidden ? `
-        <div class="discussion-impulse-row">
+      ${card.impulse ? (meta.impulseHidden
+        ? `<button class="mini-button show-impulse-btn" type="button" data-show-impulse="${escapeHtml(card.id)}">Impuls anzeigen</button>`
+        : `<div class="discussion-impulse-row">
           <div><strong>Impuls</strong><p>${escapeHtml(card.impulse)}</p></div>
           <button class="icon-button" type="button" data-hide-impulse="${escapeHtml(card.id)}" title="Impuls entfernen">✕</button>
-        </div>
-      ` : ""}
-      ${evidence.length ? `
+        </div>`) : ""}
+      ${(card.evidence ?? []).length ? `
         <div class="discussion-evidence-section">
           <div class="discussion-evidence-header">
             <strong>Beobachtungsnotizen</strong>
             <button class="mini-button" type="button" data-spellcheck="${escapeHtml(card.id)}">Rechtschreibung prüfen</button>
           </div>
-          ${evidence.map((entry, i) => {
-            const text = meta.evidenceEdits?.[i] ?? entry.text ?? "";
-            const obs = liveEventById(entry.id);
-            const hint = obs?.hintText || obs?.professionalHint || "";
-            return `
-              <div class="evidence-edit-row">
-                <textarea class="evidence-edit-text card-note" spellcheck="false"
-                  data-card-id="${escapeHtml(card.id)}"
-                  data-evidence-index="${i}">${escapeHtml(text)}</textarea>
-                ${hint ? `<div class="evidence-edit-hint"><em>Hinweis:</em> ${escapeHtml(hint)}</div>` : ""}
-              </div>`;
-          }).join("")}
+          ${renderEvidenceSourceBlocks(card, { editable: true })}
         </div>
       ` : ""}
       <div class="discussion-notes-section">
         <div class="discussion-notes-label">Notizen</div>
-        ${notes.map((note, i) => `
+        ${notes.map((note, i) => {
+          const isFree = note.type === "free";
+          return `
           <div class="discussion-note-editor ${note.type ?? "conversation"}">
             <div class="note-editor-header">
               <div class="note-type-buttons">
-                <button type="button" class="${note.type === "conversation" || !note.type ? "active" : ""}" data-note-type="${escapeHtml(card.id)}:${i}:conversation">Gesprächsnotiz</button>
-                <button type="button" class="${note.type === "agreement" ? "active" : ""}" data-note-type="${escapeHtml(card.id)}:${i}:agreement">Vereinbarung</button>
-                <button type="button" class="${note.type === "plg" ? "active" : ""}" data-note-type="${escapeHtml(card.id)}:${i}:plg">PLG-Aufgabe</button>
+                <button type="button" class="${note.type === "conversation" || !note.type ? "active" : ""}" data-note-card="${escapeHtml(card.id)}" data-note-idx="${i}" data-note-kind="conversation">Gesprächsnotiz</button>
+                <button type="button" class="${note.type === "agreement" ? "active" : ""}" data-note-card="${escapeHtml(card.id)}" data-note-idx="${i}" data-note-kind="agreement">Vereinbarung</button>
+                <button type="button" class="${note.type === "plg" ? "active" : ""}" data-note-card="${escapeHtml(card.id)}" data-note-idx="${i}" data-note-kind="plg">PLG-Aufgabe</button>
+                <button type="button" class="${isFree ? "active" : ""}" data-note-card="${escapeHtml(card.id)}" data-note-idx="${i}" data-note-kind="free">Freies Thema</button>
               </div>
-              <button type="button" class="icon-button" data-delete-note="${escapeHtml(card.id)}:${i}">✕</button>
+              <button type="button" class="icon-button" data-delete-card="${escapeHtml(card.id)}" data-delete-idx="${i}">✕</button>
             </div>
-            <textarea class="card-note discussion-note-text" data-edit-note="${escapeHtml(card.id)}:${i}"
+            ${isFree ? `<input class="note-free-label-input" type="text" placeholder="Thema eingeben…" data-free-card="${escapeHtml(card.id)}" data-free-idx="${i}" value="${escapeHtml(note.freeLabel ?? "")}">` : ""}
+            <textarea class="card-note discussion-note-text" spellcheck="true" data-edit-card="${escapeHtml(card.id)}" data-edit-idx="${i}"
               placeholder="Notiz…">${escapeHtml(note.text ?? "")}</textarea>
           </div>
-        `).join("")}
+        `}).join("")}
         <button class="mini-button add-note-button" type="button" data-add-note="${escapeHtml(card.id)}">+ Notiz hinzufügen</button>
       </div>
       <div class="card-actions inline-actions">
@@ -3453,15 +3828,40 @@ function renderDiscussionDetail(card) {
   `;
 }
 
+function relevantObsAsCards() {
+  return (session.rawObservations ?? [])
+    .filter((obs) => obs.gespraechsrelevant && !obs.excluded)
+    .map((obs) => {
+      const shortText = (obs.text ?? "").length > 60 ? (obs.text ?? "").slice(0, 57) + "…" : (obs.text ?? "");
+      const valence = obs.valence;
+      const direction = valence === "positive" ? "positive" : valence === "development" ? "development" : "open";
+      return {
+        id: obs.id,
+        source: "gespraechsrelevant",
+        direction,
+        title: shortText,
+        statement: obs.text ?? "",
+        impulse: "",
+        itemIds: [],
+        phases: [obs.phase].filter(Boolean),
+        priority: 100,
+        evidence: [{ id: obs.id, text: obs.text ?? "" }],
+        observations: [obs]
+      };
+    });
+}
+
 function selectedPhase2DiscussionCards() {
   const board = getPhase2Board({ includeOpen: true });
+  const relevantIds = new Set(relevantObsAsCards().map((c) => c.id));
   return [
     ...((board?.cards ?? [])
     .filter((card) => {
       const meta = cardMeta(card.id);
-      return !meta.archived && !meta.hidden && (meta.focus || meta.relevant);
+      return !meta.archived && !meta.hidden && !relevantIds.has(card.id) && (meta.focus || meta.relevant);
     })),
-    ...discussionCustomCards()
+    ...discussionCustomCards(),
+    ...relevantObsAsCards()
   ]
     .sort((a, b) =>
       Number(Boolean(cardMeta(b.id).focus)) - Number(Boolean(cardMeta(a.id).focus))
@@ -4213,7 +4613,7 @@ function renderProtocolSpiderItemList(subcategory) {
 }
 
 function protocolPhase2Cards() {
-  const board = getPhase2Board({ includeOpen: false });
+  const board = getPhase2Board({ includeOpen: true });
   const generated = (board?.cards ?? []).filter((card) => {
     const meta = cardMeta(card.id);
     return !meta.archived
@@ -4224,7 +4624,10 @@ function protocolPhase2Cards() {
     const meta = cardMeta(card.id);
     return protocolMetaIncluded(meta);
   });
-  return [...generated, ...custom].sort((a, b) => directionRank(a.direction) - directionRank(b.direction) || (b.priority ?? 0) - (a.priority ?? 0));
+  const relevant = relevantObsAsCards().filter((card) => {
+    return protocolMetaIncluded(cardMeta(card.id));
+  });
+  return [...generated, ...custom, ...relevant].sort((a, b) => directionRank(a.direction) - directionRank(b.direction) || (b.priority ?? 0) - (a.priority ?? 0));
 }
 
 function protocolMetaIncluded(meta) {
@@ -4358,47 +4761,20 @@ function renderProtocolBubble(card, index, activeId) {
 function noteTypeLabel(type) {
   if (type === "agreement") return "Vereinbarung";
   if (type === "plg") return "PLG-Aufgabe";
+  if (type === "free") return "Freies Thema";
   return "Gesprächsnotiz";
 }
 
 function renderProtocolDetail(card) {
   const meta = cardMeta(card.id);
   const title = meta.customTitle ?? card.title;
-  const evidence = (card.evidence ?? []).slice(0, 4);
-  const dimensionTags = [...new Set(
-    (card.itemIds ?? []).filter(Boolean).map((id) => id.split(".").slice(0, 2).join("."))
-  )];
-  const phaseTags = (card.phases ?? []).filter(Boolean);
   const notes = meta.discussionNotes ?? [];
-  const hints = evidence.map((entry) => {
-    const obs = liveEventById(entry.id);
-    return obs?.hintText || obs?.professionalHint || "";
-  });
-  const hasHints = hints.some(Boolean);
   return `
     <article class="protocol-detail-card ${protocolCardKind(card)}">
       <h3 class="protocol-card-title">${escapeHtml(title)}</h3>
-      ${!meta.impulseHidden && card.impulse ? `
-        <div class="protocol-detail-impulse"><strong>Impuls</strong><p>${escapeHtml(card.impulse)}</p></div>
-      ` : ""}
-      ${evidence.length ? `
+      ${(card.evidence ?? []).length ? `
         <div class="protocol-detail-evidence">
-          <strong>Beobachtungsnotizen aus dem Unterricht</strong>
-          <div class="evidence-block">
-            <em class="evidence-sub-label">Beobachtung</em>
-            ${evidence.map((entry, i) => `<blockquote>${escapeHtml(meta.evidenceEdits?.[i] ?? entry.text ?? "")}${renderEvidenceSketch(entry, "protocol-sketch-thumb")}</blockquote>`).join("")}
-          </div>
-          <div class="evidence-block">
-            <em class="evidence-sub-label">Hinweise</em>
-            ${hasHints ? hints.filter(Boolean).map((h) => `<blockquote>${escapeHtml(h)}</blockquote>`).join("") : `<span class="evidence-none">keine</span>`}
-          </div>
-        </div>
-      ` : ""}
-      ${(dimensionTags.length || phaseTags.length) ? `
-        <div class="protocol-detail-tags">
-          ${dimensionTags.length ? `<span class="tag-section-label">Dimensionen</span>` : ""}
-          ${dimensionTags.map((d) => `<span>${escapeHtml(d)}</span>`).join("")}
-          ${phaseTags.map((p) => `<span>${escapeHtml(p)}</span>`).join("")}
+          ${renderEvidenceSourceBlocks(card)}
         </div>
       ` : ""}
       ${notes.filter((n) => (n.text ?? "").trim()).length ? `
@@ -4867,39 +5243,48 @@ async function shareSummary() {
 }
 
 async function exportCuratedProtocolHtml() {
-  const cards = protocolPhase2Cards();
-  if (!cards.length) {
-    alert("Es gibt noch keine thematisierten Karten für ein Protokoll.");
-    return;
-  }
-  const html = buildCuratedProtocolHtml(makeProtocolReaderData(cards));
-  const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-  const fileName = protocolReaderFileName();
-  const file = new File([blob], fileName, { type: "text/html" });
-
-  if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-    try {
-      await navigator.share({
-        title: "Protokoll Beobachtungsassistent 1.0",
-        text: "Kuratiertes Reflexionsprotokoll als offline lesbare HTML-Datei.",
-        files: [file]
-      });
-      updateSaveState("Protokoll teilen geöffnet");
+  try {
+    const cards = protocolPhase2Cards();
+    if (!cards.length) {
+      alert("Es gibt noch keine thematisierten Karten für ein Protokoll.");
       return;
-    } catch (error) {
-      if (error.name === "AbortError") {
-        return;
-      }
     }
-  }
+    const html = buildCuratedProtocolHtml(makeProtocolReaderData(cards));
+    const fileName = protocolReaderFileName();
+    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    const file = new File([blob], fileName, { type: "text/html" });
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-  URL.revokeObjectURL(url);
-  updateSaveState("Protokoll-HTML vorbereitet");
+    // iOS/iPadOS: natives Share-Sheet (Mail, AirDrop, Dateien …)
+    // Nur files übergeben, kein text — sonst blockiert iOS das File-Sharing.
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ title: fileName, files: [file] });
+      updateSaveState("Protokoll geteilt");
+      return;
+    }
+
+    // Desktop: Datei herunterladen
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    updateSaveState("Protokoll-HTML gespeichert");
+  } catch (err) {
+    if (err.name === "AbortError") return;
+    alert("Protokoll-Export fehlgeschlagen: " + err.message);
+  }
+}
+
+function currentChartImageDataUrl() {
+  try {
+    const canvas = document.querySelector("#protocolSpiderCanvas") || document.querySelector("#radarChart");
+    return canvas ? canvas.toDataURL("image/png") : null;
+  } catch {
+    return null;
+  }
 }
 
 function makeProtocolReaderData(cards) {
@@ -4922,7 +5307,7 @@ function protocolCardPublicData(card) {
     title: card.title ?? "Gesprächspunkt",
     kind: protocolCardKind(card),
     statement: card.statement ?? "",
-    impulse: card.impulse ?? "",
+    impulse: "",
     status: statusLabel(meta.status || "thematisiert"),
     discussionNote: meta.discussionNote || meta.note || "",
     itemIds: (card.itemIds ?? []).filter(Boolean),
