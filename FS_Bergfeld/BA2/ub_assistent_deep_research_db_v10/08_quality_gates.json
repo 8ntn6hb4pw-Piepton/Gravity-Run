@@ -1,0 +1,37 @@
+[
+  {
+    "id": "GATE_NO_UI_FREEZE",
+    "test": "Beim schnellen Tippen 30 Sekunden lang keine sichtbare Vollanalyse; UI bleibt bedienbar.",
+    "priority": "must"
+  },
+  {
+    "id": "GATE_BATCH_LOG",
+    "test": "Mehrere Spider-Web-Klicks zwischen Öffnen und Schließen erzeugen genau einen Logbuch-Datensatz.",
+    "priority": "must"
+  },
+  {
+    "id": "GATE_FREE_OBS_REMAINS",
+    "test": "Ein freier Logbucheintrag ohne Itembezug bleibt erhalten und kann als Kontextkarte auftauchen.",
+    "priority": "must"
+  },
+  {
+    "id": "GATE_GREEN_BLUE_ONLY",
+    "test": "Violett/Entwicklungspotenzial-Farblogik ist auf Blau migriert.",
+    "priority": "must"
+  },
+  {
+    "id": "GATE_SOURCE_SEPARATION",
+    "test": "Forschungsquellen werden nicht mit UI-Designentscheidungen vermischt.",
+    "priority": "must"
+  },
+  {
+    "id": "GATE_EXISTING_APP_RECOGNIZABLE",
+    "test": "Werkzeugleiste, Tabs, JSON-Sicherung, Protokoll und Nachbesprechung bleiben erhalten.",
+    "priority": "must"
+  },
+  {
+    "id": "GATE_USER_CONTROL",
+    "test": "Alle generierten Verdichtungen/Karten sind editierbar, löschbar, ummarkierbar.",
+    "priority": "must"
+  }
+]

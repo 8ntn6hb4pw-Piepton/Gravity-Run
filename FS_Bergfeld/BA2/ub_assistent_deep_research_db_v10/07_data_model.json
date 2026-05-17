@@ -1,0 +1,49 @@
+{
+  "logEntry": {
+    "id": "string",
+    "type": "free_observation | observation_with_hint | spider_marking_batch | context_observation | protocol_note",
+    "timestamp": "ISO string or local observation time",
+    "phase": "Einstieg | Erarbeitung | Sicherung | Reflexion | Nachbesprechung | frei",
+    "socialForm": "Plenum | EA | PA | GA | LV | SuS-Präs | frei",
+    "rawObservation": "string",
+    "userHint": "string optional",
+    "spiderBatch": {
+      "greenItems": [
+        "itemId"
+      ],
+      "blueItems": [
+        "itemId"
+      ],
+      "comment": "string optional"
+    },
+    "autoLinks": [
+      {
+        "itemId": "string",
+        "confidence": "0..1",
+        "reason": "string"
+      }
+    ],
+    "condensations": [
+      {
+        "id": "string",
+        "text": "string",
+        "color": "green|blue|neutral",
+        "sourceEntryIds": [
+          "string"
+        ],
+        "editable": true
+      }
+    ],
+    "usedForInterpretation": true
+  },
+  "interpretationWeights": {
+    "manualGreenOrBlue": 5,
+    "freeObservationWithHint": 5,
+    "spiderBatchWithComment": 5,
+    "spiderBatchWithoutComment": 3,
+    "autoLinkOnly": 1.5,
+    "repeatedPattern": 6,
+    "contextObservation": 2,
+    "principle": "Nicht Items zählen, sondern Beobachtungsdaten verdichten."
+  }
+}

@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Beobachtungsassistent Tiefenstruktur</title>
-    <link rel="stylesheet" href="styles.css?v=20260517-spider-discreet-v1">
+    <title>Beobachtungsassistent 1.0</title>
+    <link rel="stylesheet" href="styles.css?v=20260517-live-fix-v1">
     <script src="vendor/chart.umd.min.js" defer></script>
     <script src="heuristics.js?v=20260511-v2" defer></script>
     <script src="research-pattern-library-v2.js?v=20260514-v1" defer></script>
@@ -20,14 +20,14 @@
     <script src="phase1-live-logic.js?v=20260514-fast-live-v1" defer></script>
     <script src="phase2-item-relations.js?v=20260513-relations-v1" defer></script>
     <script src="phase2-patterns.js?v=20260514-sketch-attach-v1" defer></script>
-    <script src="app.js?v=20260517-spider-discreet-v1" defer></script>
+    <script src="app.js?v=20260517-live-fix-v1" defer></script>
   </head>
   <body>
     <main class="app-shell" aria-labelledby="appTitle">
       <header class="topbar">
         <div>
           <p class="eyebrow">Reflexionsinstrument</p>
-          <h1 id="appTitle">Beobachtungsassistent Tiefenstruktur</h1>
+          <h1 id="appTitle">Beobachtungsassistent 1.0</h1>
         </div>
         <button class="button button-secondary tools-toggle" id="toolsToggleBtn" type="button" aria-expanded="false" aria-controls="utilityToolbar">Werkzeuge</button>
         <div class="toolbar" id="utilityToolbar" aria-label="Datei und Speicherung">
@@ -35,24 +35,14 @@
             <strong>Werkzeuge</strong>
             <button class="close-button" id="closeToolsBtn" type="button" aria-label="Werkzeuge schließen">×</button>
           </div>
-          <section class="toolbar-group" aria-label="Sitzung">
-            <h3>Sitzung</h3>
-            <button class="button button-secondary" id="newSessionBtn" type="button">Neu</button>
-            <button class="button button-secondary" id="saveBtn" type="button">Im Browser speichern</button>
-            <button class="button button-secondary" id="loadLatestBtn" type="button">Browserstand laden</button>
-          </section>
-          <section class="toolbar-group" aria-label="Datei und Export">
-            <h3>Datei / Export</h3>
-            <button class="button button-secondary" id="exportBtn" type="button">JSON sichern</button>
-            <label class="button button-secondary import-label" for="importFile">JSON öffnen</label>
-            <button class="button button-secondary" id="shareBtn" type="button">Teilen</button>
-            <button class="button button-secondary" id="exportChartBtn" type="button">Spider-Web sichern</button>
-            <a class="button button-secondary" href="reader.html" target="_blank" rel="noopener noreferrer">Reader</a>
-          </section>
-          <section class="toolbar-group toolbar-placeholder" aria-label="Besuche">
-            <h3>Später: Besuche</h3>
-            <p>Besuche pro LAA speichern, wieder aufrufen und später als Ausbildungsdurchgang exportieren.</p>
-          </section>
+          <button class="button button-secondary" id="newSessionBtn" type="button">Neu</button>
+          <button class="button button-secondary" id="loadLatestBtn" type="button">Browserstand laden</button>
+          <button class="button button-secondary" id="saveBtn" type="button">Im Browser speichern</button>
+          <button class="button button-secondary" id="exportBtn" type="button">JSON sichern</button>
+          <button class="button button-secondary" id="shareBtn" type="button">Teilen</button>
+          <button class="button button-secondary" id="exportChartBtn" type="button">Spider-Web sichern</button>
+          <a class="button button-secondary" href="reader.html" target="_blank" rel="noopener noreferrer">Reader</a>
+          <label class="button button-secondary import-label" for="importFile">JSON öffnen</label>
           <input id="importFile" class="sr-only" type="file" accept="application/json,.json">
         </div>
       </header>
@@ -92,11 +82,12 @@
           <div class="section-heading">
             <div>
               <h2 id="liveTitle">Beobachtungen aus dem Unterricht</h2>
-              <p>Tippen, Enter. Mögliche Bezüge werden danach im Logbuch geprüft.</p>
+              <p>Tippen, Vorschlag antippen, Enter. Offenes kann später sortiert werden.</p>
             </div>
             <div class="live-head-actions">
               <button class="mini-button" id="lessonStartBtn" type="button">Beginn</button>
               <button class="mini-button" id="lessonEndBtn" type="button">Ende</button>
+              <button class="mini-button" id="toggleChartBtn" type="button" aria-expanded="false">Spider-Web</button>
               <span class="lesson-timing-status" id="lessonTimingStatus"></span>
               <span class="live-stamp" id="liveTimestamp"></span>
             </div>
@@ -151,7 +142,7 @@
               <button class="mini-button" type="button" data-live-valence="free">freie Beobachtung</button>
             </div>
             <button class="button button-secondary" id="saveLiveObservationBtn" type="button">Beobachtung speichern</button>
-            <button class="button button-secondary sketch-action" id="openSketchBtn" type="button">Skizze zur Beobachtung</button>
+            <button class="button button-secondary" id="openSketchBtn" type="button">Skizze</button>
           </div>
           <div id="rawObservationList" class="raw-observation-list"></div>
         </section>
@@ -183,7 +174,6 @@
         </section>
 
         <aside id="detailPanel" class="detail-panel hidden" aria-live="polite"></aside>
-      </section>
 
       <section id="logbookView" class="view-panel hidden logbook-dock" aria-label="Nachbesprechung">
         <section class="logbook-panel">
@@ -209,6 +199,7 @@
           </div>
         </section>
       </section>
+      </section>
 
       <section id="evaluateView" class="view-panel hidden" aria-label="Auswerten">
         <section class="evaluation-section synthesis-section" aria-labelledby="synthesisTitle">
@@ -218,24 +209,21 @@
           </div>
           <div id="synthesisCards" class="synthesis-grid"></div>
         </section>
-        <div class="phase2-layout">
-          <div class="evaluation-grid">
-            <section class="evaluation-section" aria-labelledby="evidenceTitle">
-              <div class="section-heading">
-                <h2 id="evidenceTitle">Lerntragende Wirkungen</h2>
-                <button class="add-card-button" id="addEvidenceCardBtn" type="button">+</button>
-              </div>
-              <div id="evidenceCards" class="evaluation-list"></div>
-            </section>
-            <section class="evaluation-section" aria-labelledby="developmentTitle">
-              <div class="section-heading">
-                <h2 id="developmentTitle">Entwicklungsrelevante Wirkungen</h2>
-                <button class="add-card-button" id="addDevelopmentCardBtn" type="button">+</button>
-              </div>
-              <div id="developmentCards" class="evaluation-list"></div>
-            </section>
-          </div>
-          <aside id="phase2DetailPanel" class="phase2-detail-panel" aria-live="polite"></aside>
+        <div class="evaluation-grid">
+          <section class="evaluation-section" aria-labelledby="evidenceTitle">
+            <div class="section-heading">
+              <h2 id="evidenceTitle">Lerntragende Wirkungen</h2>
+              <button class="add-card-button" id="addEvidenceCardBtn" type="button">+</button>
+            </div>
+            <div id="evidenceCards" class="evaluation-list"></div>
+          </section>
+          <section class="evaluation-section" aria-labelledby="developmentTitle">
+            <div class="section-heading">
+              <h2 id="developmentTitle">Entwicklungsrelevante Wirkungen</h2>
+              <button class="add-card-button" id="addDevelopmentCardBtn" type="button">+</button>
+            </div>
+            <div id="developmentCards" class="evaluation-list"></div>
+          </section>
         </div>
         <aside id="hiddenStack" class="hidden-stack" aria-label="Ausgeblendete Karten"></aside>
       </section>

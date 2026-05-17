@@ -1,0 +1,23 @@
+[
+  {
+    "id": "CARD_GREEN",
+    "color": "green",
+    "title": "Lerntragende Wirkung",
+    "body": "{condensation}\nBelege: {evidence}\nMögliche Wirkung auf Lernen: {learningEffect}",
+    "prompt": "Woran wurde sichtbar, dass dieser Punkt Lernen unterstützt hat?"
+  },
+  {
+    "id": "CARD_BLUE",
+    "color": "blue",
+    "title": "Entwicklungshinweis",
+    "body": "{condensation}\nBelege: {evidence}\nNächster kleiner Entwicklungsschritt: {nextStep}",
+    "prompt": "Welche Entscheidung in Planung oder Steuerung würde diesen Punkt beim nächsten Mal verbessern?"
+  },
+  {
+    "id": "CARD_NEUTRAL_CONTEXT",
+    "color": "neutral",
+    "title": "Kontextbeobachtung",
+    "body": "{condensation}\nBezug: {possibleRelevance}",
+    "prompt": "Welche Bedeutung hatte diese Kontextbeobachtung für die Stunde oder das Gespräch?"
+  }
+]

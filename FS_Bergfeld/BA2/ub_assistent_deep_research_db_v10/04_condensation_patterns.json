@@ -1,0 +1,103 @@
+[
+  {
+    "id": "COND_DIAG_KLIMA",
+    "trigger": {
+      "greenDomains": [
+        "D06_unterstuetzung"
+      ],
+      "blueDomains": [
+        "D03_diagnose"
+      ]
+    },
+    "template": "Die Lernatmosphäre wirkt tragfähig; zugleich sollte geprüft werden, wie der Verstehensstand diagnostisch belastbarer sichtbar wird.",
+    "cardColorSuggestion": "blue",
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "BLACK_WILIAM_1998"
+    ]
+  },
+  {
+    "id": "COND_AKTIVITAET_KOGNITION",
+    "trigger": {
+      "notesContainAny": [
+        "beschäftigt",
+        "ruhig",
+        "arbeiten"
+      ],
+      "blueDomains": [
+        "D02_kognitive_aktivierung"
+      ]
+    },
+    "template": "Die Lernenden sind sichtbar aktiv; für die Nachbesprechung lohnt die Frage, welche Denkhandlungen tatsächlich ausgelöst wurden.",
+    "cardColorSuggestion": "blue",
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ]
+  },
+  {
+    "id": "COND_DARSTELLUNG_VERSTEHEN",
+    "trigger": {
+      "domains": [
+        "D07_mathe_verstehen",
+        "D08_darstellungen"
+      ]
+    },
+    "template": "Die fachliche Tiefe hängt hier daran, ob Darstellungen nicht nur genutzt, sondern für Grundvorstellungen vernetzt werden.",
+    "cardColorSuggestion": "neutral",
+    "sourceIds": [
+      "PREDIGER_LEUDERS_FUNKTIONEN_2005",
+      "DZLM_MACO_FUNKTIONEN_2022"
+    ]
+  },
+  {
+    "id": "COND_SICHERUNG_ZIEL",
+    "trigger": {
+      "blueDomains": [
+        "D01_zielklarheit",
+        "D13_sicherung"
+      ]
+    },
+    "template": "Die Stunde sollte stärker vom Kernanliegen her gesichert werden: Was genau sollen die Lernenden am Ende fachlich mitnehmen?",
+    "cardColorSuggestion": "blue",
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "ROSENSHINE_2012"
+    ]
+  },
+  {
+    "id": "COND_MATERIAL_LOAD",
+    "trigger": {
+      "blueDomains": [
+        "D12_medien"
+      ]
+    },
+    "template": "Material und Medium sollten daraufhin geprüft werden, ob sie den mathematischen Fokus entlasten oder zusätzliche Such- und Sortierarbeit erzeugen.",
+    "cardColorSuggestion": "blue",
+    "sourceIds": [
+      "MAYER_MULTIMEDIA_LEARNING"
+    ]
+  },
+  {
+    "id": "COND_GREEN_LEARNING_EFFECT",
+    "trigger": {
+      "greenCountAtLeast": 2
+    },
+    "template": "Mehrere Beobachtungen stützen eine lerntragende Wirkung; die Nachbesprechung kann diese Wirkung zuerst konkret belegbasiert sichern.",
+    "cardColorSuggestion": "green",
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "USER_WORKFLOW_DESIGN"
+    ]
+  },
+  {
+    "id": "COND_CONTEXT_NO_ITEM",
+    "trigger": {
+      "entryType": "context_observation"
+    },
+    "template": "Diese Beobachtung bleibt als Kontext relevant, ohne erzwungene Itemzuordnung. Sie kann helfen, Verlauf und Steuerungsentscheidungen einzuordnen.",
+    "cardColorSuggestion": "neutral",
+    "sourceIds": [
+      "USER_WORKFLOW_DESIGN"
+    ]
+  }
+]

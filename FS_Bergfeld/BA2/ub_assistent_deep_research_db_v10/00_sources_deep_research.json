@@ -1,0 +1,271 @@
+[
+  {
+    "id": "IBBW_UFB_2024",
+    "type": "manual",
+    "title": "Beobachtungsmanual zum Unterrichtsfeedbackbogen Tiefenstrukturen, Version 01.07.2024",
+    "institution": "IBBW / ZSL",
+    "status": "primary_structure_source",
+    "constructs": [
+      "Tiefenstrukturen",
+      "kognitive Aktivierung",
+      "konstruktive Unterstützung",
+      "strukturierte Klassenführung",
+      "Feedback zur Unterrichtsentwicklung"
+    ],
+    "use_in_db": [
+      "domain_system",
+      "observation_items",
+      "interpretation_principles"
+    ],
+    "not_use_for": [
+      "automatische Bewertung",
+      "Lehrkraftbeurteilung",
+      "UI-Design als Forschungsbefund"
+    ],
+    "evidence_level": "strong_for_observation_structure",
+    "citation_note": "UFB macht Basisdimensionen von Unterrichtsqualität greifbar und beschreibbar und ist kein Bewertungsinstrument."
+  },
+  {
+    "id": "IBBW_QUBE_F",
+    "type": "institutional_page",
+    "title": "Unterrichtsfeedbackbogen Tiefenstrukturen / QUBE-F",
+    "institution": "IBBW",
+    "status": "primary_context_source",
+    "constructs": [
+      "wissenschaftlich konzipiertes und erprobtes Beobachtungsinstrument",
+      "Unterrichtsbeobachtung und Feedback"
+    ],
+    "use_in_db": [
+      "source_context",
+      "tool_purpose"
+    ],
+    "not_use_for": [
+      "Detailitems ohne Manual"
+    ],
+    "evidence_level": "strong_for_instrument_context"
+  },
+  {
+    "id": "CHU_KOGNITIVE_AKTIVIERUNG",
+    "type": "glossary",
+    "title": "Clearing House Unterricht: Kognitive Aktivierung",
+    "institution": "TUM / Clearing House Unterricht",
+    "status": "definition_source",
+    "constructs": [
+      "aktive Auseinandersetzung mit Lerninhalten",
+      "Vorwissen aktivieren",
+      "eigene Lösungen erklären"
+    ],
+    "use_in_db": [
+      "buzzword_rules",
+      "cognitive_activation_items",
+      "condensation_rules"
+    ],
+    "not_use_for": [
+      "farbliche UI-Logik",
+      "Spider-Web-Batch"
+    ],
+    "evidence_level": "strong_for_construct_definition"
+  },
+  {
+    "id": "KMK_MATHE_AHR_2012",
+    "type": "standards",
+    "title": "Bildungsstandards im Fach Mathematik für die Allgemeine Hochschulreife",
+    "institution": "KMK",
+    "status": "primary_curriculum_standard",
+    "constructs": [
+      "argumentieren",
+      "problemlösen",
+      "modellieren",
+      "Darstellungen verwenden",
+      "symbolisch/formal/technisch arbeiten",
+      "kommunizieren"
+    ],
+    "use_in_db": [
+      "math_competency_mapping",
+      "observation_items_math",
+      "task_quality"
+    ],
+    "not_use_for": [
+      "allgemeine Unterrichtsqualität",
+      "psychologische Deutungen"
+    ],
+    "evidence_level": "strong_for_math_competencies"
+  },
+  {
+    "id": "KMK_MATHE_ESA_MSA_2022",
+    "type": "standards",
+    "title": "Bildungsstandards für das Fach Mathematik Erster Schulabschluss und Mittlerer Schulabschluss",
+    "institution": "KMK",
+    "status": "primary_curriculum_standard",
+    "constructs": [
+      "Kompetenzorientierung",
+      "allgemeine mathematische Kompetenzen",
+      "Leitideen"
+    ],
+    "use_in_db": [
+      "sek1_math_mapping",
+      "competency_language"
+    ],
+    "not_use_for": [
+      "Bewertung von Unterrichtsqualität"
+    ],
+    "evidence_level": "strong_for_math_competencies"
+  },
+  {
+    "id": "PREDIGER_LEUDERS_FUNKTIONEN_2005",
+    "type": "math_didactics_article",
+    "title": "Funktioniert's? Denken in Funktionen",
+    "authors": "Timo Leuders, Susanne Prediger",
+    "status": "math_didactics_anchor",
+    "constructs": [
+      "Grundvorstellungen",
+      "Darstellungsformen",
+      "verständnisorientierte Behandlung",
+      "Denken in Funktionen"
+    ],
+    "use_in_db": [
+      "representation_items",
+      "conceptual_understanding_items",
+      "condensation_rules_math"
+    ],
+    "not_use_for": [
+      "allgemeine Klassenführung"
+    ],
+    "evidence_level": "strong_for_function_conceptual_understanding"
+  },
+  {
+    "id": "DZLM_MACO_FUNKTIONEN_2022",
+    "type": "professional_learning_material",
+    "title": "Verstehensgrundlagen zu Funktionen",
+    "institution": "DZLM / MaCo",
+    "status": "math_didactics_practice_anchor",
+    "constructs": [
+      "Darstellungsvernetzung",
+      "Funktionsverständnis",
+      "verbal-tabellarisch-graphisch-symbolisch"
+    ],
+    "use_in_db": [
+      "representation_change_rules",
+      "math_deepening_prompts"
+    ],
+    "not_use_for": [
+      "allgemeine Unterrichtsqualität"
+    ],
+    "evidence_level": "plausible_for_professional_development"
+  },
+  {
+    "id": "ROSENSHINE_2012",
+    "type": "research_synthesis_practice",
+    "title": "Principles of Instruction: Research-Based Strategies That All Teachers Should Know",
+    "author": "Barak Rosenshine",
+    "status": "instructional_practice_anchor",
+    "constructs": [
+      "review",
+      "small steps",
+      "guided practice",
+      "checking understanding",
+      "scaffolding",
+      "independent practice"
+    ],
+    "use_in_db": [
+      "direct_instruction_items",
+      "checking_understanding",
+      "scaffolding_rules"
+    ],
+    "not_use_for": [
+      "starre Rezeptdidaktik",
+      "Methodenpflicht"
+    ],
+    "evidence_level": "strong_practice_synthesis"
+  },
+  {
+    "id": "BLACK_WILIAM_1998",
+    "type": "formative_assessment_article",
+    "title": "Inside the Black Box: Raising Standards Through Classroom Assessment",
+    "authors": "Paul Black, Dylan Wiliam",
+    "status": "formative_assessment_anchor",
+    "constructs": [
+      "formative assessment",
+      "feedback",
+      "questioning",
+      "peer/self assessment"
+    ],
+    "use_in_db": [
+      "diagnosis_feedback_items",
+      "feedback_prompts",
+      "assessment_for_learning"
+    ],
+    "not_use_for": [
+      "reine Notengebung",
+      "summative Urteilssätze"
+    ],
+    "evidence_level": "strong_for_formative_assessment"
+  },
+  {
+    "id": "MAYER_MULTIMEDIA_LEARNING",
+    "type": "instructional_design_theory",
+    "title": "Multimedia Learning",
+    "author": "Richard E. Mayer",
+    "status": "media_design_anchor",
+    "constructs": [
+      "multimedia learning",
+      "words and pictures",
+      "cognitive theory",
+      "contiguity",
+      "coherence",
+      "signaling"
+    ],
+    "use_in_db": [
+      "media_material_items",
+      "extraneous_load_warnings"
+    ],
+    "not_use_for": [
+      "generelle Medienkritik"
+    ],
+    "evidence_level": "strong_for_multimedia_design"
+  },
+  {
+    "id": "ATKINSON_RENKL_WORKED_EXAMPLES_2000",
+    "type": "research_review",
+    "title": "Learning from Examples: Instructional Principles from the Worked Examples Research",
+    "authors": "Atkinson, Derry, Renkl, Wortham",
+    "status": "worked_example_anchor",
+    "constructs": [
+      "worked examples",
+      "example-based learning",
+      "cognitive load",
+      "self-explanation"
+    ],
+    "use_in_db": [
+      "worked_example_items",
+      "procedural_learning_rules",
+      "scaffolding"
+    ],
+    "not_use_for": [
+      "offene Aufgaben grundsätzlich abwerten"
+    ],
+    "evidence_level": "strong_for_novice_learning_design"
+  },
+  {
+    "id": "USER_WORKFLOW_DESIGN",
+    "type": "design_decision",
+    "title": "Nutzerworkflow Beobachtungsassistent",
+    "status": "local_design_logic",
+    "constructs": [
+      "Logbuchzentrierung",
+      "Spider-Web-Batch",
+      "grün/blau",
+      "Inaktivitätsrechnung",
+      "ruhige UI"
+    ],
+    "use_in_db": [
+      "ui_logic",
+      "codex_prompt",
+      "data_model"
+    ],
+    "not_use_for": [
+      "Forschungsbehauptungen"
+    ],
+    "evidence_level": "design_decision_from_user_workflow"
+  }
+]

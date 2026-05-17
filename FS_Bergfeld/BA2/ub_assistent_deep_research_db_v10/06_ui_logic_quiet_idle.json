@@ -1,0 +1,74 @@
+{
+  "principle": "Ruhige, logbuchzentrierte App. Keine Item-Klickpflicht. Spider-Web bleibt bewusster Markierungsmodus.",
+  "current_app_anchors": [
+    "Werkzeuge",
+    "Live",
+    "Verdichten",
+    "Nachbesprechung",
+    "Protokoll",
+    "Beobachtung",
+    "Spider-Web",
+    "Zusammenhänge berechnen",
+    "JSON sichern/öffnen"
+  ],
+  "colors": {
+    "green": "lerntragende Wirkung / Stärke",
+    "blue": "Entwicklungshinweis / Klärungsbedarf",
+    "neutral": "Kontext oder unklar"
+  },
+  "typing": {
+    "do": [
+      "localSave",
+      "dirtyFlagEntry",
+      "timestampDraft"
+    ],
+    "dont": [
+      "fullAnalysis",
+      "cardGeneration",
+      "spiderRecompute",
+      "jumpingSuggestions"
+    ],
+    "debounceMs": 0
+  },
+  "idle_short": {
+    "afterMs": 1200,
+    "do": [
+      "lightKeywordIndex",
+      "markDirtyEntriesForBackground"
+    ],
+    "visibleChange": "none_or_small_status"
+  },
+  "idle_long": {
+    "afterMs": 4500,
+    "do": [
+      "analyzeDirtyEntries",
+      "prepareCondensations",
+      "cacheResults"
+    ],
+    "visibleChange": "non_intrusive_badge"
+  },
+  "on_spider_open": {
+    "snapshotCurrentState": true,
+    "mode": "batchMarking"
+  },
+  "on_spider_close": {
+    "createLogEntryType": "spider_marking_batch",
+    "include": [
+      "timestamp",
+      "phase",
+      "greenItems",
+      "blueItems",
+      "optionalComment"
+    ],
+    "avoid": "one_log_entry_per_item"
+  },
+  "on_evaluate": {
+    "do": [
+      "generateCards",
+      "rankGreenAndBlue",
+      "updateSpiderSummary",
+      "prepareDebriefingProtocol"
+    ],
+    "userControl": "all_generated_text_editable_deletable"
+  }
+}

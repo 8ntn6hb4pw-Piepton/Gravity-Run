@@ -1,0 +1,138 @@
+[
+  {
+    "id": "D01_zielklarheit",
+    "label": "Zielklarheit und fachliche Orientierung",
+    "basis": "UFB/Helmke/Rosenshine",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D02_kognitive_aktivierung",
+    "label": "Kognitive Aktivierung und Denkqualität",
+    "basis": "UFB/CHU",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D03_diagnose",
+    "label": "Diagnose, Verstehensprüfung und formative Nutzung",
+    "basis": "UFB/Black-Wiliam/Rosenshine",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D04_feedback",
+    "label": "Feedback, Rückmeldung und Anschlussfähigkeit",
+    "basis": "UFB/Black-Wiliam/Hattie-Zierer als vorsichtiger Cluster",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D05_klassenfuehrung",
+    "label": "Strukturierte Klassenführung und Lernzeit",
+    "basis": "UFB",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D06_unterstuetzung",
+    "label": "Konstruktive Unterstützung, Beziehung und Klima",
+    "basis": "UFB/Kunter-Trautwein-Cluster",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D07_mathe_verstehen",
+    "label": "Mathematisches Verstehen und Grundvorstellungen",
+    "basis": "Prediger/Leuders/DZLM/KMK",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D08_darstellungen",
+    "label": "Darstellungen verwenden und vernetzen",
+    "basis": "KMK/Prediger/DZLM",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D09_sprache",
+    "label": "Mathematische Sprache und Kommunikation",
+    "basis": "KMK/Mathedidaktik",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D10_aufgaben",
+    "label": "Aufgabenqualität, Offenheit und Passung",
+    "basis": "UFB/CHU/KMK",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D11_scaffolding",
+    "label": "Scaffolding, Beispiele und Übungslogik",
+    "basis": "Rosenshine/Worked Examples/Cognitive Load",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D12_medien",
+    "label": "Medien, Material und kognitive Entlastung",
+    "basis": "Mayer/Cognitive Load",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D13_sicherung",
+    "label": "Sicherung, Konsolidierung und Transfer",
+    "basis": "UFB/Rosenshine/KMK",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D14_reflexion",
+    "label": "Reflexion, Selbstregulation und Lernbewusstsein",
+    "basis": "UFB/Black-Wiliam/KMK",
+    "colorUse": [
+      "green",
+      "blue"
+    ]
+  },
+  {
+    "id": "D15_kontext",
+    "label": "Kontextbeobachtungen ohne erzwungenen Itembezug",
+    "basis": "User Workflow Design",
+    "colorUse": [
+      "neutral",
+      "green",
+      "blue"
+    ]
+  }
+]

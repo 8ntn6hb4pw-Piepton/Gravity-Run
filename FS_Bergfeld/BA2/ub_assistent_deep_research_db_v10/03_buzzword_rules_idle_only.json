@@ -1,0 +1,2615 @@
+[
+  {
+    "id": "RULE_001_ziel",
+    "patterns": [
+      "ziel"
+    ],
+    "suggestedItemIds": [
+      "ITEM_001"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'ziel' kann auf 'Zielrichtung sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_001_kernanliegen",
+    "patterns": [
+      "kernanliegen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_001"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kernanliegen' kann auf 'Zielrichtung sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_001_wozu",
+    "patterns": [
+      "wozu"
+    ],
+    "suggestedItemIds": [
+      "ITEM_001"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wozu' kann auf 'Zielrichtung sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_002_einstieg",
+    "patterns": [
+      "einstieg"
+    ],
+    "suggestedItemIds": [
+      "ITEM_002"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'einstieg' kann auf 'Einstieg trägt fachlich' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_002_motivation",
+    "patterns": [
+      "motivation"
+    ],
+    "suggestedItemIds": [
+      "ITEM_002"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'motivation' kann auf 'Einstieg trägt fachlich' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_002_kontext",
+    "patterns": [
+      "kontext"
+    ],
+    "suggestedItemIds": [
+      "ITEM_002"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kontext' kann auf 'Einstieg trägt fachlich' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_003_kernidee",
+    "patterns": [
+      "kernidee"
+    ],
+    "suggestedItemIds": [
+      "ITEM_003"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kernidee' kann auf 'Kernidee wird wieder aufgegriffen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_003_einsicht",
+    "patterns": [
+      "einsicht"
+    ],
+    "suggestedItemIds": [
+      "ITEM_003"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'einsicht' kann auf 'Kernidee wird wieder aufgegriffen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_003_rückbindung",
+    "patterns": [
+      "rückbindung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_003"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'rückbindung' kann auf 'Kernidee wird wieder aufgegriffen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_004_auftrag",
+    "patterns": [
+      "auftrag"
+    ],
+    "suggestedItemIds": [
+      "ITEM_004"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'auftrag' kann auf 'Transparente Lernhandlung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_004_wozu",
+    "patterns": [
+      "wozu"
+    ],
+    "suggestedItemIds": [
+      "ITEM_004"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wozu' kann auf 'Transparente Lernhandlung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_004_sinn",
+    "patterns": [
+      "sinn"
+    ],
+    "suggestedItemIds": [
+      "ITEM_004"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'sinn' kann auf 'Transparente Lernhandlung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_005_vorwissen",
+    "patterns": [
+      "vorwissen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_005"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'vorwissen' kann auf 'Vorwissen wird fachlich aktiviert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_005_anknüpfen",
+    "patterns": [
+      "anknüpfen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_005"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'anknüpfen' kann auf 'Vorwissen wird fachlich aktiviert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_005_erinnern",
+    "patterns": [
+      "erinnern"
+    ],
+    "suggestedItemIds": [
+      "ITEM_005"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'erinnern' kann auf 'Vorwissen wird fachlich aktiviert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_006_abarbeiten",
+    "patterns": [
+      "abarbeiten"
+    ],
+    "suggestedItemIds": [
+      "ITEM_006"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'abarbeiten' kann auf 'Denkentscheidungen statt Abarbeiten' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_006_strategie",
+    "patterns": [
+      "strategie"
+    ],
+    "suggestedItemIds": [
+      "ITEM_006"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'strategie' kann auf 'Denkentscheidungen statt Abarbeiten' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_006_begründen",
+    "patterns": [
+      "begründen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_006"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'begründen' kann auf 'Denkentscheidungen statt Abarbeiten' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_007_lösung_erklären",
+    "patterns": [
+      "lösung erklären"
+    ],
+    "suggestedItemIds": [
+      "ITEM_007"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'lösung erklären' kann auf 'Lernende erklären eigene Lösungen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_007_denkweg",
+    "patterns": [
+      "denkweg"
+    ],
+    "suggestedItemIds": [
+      "ITEM_007"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'denkweg' kann auf 'Lernende erklären eigene Lösungen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_007_idee",
+    "patterns": [
+      "idee"
+    ],
+    "suggestedItemIds": [
+      "ITEM_007"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'idee' kann auf 'Lernende erklären eigene Lösungen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_008_aktiv",
+    "patterns": [
+      "aktiv"
+    ],
+    "suggestedItemIds": [
+      "ITEM_008"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'aktiv' kann auf 'Kognitive Aktivierung ist nicht nur Aktivität' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_008_beschäftigt",
+    "patterns": [
+      "beschäftigt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_008"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'beschäftigt' kann auf 'Kognitive Aktivierung ist nicht nur Aktivität' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_008_ruhig",
+    "patterns": [
+      "ruhig"
+    ],
+    "suggestedItemIds": [
+      "ITEM_008"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'ruhig' kann auf 'Kognitive Aktivierung ist nicht nur Aktivität' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_009_gibt_es_fragen",
+    "patterns": [
+      "gibt es fragen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_009"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'gibt es fragen' kann auf 'Verstehensstand wird sichtbar geprüft' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_009_verstanden",
+    "patterns": [
+      "verstanden"
+    ],
+    "suggestedItemIds": [
+      "ITEM_009"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'verstanden' kann auf 'Verstehensstand wird sichtbar geprüft' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_009_keine_meldung",
+    "patterns": [
+      "keine meldung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_009"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'keine meldung' kann auf 'Verstehensstand wird sichtbar geprüft' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_010_fehler",
+    "patterns": [
+      "fehler"
+    ],
+    "suggestedItemIds": [
+      "ITEM_010"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'fehler' kann auf 'Fehler werden als Lerninformation genutzt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_010_falsch",
+    "patterns": [
+      "falsch"
+    ],
+    "suggestedItemIds": [
+      "ITEM_010"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'falsch' kann auf 'Fehler werden als Lerninformation genutzt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_010_missverständnis",
+    "patterns": [
+      "missverständnis"
+    ],
+    "suggestedItemIds": [
+      "ITEM_010"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'missverständnis' kann auf 'Fehler werden als Lerninformation genutzt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_011_frage",
+    "patterns": [
+      "frage"
+    ],
+    "suggestedItemIds": [
+      "ITEM_011"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'frage' kann auf 'Fragen öffnen Diagnose' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_011_warum",
+    "patterns": [
+      "warum"
+    ],
+    "suggestedItemIds": [
+      "ITEM_011"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'warum' kann auf 'Fragen öffnen Diagnose' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_011_wie_kommst_du",
+    "patterns": [
+      "wie kommst du"
+    ],
+    "suggestedItemIds": [
+      "ITEM_011"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wie kommst du' kann auf 'Fragen öffnen Diagnose' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_012_anschluss",
+    "patterns": [
+      "anschluss"
+    ],
+    "suggestedItemIds": [
+      "ITEM_012"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'anschluss' kann auf 'Diagnose hat Anschluss' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_012_reagiert",
+    "patterns": [
+      "reagiert"
+    ],
+    "suggestedItemIds": [
+      "ITEM_012"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'reagiert' kann auf 'Diagnose hat Anschluss' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_012_passt_an",
+    "patterns": [
+      "passt an"
+    ],
+    "suggestedItemIds": [
+      "ITEM_012"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'passt an' kann auf 'Diagnose hat Anschluss' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_013_gut_gemacht",
+    "patterns": [
+      "gut gemacht"
+    ],
+    "suggestedItemIds": [
+      "ITEM_013"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'gut gemacht' kann auf 'Feedback ist aufgabe- und prozessbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_013_richtig",
+    "patterns": [
+      "richtig"
+    ],
+    "suggestedItemIds": [
+      "ITEM_013"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'richtig' kann auf 'Feedback ist aufgabe- und prozessbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_013_feedback",
+    "patterns": [
+      "feedback"
+    ],
+    "suggestedItemIds": [
+      "ITEM_013"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'feedback' kann auf 'Feedback ist aufgabe- und prozessbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_014_überarbeiten",
+    "patterns": [
+      "überarbeiten"
+    ],
+    "suggestedItemIds": [
+      "ITEM_014"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'überarbeiten' kann auf 'Feedbackschleife wird geschlossen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_014_verbessern",
+    "patterns": [
+      "verbessern"
+    ],
+    "suggestedItemIds": [
+      "ITEM_014"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'verbessern' kann auf 'Feedbackschleife wird geschlossen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_014_nutzen",
+    "patterns": [
+      "nutzen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_014"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'nutzen' kann auf 'Feedbackschleife wird geschlossen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_015_peerfeedback",
+    "patterns": [
+      "peerfeedback"
+    ],
+    "suggestedItemIds": [
+      "ITEM_015"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'peerfeedback' kann auf 'Peerfeedback hat Kriterien' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_015_kriterien",
+    "patterns": [
+      "kriterien"
+    ],
+    "suggestedItemIds": [
+      "ITEM_015"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kriterien' kann auf 'Peerfeedback hat Kriterien' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_015_partner",
+    "patterns": [
+      "partner"
+    ],
+    "suggestedItemIds": [
+      "ITEM_015"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'partner' kann auf 'Peerfeedback hat Kriterien' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_016_selbsteinschätzu",
+    "patterns": [
+      "selbsteinschätzung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_016"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'selbsteinschätzung' kann auf 'Selbsteinschätzung ist fachlich gerahmt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_016_ampel",
+    "patterns": [
+      "ampel"
+    ],
+    "suggestedItemIds": [
+      "ITEM_016"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'ampel' kann auf 'Selbsteinschätzung ist fachlich gerahmt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_016_kriterien",
+    "patterns": [
+      "kriterien"
+    ],
+    "suggestedItemIds": [
+      "ITEM_016"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kriterien' kann auf 'Selbsteinschätzung ist fachlich gerahmt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_017_ruhe",
+    "patterns": [
+      "ruhe"
+    ],
+    "suggestedItemIds": [
+      "ITEM_017"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'ruhe' kann auf 'Arbeitsruhe schützt Lernzeit' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_017_störung",
+    "patterns": [
+      "störung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_017"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'störung' kann auf 'Arbeitsruhe schützt Lernzeit' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_017_übergang",
+    "patterns": [
+      "übergang"
+    ],
+    "suggestedItemIds": [
+      "ITEM_017"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'übergang' kann auf 'Arbeitsruhe schützt Lernzeit' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_018_auftrag",
+    "patterns": [
+      "auftrag"
+    ],
+    "suggestedItemIds": [
+      "ITEM_018"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'auftrag' kann auf 'Arbeitsauftrag ist eindeutig' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_018_unklar",
+    "patterns": [
+      "unklar"
+    ],
+    "suggestedItemIds": [
+      "ITEM_018"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'unklar' kann auf 'Arbeitsauftrag ist eindeutig' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_018_was_machen",
+    "patterns": [
+      "was machen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_018"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'was machen' kann auf 'Arbeitsauftrag ist eindeutig' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_019_wechsel",
+    "patterns": [
+      "wechsel"
+    ],
+    "suggestedItemIds": [
+      "ITEM_019"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wechsel' kann auf 'Übergänge sind lernökonomisch' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_019_material",
+    "patterns": [
+      "material"
+    ],
+    "suggestedItemIds": [
+      "ITEM_019"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'material' kann auf 'Übergänge sind lernökonomisch' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_019_phase",
+    "patterns": [
+      "phase"
+    ],
+    "suggestedItemIds": [
+      "ITEM_019"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'phase' kann auf 'Übergänge sind lernökonomisch' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_020_rundgang",
+    "patterns": [
+      "rundgang"
+    ],
+    "suggestedItemIds": [
+      "ITEM_020"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'rundgang' kann auf 'Monitoring ist lernbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_020_blick",
+    "patterns": [
+      "blick"
+    ],
+    "suggestedItemIds": [
+      "ITEM_020"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'blick' kann auf 'Monitoring ist lernbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_020_monitoring",
+    "patterns": [
+      "monitoring"
+    ],
+    "suggestedItemIds": [
+      "ITEM_020"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'monitoring' kann auf 'Monitoring ist lernbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_021_klima",
+    "patterns": [
+      "klima"
+    ],
+    "suggestedItemIds": [
+      "ITEM_021"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'klima' kann auf 'Klima ermöglicht Beteiligung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_021_wertschätzung",
+    "patterns": [
+      "wertschätzung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_021"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wertschätzung' kann auf 'Klima ermöglicht Beteiligung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_021_fehlerfreundlich",
+    "patterns": [
+      "fehlerfreundlich"
+    ],
+    "suggestedItemIds": [
+      "ITEM_021"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'fehlerfreundlich' kann auf 'Klima ermöglicht Beteiligung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_022_zugewandt",
+    "patterns": [
+      "zugewandt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_022"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'zugewandt' kann auf 'Lehrkraft ist fachlich zugewandt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_022_präsenz",
+    "patterns": [
+      "präsenz"
+    ],
+    "suggestedItemIds": [
+      "ITEM_022"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'präsenz' kann auf 'Lehrkraft ist fachlich zugewandt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_022_ansprechbar",
+    "patterns": [
+      "ansprechbar"
+    ],
+    "suggestedItemIds": [
+      "ITEM_022"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'ansprechbar' kann auf 'Lehrkraft ist fachlich zugewandt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_023_hilfe",
+    "patterns": [
+      "hilfe"
+    ],
+    "suggestedItemIds": [
+      "ITEM_023"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'hilfe' kann auf 'Hilfen sind adaptiv dosiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_023_impuls",
+    "patterns": [
+      "impuls"
+    ],
+    "suggestedItemIds": [
+      "ITEM_023"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'impuls' kann auf 'Hilfen sind adaptiv dosiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_023_scaffold",
+    "patterns": [
+      "scaffold"
+    ],
+    "suggestedItemIds": [
+      "ITEM_023"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'scaffold' kann auf 'Hilfen sind adaptiv dosiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_024_nett",
+    "patterns": [
+      "nett"
+    ],
+    "suggestedItemIds": [
+      "ITEM_024"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'nett' kann auf 'Wertschätzung bleibt anspruchsvoll' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_024_harmonie",
+    "patterns": [
+      "harmonie"
+    ],
+    "suggestedItemIds": [
+      "ITEM_024"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'harmonie' kann auf 'Wertschätzung bleibt anspruchsvoll' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_024_anspruch",
+    "patterns": [
+      "anspruch"
+    ],
+    "suggestedItemIds": [
+      "ITEM_024"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'anspruch' kann auf 'Wertschätzung bleibt anspruchsvoll' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_025_grundvorstellung",
+    "patterns": [
+      "grundvorstellung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_025"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'grundvorstellung' kann auf 'Grundvorstellung wird aufgebaut' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_025_bedeutung",
+    "patterns": [
+      "bedeutung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_025"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'bedeutung' kann auf 'Grundvorstellung wird aufgebaut' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_025_rezept",
+    "patterns": [
+      "rezept"
+    ],
+    "suggestedItemIds": [
+      "ITEM_025"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'rezept' kann auf 'Grundvorstellung wird aufgebaut' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_026_begriff",
+    "patterns": [
+      "begriff"
+    ],
+    "suggestedItemIds": [
+      "ITEM_026"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'begriff' kann auf 'Begriffsverständnis wird vertieft' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_026_definition",
+    "patterns": [
+      "definition"
+    ],
+    "suggestedItemIds": [
+      "ITEM_026"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'definition' kann auf 'Begriffsverständnis wird vertieft' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_026_beispiel",
+    "patterns": [
+      "beispiel"
+    ],
+    "suggestedItemIds": [
+      "ITEM_026"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'beispiel' kann auf 'Begriffsverständnis wird vertieft' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_027_verfahren",
+    "patterns": [
+      "verfahren"
+    ],
+    "suggestedItemIds": [
+      "ITEM_027"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'verfahren' kann auf 'Verfahren werden begründet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_027_warum_funktionie",
+    "patterns": [
+      "warum funktioniert"
+    ],
+    "suggestedItemIds": [
+      "ITEM_027"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'warum funktioniert' kann auf 'Verfahren werden begründet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_027_algorithmus",
+    "patterns": [
+      "algorithmus"
+    ],
+    "suggestedItemIds": [
+      "ITEM_027"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'algorithmus' kann auf 'Verfahren werden begründet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_028_struktur",
+    "patterns": [
+      "struktur"
+    ],
+    "suggestedItemIds": [
+      "ITEM_028"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'struktur' kann auf 'Mathematische Struktur wird sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_028_muster",
+    "patterns": [
+      "muster"
+    ],
+    "suggestedItemIds": [
+      "ITEM_028"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'muster' kann auf 'Mathematische Struktur wird sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_028_zusammenhang",
+    "patterns": [
+      "zusammenhang"
+    ],
+    "suggestedItemIds": [
+      "ITEM_028"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'zusammenhang' kann auf 'Mathematische Struktur wird sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_029_graph",
+    "patterns": [
+      "graph"
+    ],
+    "suggestedItemIds": [
+      "ITEM_029"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'graph' kann auf 'Darstellungen werden vernetzt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_029_tabelle",
+    "patterns": [
+      "tabelle"
+    ],
+    "suggestedItemIds": [
+      "ITEM_029"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'tabelle' kann auf 'Darstellungen werden vernetzt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_029_term",
+    "patterns": [
+      "term"
+    ],
+    "suggestedItemIds": [
+      "ITEM_029"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'term' kann auf 'Darstellungen werden vernetzt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_030_skizze",
+    "patterns": [
+      "skizze"
+    ],
+    "suggestedItemIds": [
+      "ITEM_030"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'skizze' kann auf 'Darstellung passt zur Idee' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_030_graph",
+    "patterns": [
+      "graph"
+    ],
+    "suggestedItemIds": [
+      "ITEM_030"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'graph' kann auf 'Darstellung passt zur Idee' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_030_tabelle",
+    "patterns": [
+      "tabelle"
+    ],
+    "suggestedItemIds": [
+      "ITEM_030"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'tabelle' kann auf 'Darstellung passt zur Idee' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_031_warum_graph",
+    "patterns": [
+      "warum graph"
+    ],
+    "suggestedItemIds": [
+      "ITEM_031"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'warum graph' kann auf 'Wechsel wird fachlich begründet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_031_warum_tabelle",
+    "patterns": [
+      "warum tabelle"
+    ],
+    "suggestedItemIds": [
+      "ITEM_031"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'warum tabelle' kann auf 'Wechsel wird fachlich begründet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_031_darstellungswahl",
+    "patterns": [
+      "darstellungswahl"
+    ],
+    "suggestedItemIds": [
+      "ITEM_031"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'darstellungswahl' kann auf 'Wechsel wird fachlich begründet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_032_zeigen",
+    "patterns": [
+      "zeigen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_032"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'zeigen' kann auf 'Repräsentationen tragen Kommunikation' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_032_erklären_am_grap",
+    "patterns": [
+      "erklären am graphen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_032"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'erklären am graphen' kann auf 'Repräsentationen tragen Kommunikation' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_032_gemeinsam",
+    "patterns": [
+      "gemeinsam"
+    ],
+    "suggestedItemIds": [
+      "ITEM_032"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'gemeinsam' kann auf 'Repräsentationen tragen Kommunikation' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_033_fachsprache",
+    "patterns": [
+      "fachsprache"
+    ],
+    "suggestedItemIds": [
+      "ITEM_033"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'fachsprache' kann auf 'Fachsprache wird präzisiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_033_symbol",
+    "patterns": [
+      "symbol"
+    ],
+    "suggestedItemIds": [
+      "ITEM_033"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'symbol' kann auf 'Fachsprache wird präzisiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_033_präzise",
+    "patterns": [
+      "präzise"
+    ],
+    "suggestedItemIds": [
+      "ITEM_033"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'präzise' kann auf 'Fachsprache wird präzisiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_034_formulieren",
+    "patterns": [
+      "formulieren"
+    ],
+    "suggestedItemIds": [
+      "ITEM_034"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'formulieren' kann auf 'Lernende formulieren mathematisch' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_034_erklären",
+    "patterns": [
+      "erklären"
+    ],
+    "suggestedItemIds": [
+      "ITEM_034"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'erklären' kann auf 'Lernende formulieren mathematisch' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_034_schüler_sprechen",
+    "patterns": [
+      "schüler sprechen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_034"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'schüler sprechen' kann auf 'Lernende formulieren mathematisch' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_035_operator",
+    "patterns": [
+      "operator"
+    ],
+    "suggestedItemIds": [
+      "ITEM_035"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'operator' kann auf 'Operatoren sind handlungsleitend' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_035_begründen",
+    "patterns": [
+      "begründen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_035"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'begründen' kann auf 'Operatoren sind handlungsleitend' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_035_erläutern",
+    "patterns": [
+      "erläutern"
+    ],
+    "suggestedItemIds": [
+      "ITEM_035"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'erläutern' kann auf 'Operatoren sind handlungsleitend' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_036_satzstarter",
+    "patterns": [
+      "satzstarter"
+    ],
+    "suggestedItemIds": [
+      "ITEM_036"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'satzstarter' kann auf 'Sprachstützen erhalten Denken' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_036_sprachhilfe",
+    "patterns": [
+      "sprachhilfe"
+    ],
+    "suggestedItemIds": [
+      "ITEM_036"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'sprachhilfe' kann auf 'Sprachstützen erhalten Denken' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_036_wortspeicher",
+    "patterns": [
+      "wortspeicher"
+    ],
+    "suggestedItemIds": [
+      "ITEM_036"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wortspeicher' kann auf 'Sprachstützen erhalten Denken' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_037_aufgabe",
+    "patterns": [
+      "aufgabe"
+    ],
+    "suggestedItemIds": [
+      "ITEM_037"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'aufgabe' kann auf 'Aufgabe hat fachlichen Kern' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_037_produkt",
+    "patterns": [
+      "produkt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_037"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'produkt' kann auf 'Aufgabe hat fachlichen Kern' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_037_beschäftigung",
+    "patterns": [
+      "beschäftigung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_037"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'beschäftigung' kann auf 'Aufgabe hat fachlichen Kern' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_038_offen",
+    "patterns": [
+      "offen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_038"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'offen' kann auf 'Offenheit ist gesteuert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_038_entdecken",
+    "patterns": [
+      "entdecken"
+    ],
+    "suggestedItemIds": [
+      "ITEM_038"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'entdecken' kann auf 'Offenheit ist gesteuert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_038_frei",
+    "patterns": [
+      "frei"
+    ],
+    "suggestedItemIds": [
+      "ITEM_038"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'frei' kann auf 'Offenheit ist gesteuert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_039_zu_leicht",
+    "patterns": [
+      "zu leicht"
+    ],
+    "suggestedItemIds": [
+      "ITEM_039"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'zu leicht' kann auf 'Niveau passt zum Lernstand' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_039_zu_schwer",
+    "patterns": [
+      "zu schwer"
+    ],
+    "suggestedItemIds": [
+      "ITEM_039"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'zu schwer' kann auf 'Niveau passt zum Lernstand' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_039_niveau",
+    "patterns": [
+      "niveau"
+    ],
+    "suggestedItemIds": [
+      "ITEM_039"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'niveau' kann auf 'Niveau passt zum Lernstand' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_040_vergleich",
+    "patterns": [
+      "vergleich"
+    ],
+    "suggestedItemIds": [
+      "ITEM_040"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'vergleich' kann auf 'Aufgabe erzeugt Vergleichbarkeit' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_040_lösungswege",
+    "patterns": [
+      "lösungswege"
+    ],
+    "suggestedItemIds": [
+      "ITEM_040"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'lösungswege' kann auf 'Aufgabe erzeugt Vergleichbarkeit' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_040_auswertung",
+    "patterns": [
+      "auswertung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_040"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'auswertung' kann auf 'Aufgabe erzeugt Vergleichbarkeit' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_041_scaffold",
+    "patterns": [
+      "scaffold"
+    ],
+    "suggestedItemIds": [
+      "ITEM_041"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'scaffold' kann auf 'Hilfen werden schrittweise zurückgenommen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_041_hilfe_zurücknehm",
+    "patterns": [
+      "hilfe zurücknehmen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_041"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'hilfe zurücknehmen' kann auf 'Hilfen werden schrittweise zurückgenommen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_041_selbstständig",
+    "patterns": [
+      "selbstständig"
+    ],
+    "suggestedItemIds": [
+      "ITEM_041"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'selbstständig' kann auf 'Hilfen werden schrittweise zurückgenommen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_042_beispiel",
+    "patterns": [
+      "beispiel"
+    ],
+    "suggestedItemIds": [
+      "ITEM_042"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'beispiel' kann auf 'Beispiele fördern Verstehen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_042_musterlösung",
+    "patterns": [
+      "musterlösung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_042"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'musterlösung' kann auf 'Beispiele fördern Verstehen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_042_worked_example",
+    "patterns": [
+      "worked example"
+    ],
+    "suggestedItemIds": [
+      "ITEM_042"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'worked example' kann auf 'Beispiele fördern Verstehen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_043_übung",
+    "patterns": [
+      "übung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_043"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'übung' kann auf 'Übung folgt Verständnis' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_043_automatisieren",
+    "patterns": [
+      "automatisieren"
+    ],
+    "suggestedItemIds": [
+      "ITEM_043"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'automatisieren' kann auf 'Übung folgt Verständnis' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_043_routine",
+    "patterns": [
+      "routine"
+    ],
+    "suggestedItemIds": [
+      "ITEM_043"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'routine' kann auf 'Übung folgt Verständnis' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_044_selbsterklärung",
+    "patterns": [
+      "selbsterklärung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_044"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'selbsterklärung' kann auf 'Selbsterklärungen werden angeregt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_044_erkläre_dir",
+    "patterns": [
+      "erkläre dir"
+    ],
+    "suggestedItemIds": [
+      "ITEM_044"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'erkläre dir' kann auf 'Selbsterklärungen werden angeregt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_044_warum_schritt",
+    "patterns": [
+      "warum schritt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_044"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'warum schritt' kann auf 'Selbsterklärungen werden angeregt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_045_folie",
+    "patterns": [
+      "folie"
+    ],
+    "suggestedItemIds": [
+      "ITEM_045"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'folie' kann auf 'Material reduziert unnötige Belastung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_045_arbeitsblatt",
+    "patterns": [
+      "arbeitsblatt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_045"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'arbeitsblatt' kann auf 'Material reduziert unnötige Belastung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_045_überladen",
+    "patterns": [
+      "überladen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_045"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'überladen' kann auf 'Material reduziert unnötige Belastung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_046_text",
+    "patterns": [
+      "text"
+    ],
+    "suggestedItemIds": [
+      "ITEM_046"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'text' kann auf 'Text und Bild sind sinnvoll verbunden' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_046_bild",
+    "patterns": [
+      "bild"
+    ],
+    "suggestedItemIds": [
+      "ITEM_046"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'bild' kann auf 'Text und Bild sind sinnvoll verbunden' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_046_diagramm",
+    "patterns": [
+      "diagramm"
+    ],
+    "suggestedItemIds": [
+      "ITEM_046"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'diagramm' kann auf 'Text und Bild sind sinnvoll verbunden' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_047_technik",
+    "patterns": [
+      "technik"
+    ],
+    "suggestedItemIds": [
+      "ITEM_047"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'technik' kann auf 'Technik dient dem Denken' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_047_geogebra",
+    "patterns": [
+      "geogebra"
+    ],
+    "suggestedItemIds": [
+      "ITEM_047"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'geogebra' kann auf 'Technik dient dem Denken' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_047_tablet",
+    "patterns": [
+      "tablet"
+    ],
+    "suggestedItemIds": [
+      "ITEM_047"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'tablet' kann auf 'Technik dient dem Denken' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_048_detail",
+    "patterns": [
+      "detail"
+    ],
+    "suggestedItemIds": [
+      "ITEM_048"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'detail' kann auf 'Reduktion schützt Fokus' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_048_schmuck",
+    "patterns": [
+      "schmuck"
+    ],
+    "suggestedItemIds": [
+      "ITEM_048"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'schmuck' kann auf 'Reduktion schützt Fokus' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_048_bildchen",
+    "patterns": [
+      "bildchen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_048"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'bildchen' kann auf 'Reduktion schützt Fokus' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_049_sicherung",
+    "patterns": [
+      "sicherung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_049"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'sicherung' kann auf 'Sicherung bündelt zentrale Einsichten' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_049_bündeln",
+    "patterns": [
+      "bündeln"
+    ],
+    "suggestedItemIds": [
+      "ITEM_049"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'bündeln' kann auf 'Sicherung bündelt zentrale Einsichten' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_049_tafelbild",
+    "patterns": [
+      "tafelbild"
+    ],
+    "suggestedItemIds": [
+      "ITEM_049"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'tafelbild' kann auf 'Sicherung bündelt zentrale Einsichten' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_050_sicherung",
+    "patterns": [
+      "sicherung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_050"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'sicherung' kann auf 'Sicherung prüft Verständnis' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_050_verständnis",
+    "patterns": [
+      "verständnis"
+    ],
+    "suggestedItemIds": [
+      "ITEM_050"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'verständnis' kann auf 'Sicherung prüft Verständnis' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_050_transfer",
+    "patterns": [
+      "transfer"
+    ],
+    "suggestedItemIds": [
+      "ITEM_050"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'transfer' kann auf 'Sicherung prüft Verständnis' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_051_transfer",
+    "patterns": [
+      "transfer"
+    ],
+    "suggestedItemIds": [
+      "ITEM_051"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'transfer' kann auf 'Transfer wird vorbereitet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_051_anwenden",
+    "patterns": [
+      "anwenden"
+    ],
+    "suggestedItemIds": [
+      "ITEM_051"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'anwenden' kann auf 'Transfer wird vorbereitet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_051_neue_aufgabe",
+    "patterns": [
+      "neue aufgabe"
+    ],
+    "suggestedItemIds": [
+      "ITEM_051"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'neue aufgabe' kann auf 'Transfer wird vorbereitet' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_052_heft",
+    "patterns": [
+      "heft"
+    ],
+    "suggestedItemIds": [
+      "ITEM_052"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'heft' kann auf 'Dokumentation ist lernbrauchbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_052_tafelbild",
+    "patterns": [
+      "tafelbild"
+    ],
+    "suggestedItemIds": [
+      "ITEM_052"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'tafelbild' kann auf 'Dokumentation ist lernbrauchbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_052_notieren",
+    "patterns": [
+      "notieren"
+    ],
+    "suggestedItemIds": [
+      "ITEM_052"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'notieren' kann auf 'Dokumentation ist lernbrauchbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_053_reflexion",
+    "patterns": [
+      "reflexion"
+    ],
+    "suggestedItemIds": [
+      "ITEM_053"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'reflexion' kann auf 'Reflexion ist fachbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_053_strategie",
+    "patterns": [
+      "strategie"
+    ],
+    "suggestedItemIds": [
+      "ITEM_053"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'strategie' kann auf 'Reflexion ist fachbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_053_was_gelernt",
+    "patterns": [
+      "was gelernt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_053"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'was gelernt' kann auf 'Reflexion ist fachbezogen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_054_metakognition",
+    "patterns": [
+      "metakognition"
+    ],
+    "suggestedItemIds": [
+      "ITEM_054"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'metakognition' kann auf 'Metakognition wird operationalisiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_054_kriterium",
+    "patterns": [
+      "kriterium"
+    ],
+    "suggestedItemIds": [
+      "ITEM_054"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kriterium' kann auf 'Metakognition wird operationalisiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_054_nächster_schritt",
+    "patterns": [
+      "nächster schritt"
+    ],
+    "suggestedItemIds": [
+      "ITEM_054"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'nächster schritt' kann auf 'Metakognition wird operationalisiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_055_nachbesprechung",
+    "patterns": [
+      "nachbesprechung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_055"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'nachbesprechung' kann auf 'Nachbesprechungsimpuls ist belegbasiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_055_beleg",
+    "patterns": [
+      "beleg"
+    ],
+    "suggestedItemIds": [
+      "ITEM_055"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'beleg' kann auf 'Nachbesprechungsimpuls ist belegbasiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_055_wirkung",
+    "patterns": [
+      "wirkung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_055"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'wirkung' kann auf 'Nachbesprechungsimpuls ist belegbasiert' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_056_selbstständig",
+    "patterns": [
+      "selbstständig"
+    ],
+    "suggestedItemIds": [
+      "ITEM_056"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'selbstständig' kann auf 'Lernende übernehmen Verantwortung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_056_verantwortung",
+    "patterns": [
+      "verantwortung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_056"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'verantwortung' kann auf 'Lernende übernehmen Verantwortung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_056_planen",
+    "patterns": [
+      "planen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_056"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'planen' kann auf 'Lernende übernehmen Verantwortung' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_057_kontext",
+    "patterns": [
+      "kontext"
+    ],
+    "suggestedItemIds": [
+      "ITEM_057"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'kontext' kann auf 'Kontextbeobachtung bleibt sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_057_technik",
+    "patterns": [
+      "technik"
+    ],
+    "suggestedItemIds": [
+      "ITEM_057"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'technik' kann auf 'Kontextbeobachtung bleibt sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_057_hektisch",
+    "patterns": [
+      "hektisch"
+    ],
+    "suggestedItemIds": [
+      "ITEM_057"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'hektisch' kann auf 'Kontextbeobachtung bleibt sichtbar' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_058_spider",
+    "patterns": [
+      "spider"
+    ],
+    "suggestedItemIds": [
+      "ITEM_058"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'spider' kann auf 'Spider-Web-Markierungen werden gebündelt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_058_batch",
+    "patterns": [
+      "batch"
+    ],
+    "suggestedItemIds": [
+      "ITEM_058"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'batch' kann auf 'Spider-Web-Markierungen werden gebündelt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_058_markierung",
+    "patterns": [
+      "markierung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_058"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'markierung' kann auf 'Spider-Web-Markierungen werden gebündelt' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_059_inaktiv",
+    "patterns": [
+      "inaktiv"
+    ],
+    "suggestedItemIds": [
+      "ITEM_059"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'inaktiv' kann auf 'Inaktivität löst stille Analyse aus' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_059_rechnet",
+    "patterns": [
+      "rechnet"
+    ],
+    "suggestedItemIds": [
+      "ITEM_059"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'rechnet' kann auf 'Inaktivität löst stille Analyse aus' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_059_freeze",
+    "patterns": [
+      "freeze"
+    ],
+    "suggestedItemIds": [
+      "ITEM_059"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'freeze' kann auf 'Inaktivität löst stille Analyse aus' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_060_grün",
+    "patterns": [
+      "grün"
+    ],
+    "suggestedItemIds": [
+      "ITEM_060"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'grün' kann auf 'Grün/blau markiert Verdichtungen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_060_blau",
+    "patterns": [
+      "blau"
+    ],
+    "suggestedItemIds": [
+      "ITEM_060"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'blau' kann auf 'Grün/blau markiert Verdichtungen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_060_verdichtung",
+    "patterns": [
+      "verdichtung"
+    ],
+    "suggestedItemIds": [
+      "ITEM_060"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.45,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Das Muster 'verdichtung' kann auf 'Grün/blau markiert Verdichtungen' hinweisen.",
+    "caution": "Nur als Vorschlag verwenden; nie automatisch als Befund übernehmen."
+  },
+  {
+    "id": "RULE_APP_DIAG_001",
+    "patterns": [
+      "gibt es noch fragen",
+      "keine meldung",
+      "alle verstanden"
+    ],
+    "suggestedItemIds": [
+      "ITEM_009",
+      "ITEM_013",
+      "ITEM_050"
+    ],
+    "markingBias": "blue",
+    "confidenceBase": 0.82,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Appellative Verständnisabfrage ohne sichtbare Diagnose.",
+    "caution": "Nur dann stark gewichten, wenn keine anschließende Diagnosehandlung beobachtet wurde."
+  },
+  {
+    "id": "RULE_AKTIVITAET_DENKEN_001",
+    "patterns": [
+      "beschäftigt",
+      "ruhig",
+      "arbeiten",
+      "nur rechnen"
+    ],
+    "suggestedItemIds": [
+      "ITEM_006",
+      "ITEM_008",
+      "ITEM_037"
+    ],
+    "markingBias": "blue",
+    "confidenceBase": 0.68,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Aktivität ist sichtbar, Denkqualität muss geprüft werden.",
+    "caution": "Nicht Ruhe mit Lernen verwechseln."
+  },
+  {
+    "id": "RULE_DARSTELLUNG_001",
+    "patterns": [
+      "graph",
+      "tabelle",
+      "term",
+      "situation"
+    ],
+    "suggestedItemIds": [
+      "ITEM_029",
+      "ITEM_030",
+      "ITEM_031"
+    ],
+    "markingBias": "neutral",
+    "confidenceBase": 0.72,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Darstellungen sind fachlich relevant; prüfen, ob sie vernetzt werden.",
+    "caution": "Darstellungsnennung allein ist noch kein Befund."
+  },
+  {
+    "id": "RULE_KLIMA_001",
+    "patterns": [
+      "wertschätzend",
+      "fehlerfreundlich",
+      "sicher",
+      "respektvoll"
+    ],
+    "suggestedItemIds": [
+      "ITEM_021",
+      "ITEM_024"
+    ],
+    "markingBias": "green",
+    "confidenceBase": 0.75,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Klima kann lerntragend wirken, wenn Beteiligung und fachlicher Anspruch sichtbar werden.",
+    "caution": "Klima nicht isoliert von fachlicher Lernwirksamkeit betrachten."
+  },
+  {
+    "id": "RULE_MATERIAL_001",
+    "patterns": [
+      "überladen",
+      "layout",
+      "ablenkung",
+      "zu viel text"
+    ],
+    "suggestedItemIds": [
+      "ITEM_045",
+      "ITEM_046",
+      "ITEM_048"
+    ],
+    "markingBias": "blue",
+    "confidenceBase": 0.7,
+    "analysisMode": "idle_only",
+    "reasonTemplate": "Material könnte unnötige kognitive Belastung erzeugen.",
+    "caution": "Prüfen, ob Lernende tatsächlich behindert wurden."
+  }
+]

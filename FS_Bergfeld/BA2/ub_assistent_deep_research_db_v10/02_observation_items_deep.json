@@ -1,0 +1,1675 @@
+[
+  {
+    "id": "ITEM_001",
+    "domainId": "D01_zielklarheit",
+    "label": "Zielrichtung sichtbar",
+    "observationItem": "Die Lernenden können erkennen, worauf die Stunde mathematisch hinausläuft.",
+    "greenSignal": "Ziel/Kernanliegen strukturiert Aufgaben, Impulse und Sicherung.",
+    "blueSignal": "Aktivität ist sichtbar, aber die fachliche Zielrichtung bleibt diffus.",
+    "keywords": [
+      "ziel",
+      "kernanliegen",
+      "wozu",
+      "roter faden",
+      "unklar",
+      "nur gerechnet"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_002",
+    "domainId": "D01_zielklarheit",
+    "label": "Einstieg trägt fachlich",
+    "observationItem": "Der Einstieg aktiviert ein fachliches Problem und nicht nur situative Aufmerksamkeit.",
+    "greenSignal": "Der Einstieg eröffnet eine mathematische Frage, die später bearbeitet wird.",
+    "blueSignal": "Der Einstieg motiviert, bleibt aber dekorativ oder fachlich lose.",
+    "keywords": [
+      "einstieg",
+      "motivation",
+      "kontext",
+      "dekorativ",
+      "angebunden"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_003",
+    "domainId": "D01_zielklarheit",
+    "label": "Kernidee wird wieder aufgegriffen",
+    "observationItem": "Die Stunde führt erkennbar auf eine zentrale Einsicht zurück.",
+    "greenSignal": "Sicherung und Reflexion spiegeln das Kernanliegen.",
+    "blueSignal": "Einzelaktivitäten bleiben nebeneinander stehen.",
+    "keywords": [
+      "kernidee",
+      "einsicht",
+      "rückbindung",
+      "wieder aufgegriffen"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_004",
+    "domainId": "D01_zielklarheit",
+    "label": "Transparente Lernhandlung",
+    "observationItem": "Lernende verstehen nicht nur was, sondern auch wozu sie etwas tun.",
+    "greenSignal": "Handlungsauftrag und fachlicher Sinn sind verbunden.",
+    "blueSignal": "Der Auftrag ist handlungspraktisch klar, aber fachlich nicht orientierend.",
+    "keywords": [
+      "auftrag",
+      "wozu",
+      "sinn",
+      "was sollen wir machen"
+    ],
+    "sourceIds": [
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_005",
+    "domainId": "D02_kognitive_aktivierung",
+    "label": "Vorwissen wird fachlich aktiviert",
+    "observationItem": "Vorwissen wird nicht nur abgefragt, sondern für neues Denken genutzt.",
+    "greenSignal": "Schülerideen werden als Ausgangspunkt für fachliche Weiterarbeit genutzt.",
+    "blueSignal": "Vorwissen wird abgefragt, aber nicht aufgegriffen.",
+    "keywords": [
+      "vorwissen",
+      "anknüpfen",
+      "erinnern",
+      "aktivieren",
+      "aufgreifen"
+    ],
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_006",
+    "domainId": "D02_kognitive_aktivierung",
+    "label": "Denkentscheidungen statt Abarbeiten",
+    "observationItem": "Aufgaben verlangen Entscheidungen, Begründungen, Vergleiche oder Strategien.",
+    "greenSignal": "Lernende müssen mathematisch entscheiden und begründen.",
+    "blueSignal": "Lernende arbeiten ab, ohne relevante Denkentscheidung.",
+    "keywords": [
+      "abarbeiten",
+      "strategie",
+      "begründen",
+      "vergleichen",
+      "entscheiden",
+      "denken"
+    ],
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_007",
+    "domainId": "D02_kognitive_aktivierung",
+    "label": "Lernende erklären eigene Lösungen",
+    "observationItem": "Eigene Lösungen und Ideen werden sichtbar gemacht und diskutiert.",
+    "greenSignal": "Lernende erklären Denkwege, nicht nur Ergebnisse.",
+    "blueSignal": "Lösungen werden genannt, aber nicht gedanklich entfaltet.",
+    "keywords": [
+      "lösung erklären",
+      "denkweg",
+      "idee",
+      "schüler erklären",
+      "ergebnis"
+    ],
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_008",
+    "domainId": "D02_kognitive_aktivierung",
+    "label": "Kognitive Aktivierung ist nicht nur Aktivität",
+    "observationItem": "Die beobachtete Aktivität führt zu vertiefter Auseinandersetzung mit dem Lerngegenstand.",
+    "greenSignal": "Beschäftigung ist mit fachlicher Verarbeitung verbunden.",
+    "blueSignal": "Die Klasse ist beschäftigt, aber Denkqualität bleibt unklar.",
+    "keywords": [
+      "aktiv",
+      "beschäftigt",
+      "ruhig",
+      "denken",
+      "vertieft"
+    ],
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_009",
+    "domainId": "D03_diagnose",
+    "label": "Verstehensstand wird sichtbar geprüft",
+    "observationItem": "Die Lehrkraft gewinnt belastbare Informationen über den aktuellen Verstehensstand.",
+    "greenSignal": "Zwischenprodukte, Fragen oder Aufgaben zeigen, was verstanden wurde.",
+    "blueSignal": "Verstehen wird appellativ abgefragt.",
+    "keywords": [
+      "gibt es fragen",
+      "verstanden",
+      "keine meldung",
+      "diagnose",
+      "check"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "ROSENSHINE_2012",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_010",
+    "domainId": "D03_diagnose",
+    "label": "Fehler werden als Lerninformation genutzt",
+    "observationItem": "Fehler und Irritationen werden aufgegriffen, um Verständnis zu klären.",
+    "greenSignal": "Fehler dienen als Anlass für fachliche Klärung.",
+    "blueSignal": "Fehler werden übergangen oder nur korrigiert.",
+    "keywords": [
+      "fehler",
+      "falsch",
+      "missverständnis",
+      "irritation",
+      "korrigiert"
+    ],
+    "sourceIds": [
+      "ROSENSHINE_2012",
+      "BLACK_WILIAM_1998"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_011",
+    "domainId": "D03_diagnose",
+    "label": "Fragen öffnen Diagnose",
+    "observationItem": "Lehrerfragen machen Denkwege sichtbar, statt nur Antworten abzufragen.",
+    "greenSignal": "Fragen fordern Begründungen, Zwischenschritte oder Alternativen.",
+    "blueSignal": "Fragen prüfen nur Ja/Nein oder Ergebnisnennung.",
+    "keywords": [
+      "frage",
+      "warum",
+      "wie kommst du",
+      "ja nein",
+      "melden"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_012",
+    "domainId": "D03_diagnose",
+    "label": "Diagnose hat Anschluss",
+    "observationItem": "Erhobene Lernstände führen sichtbar zu Anpassung, Klärung oder Vertiefung.",
+    "greenSignal": "Die Lehrkraft reagiert auf Diagnoseinformationen.",
+    "blueSignal": "Diagnose bleibt folgenlos.",
+    "keywords": [
+      "anschluss",
+      "reagiert",
+      "passt an",
+      "nochmal",
+      "klärung"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_013",
+    "domainId": "D04_feedback",
+    "label": "Feedback ist aufgabe- und prozessbezogen",
+    "observationItem": "Rückmeldung hilft fachlich weiter und bleibt nicht nur Lob oder Bewertung.",
+    "greenSignal": "Feedback benennt Qualität und nächsten Schritt.",
+    "blueSignal": "Feedback bleibt allgemein, personenbezogen oder nur bewertend.",
+    "keywords": [
+      "gut gemacht",
+      "richtig",
+      "feedback",
+      "nächster schritt",
+      "qualität"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_014",
+    "domainId": "D04_feedback",
+    "label": "Feedbackschleife wird geschlossen",
+    "observationItem": "Lernende können Feedback nutzen und sichtbar weiterarbeiten.",
+    "greenSignal": "Feedback führt zu Überarbeitung oder Verbesserung.",
+    "blueSignal": "Feedback wird gegeben, aber nicht genutzt.",
+    "keywords": [
+      "überarbeiten",
+      "verbessern",
+      "nutzen",
+      "nochmal",
+      "feedbackschleife"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_015",
+    "domainId": "D04_feedback",
+    "label": "Peerfeedback hat Kriterien",
+    "observationItem": "Rückmeldungen unter Lernenden werden durch Kriterien fachlich gestützt.",
+    "greenSignal": "Kriterien helfen, mathematische Qualität zu erkennen.",
+    "blueSignal": "Peerfeedback bleibt geschmacklich oder allgemein.",
+    "keywords": [
+      "peerfeedback",
+      "kriterien",
+      "partner",
+      "rückmeldung"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_016",
+    "domainId": "D04_feedback",
+    "label": "Selbsteinschätzung ist fachlich gerahmt",
+    "observationItem": "Lernende schätzen ihren Lernstand anhand fachlicher Kriterien ein.",
+    "greenSignal": "Selbsteinschätzung bezieht sich auf Können und Verständnis.",
+    "blueSignal": "Selbsteinschätzung bleibt Stimmungsabfrage.",
+    "keywords": [
+      "selbsteinschätzung",
+      "ampel",
+      "kriterien",
+      "kann ich"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_017",
+    "domainId": "D05_klassenfuehrung",
+    "label": "Arbeitsruhe schützt Lernzeit",
+    "observationItem": "Abläufe, Regeln und Präsenz ermöglichen ungestörte fachliche Arbeit.",
+    "greenSignal": "Übergänge laufen zügig, Lernzeit bleibt erhalten.",
+    "blueSignal": "Störungen oder Unklarheiten binden Aufmerksamkeit.",
+    "keywords": [
+      "ruhe",
+      "störung",
+      "übergang",
+      "lernzeit",
+      "warten"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_018",
+    "domainId": "D05_klassenfuehrung",
+    "label": "Arbeitsauftrag ist eindeutig",
+    "observationItem": "Lernende wissen, was sie tun sollen, ohne fachliche Offenheit unnötig zu schließen.",
+    "greenSignal": "Auftrag ist klar, fachlicher Anspruch bleibt erhalten.",
+    "blueSignal": "Unklarer Auftrag erzeugt Leerlauf oder Scheinaktivität.",
+    "keywords": [
+      "auftrag",
+      "unklar",
+      "was machen",
+      "leerlauf"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_019",
+    "domainId": "D05_klassenfuehrung",
+    "label": "Übergänge sind lernökonomisch",
+    "observationItem": "Phasenwechsel unterstützen den fachlichen Lernfluss.",
+    "greenSignal": "Material, Sozialform und Zeitwechsel sind vorbereitet.",
+    "blueSignal": "Übergänge reißen den fachlichen Fokus ab.",
+    "keywords": [
+      "wechsel",
+      "material",
+      "phase",
+      "zeitverlust"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_020",
+    "domainId": "D05_klassenfuehrung",
+    "label": "Monitoring ist lernbezogen",
+    "observationItem": "Die Lehrkraft nimmt Arbeitsstände wahr und steuert rechtzeitig nach.",
+    "greenSignal": "Rundgänge liefern fachliche Informationen.",
+    "blueSignal": "Monitoring bleibt organisatorisch.",
+    "keywords": [
+      "rundgang",
+      "blick",
+      "monitoring",
+      "steuern"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_021",
+    "domainId": "D06_unterstuetzung",
+    "label": "Klima ermöglicht Beteiligung",
+    "observationItem": "Die Lernatmosphäre unterstützt Beteiligung, Fehlerfreundlichkeit und Sicherheit.",
+    "greenSignal": "Lernende beteiligen sich sichtbar angstarm.",
+    "blueSignal": "Unsicherheit oder Beschämung hemmt Beteiligung.",
+    "keywords": [
+      "klima",
+      "wertschätzung",
+      "fehlerfreundlich",
+      "sicher"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_022",
+    "domainId": "D06_unterstuetzung",
+    "label": "Lehrkraft ist fachlich zugewandt",
+    "observationItem": "Zuwendung unterstützt das mathematische Arbeiten und bleibt lernbezogen.",
+    "greenSignal": "Präsenz verbindet Beziehung und fachliche Orientierung.",
+    "blueSignal": "Zuwendung bleibt organisatorisch oder vom Lerngegenstand gelöst.",
+    "keywords": [
+      "zugewandt",
+      "präsenz",
+      "ansprechbar",
+      "lernbezogen"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_023",
+    "domainId": "D06_unterstuetzung",
+    "label": "Hilfen sind adaptiv dosiert",
+    "observationItem": "Unterstützung passt zum Lernbedarf und nimmt Denken nicht ab.",
+    "greenSignal": "Hilfen eröffnen nächste Denkschritte.",
+    "blueSignal": "Hilfen kommen zu früh, zu spät oder lösen für die Lernenden.",
+    "keywords": [
+      "hilfe",
+      "impuls",
+      "scaffold",
+      "zu früh",
+      "zu spät"
+    ],
+    "sourceIds": [
+      "ROSENSHINE_2012",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_024",
+    "domainId": "D06_unterstuetzung",
+    "label": "Wertschätzung bleibt anspruchsvoll",
+    "observationItem": "Ein positives Klima wird mit fachlichem Anspruch verbunden.",
+    "greenSignal": "Lernende erleben Unterstützung und Herausforderung.",
+    "blueSignal": "Harmonie ersetzt fachliche Herausforderung.",
+    "keywords": [
+      "nett",
+      "harmonie",
+      "anspruch",
+      "forderung"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_025",
+    "domainId": "D07_mathe_verstehen",
+    "label": "Grundvorstellung wird aufgebaut",
+    "observationItem": "Begriffe oder Verfahren werden mit tragfähigen Bedeutungen verbunden.",
+    "greenSignal": "Formales Vorgehen wird mit Bedeutung, Bild oder Handlung verbunden.",
+    "blueSignal": "Verfahren bleibt Rezept ohne Bedeutungsaufbau.",
+    "keywords": [
+      "grundvorstellung",
+      "bedeutung",
+      "rezept",
+      "verfahren",
+      "anschaulich"
+    ],
+    "sourceIds": [
+      "PREDIGER_LEUDERS_FUNKTIONEN_2005",
+      "DZLM_MACO_FUNKTIONEN_2022"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_026",
+    "domainId": "D07_mathe_verstehen",
+    "label": "Begriffsverständnis wird vertieft",
+    "observationItem": "Mathematische Begriffe werden präzisiert, abgegrenzt und angewendet.",
+    "greenSignal": "Begriff wird an Beispielen, Gegenbeispielen oder Darstellungen geklärt.",
+    "blueSignal": "Begriffe werden verwendet, aber nicht verstanden.",
+    "keywords": [
+      "begriff",
+      "definition",
+      "beispiel",
+      "gegenbeispiel"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "PREDIGER_LEUDERS_FUNKTIONEN_2005"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_027",
+    "domainId": "D07_mathe_verstehen",
+    "label": "Verfahren werden begründet",
+    "observationItem": "Rechenwege oder Algorithmen werden fachlich begründet.",
+    "greenSignal": "Lernende verstehen, warum ein Verfahren funktioniert.",
+    "blueSignal": "Verfahren werden nur eingeübt.",
+    "keywords": [
+      "verfahren",
+      "warum funktioniert",
+      "algorithmus",
+      "rezept"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "ATKINSON_RENKL_WORKED_EXAMPLES_2000"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_028",
+    "domainId": "D07_mathe_verstehen",
+    "label": "Mathematische Struktur wird sichtbar",
+    "observationItem": "Der Unterricht hebt Beziehungen, Muster oder Invarianten hervor.",
+    "greenSignal": "Schüler erkennen strukturelle Zusammenhänge.",
+    "blueSignal": "Einzelaufgaben bleiben unverbunden.",
+    "keywords": [
+      "struktur",
+      "muster",
+      "zusammenhang",
+      "invariante"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_029",
+    "domainId": "D08_darstellungen",
+    "label": "Darstellungen werden vernetzt",
+    "observationItem": "Tabelle, Graph, Term, Situation und Sprache werden bewusst miteinander verbunden.",
+    "greenSignal": "Darstellungswechsel stützt Verständnis.",
+    "blueSignal": "Darstellungen stehen nebeneinander oder werden mechanisch übersetzt.",
+    "keywords": [
+      "graph",
+      "tabelle",
+      "term",
+      "darstellung",
+      "vernetzen",
+      "wechsel"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "DZLM_MACO_FUNKTIONEN_2022",
+      "PREDIGER_LEUDERS_FUNKTIONEN_2005"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_030",
+    "domainId": "D08_darstellungen",
+    "label": "Darstellung passt zur Idee",
+    "observationItem": "Die gewählte Darstellung macht eine mathematische Struktur zugänglich.",
+    "greenSignal": "Darstellung entlastet und fokussiert die relevante Idee.",
+    "blueSignal": "Darstellung verdeckt oder verzerrt den mathematischen Kern.",
+    "keywords": [
+      "skizze",
+      "graph",
+      "tabelle",
+      "visualisierung",
+      "passt"
+    ],
+    "sourceIds": [
+      "MAYER_MULTIMEDIA_LEARNING",
+      "PREDIGER_LEUDERS_FUNKTIONEN_2005"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_031",
+    "domainId": "D08_darstellungen",
+    "label": "Wechsel wird fachlich begründet",
+    "observationItem": "Lernende begründen, warum eine Darstellung hilfreich ist.",
+    "greenSignal": "Darstellungswahl wird reflektiert.",
+    "blueSignal": "Darstellungswechsel bleibt Bedienhandlung.",
+    "keywords": [
+      "warum graph",
+      "warum tabelle",
+      "darstellungswahl"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "DZLM_MACO_FUNKTIONEN_2022"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_032",
+    "domainId": "D08_darstellungen",
+    "label": "Repräsentationen tragen Kommunikation",
+    "observationItem": "Darstellungen dienen als gemeinsamer Bezug für mathematische Gespräche.",
+    "greenSignal": "SuS zeigen und erklären an Darstellung.",
+    "blueSignal": "Darstellung wird gezeigt, aber nicht besprochen.",
+    "keywords": [
+      "zeigen",
+      "erklären am graphen",
+      "gemeinsam"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_033",
+    "domainId": "D09_sprache",
+    "label": "Fachsprache wird präzisiert",
+    "observationItem": "Fachbegriffe, Symbole und Alltagssprache werden lernförderlich verbunden.",
+    "greenSignal": "Sprachliche Präzisierung unterstützt Verständnis.",
+    "blueSignal": "Unschärfen bleiben stehen.",
+    "keywords": [
+      "fachsprache",
+      "symbol",
+      "präzise",
+      "heißt",
+      "begriff"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_034",
+    "domainId": "D09_sprache",
+    "label": "Lernende formulieren mathematisch",
+    "observationItem": "Lernende erhalten Gelegenheit, Zusammenhänge selbst zu formulieren.",
+    "greenSignal": "Schüler erklären, begründen, vergleichen.",
+    "blueSignal": "Lehrkraft formuliert fast alles selbst.",
+    "keywords": [
+      "formulieren",
+      "erklären",
+      "schüler sprechen",
+      "lehrer erklärt"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_035",
+    "domainId": "D09_sprache",
+    "label": "Operatoren sind handlungsleitend",
+    "observationItem": "Operatoren wie begründen, erläutern, vergleichen werden in Handlung übersetzt.",
+    "greenSignal": "Lernende wissen, was eine mathematische Handlung verlangt.",
+    "blueSignal": "Operatoren bleiben Etiketten.",
+    "keywords": [
+      "operator",
+      "begründen",
+      "erläutern",
+      "vergleichen"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_036",
+    "domainId": "D09_sprache",
+    "label": "Sprachstützen erhalten Denken",
+    "observationItem": "Sprachhilfen unterstützen mathematisches Argumentieren ohne es zu ersetzen.",
+    "greenSignal": "Satzstarter oder Begriffslisten öffnen Beteiligung.",
+    "blueSignal": "Sprachhilfen werden mechanisch oder fachlich leer genutzt.",
+    "keywords": [
+      "satzstarter",
+      "sprachhilfe",
+      "wortspeicher"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_037",
+    "domainId": "D10_aufgaben",
+    "label": "Aufgabe hat fachlichen Kern",
+    "observationItem": "Die Aufgabe ist auf eine mathematische Einsicht oder Kompetenz ausgerichtet.",
+    "greenSignal": "Bearbeitung führt zu fachlichem Ertrag.",
+    "blueSignal": "Aufgabe bleibt Beschäftigung oder Produktorientierung.",
+    "keywords": [
+      "aufgabe",
+      "produkt",
+      "beschäftigung",
+      "fachlicher kern"
+    ],
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_038",
+    "domainId": "D10_aufgaben",
+    "label": "Offenheit ist gesteuert",
+    "observationItem": "Offene Elemente ermöglichen Denken, ohne Orientierung zu verlieren.",
+    "greenSignal": "Offenheit führt zu Strategievergleich oder Begründung.",
+    "blueSignal": "Offenheit zerfasert oder überfordert.",
+    "keywords": [
+      "offen",
+      "entdecken",
+      "frei",
+      "strategie"
+    ],
+    "sourceIds": [
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_039",
+    "domainId": "D10_aufgaben",
+    "label": "Niveau passt zum Lernstand",
+    "observationItem": "Anforderung liegt im erreichbaren, aber herausfordernden Bereich.",
+    "greenSignal": "Aufgabe fordert und bleibt zugänglich.",
+    "blueSignal": "Aufgabe ist zu leicht, zu schwer oder unklar gestuft.",
+    "keywords": [
+      "zu leicht",
+      "zu schwer",
+      "niveau",
+      "heterogen"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_040",
+    "domainId": "D10_aufgaben",
+    "label": "Aufgabe erzeugt Vergleichbarkeit",
+    "observationItem": "Lösungen lassen sich fachlich vergleichen und auswerten.",
+    "greenSignal": "Aufgabe erzeugt unterschiedliche sinnvolle Lösungswege.",
+    "blueSignal": "Ergebnisse sind kaum auswertbar.",
+    "keywords": [
+      "vergleich",
+      "lösungswege",
+      "auswertung"
+    ],
+    "sourceIds": [
+      "KMK_MATHE_AHR_2012",
+      "CHU_KOGNITIVE_AKTIVIERUNG"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_041",
+    "domainId": "D11_scaffolding",
+    "label": "Hilfen werden schrittweise zurückgenommen",
+    "observationItem": "Unterstützung wird als Gerüst genutzt und später reduziert.",
+    "greenSignal": "Lernende gewinnen Selbstständigkeit.",
+    "blueSignal": "Hilfe bleibt dauerhaft oder nimmt Denken ab.",
+    "keywords": [
+      "scaffold",
+      "hilfe zurücknehmen",
+      "selbstständig"
+    ],
+    "sourceIds": [
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_042",
+    "domainId": "D11_scaffolding",
+    "label": "Beispiele fördern Verstehen",
+    "observationItem": "Lösungsbeispiele werden aktiv verarbeitet, erklärt und variiert.",
+    "greenSignal": "Beispiele entlasten und fördern Verständnis.",
+    "blueSignal": "Beispiele werden passiv abgeschrieben.",
+    "keywords": [
+      "beispiel",
+      "musterlösung",
+      "worked example",
+      "abschreiben"
+    ],
+    "sourceIds": [
+      "ATKINSON_RENKL_WORKED_EXAMPLES_2000"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_043",
+    "domainId": "D11_scaffolding",
+    "label": "Übung folgt Verständnis",
+    "observationItem": "Übungsphasen konsolidieren gezielt zuvor aufgebaute Konzepte oder Verfahren.",
+    "greenSignal": "Übung automatisiert tragfähiges Wissen.",
+    "blueSignal": "Übung startet vor Klärung oder ohne Rückmeldung.",
+    "keywords": [
+      "übung",
+      "automatisieren",
+      "routine",
+      "festigen"
+    ],
+    "sourceIds": [
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_044",
+    "domainId": "D11_scaffolding",
+    "label": "Selbsterklärungen werden angeregt",
+    "observationItem": "Lernende erklären sich Schritte, Begründungen oder Beispiele aktiv selbst.",
+    "greenSignal": "Selbsterklärung vertieft das Beispielverständnis.",
+    "blueSignal": "Beispiele bleiben oberflächlich.",
+    "keywords": [
+      "selbsterklärung",
+      "erkläre dir",
+      "warum schritt"
+    ],
+    "sourceIds": [
+      "ATKINSON_RENKL_WORKED_EXAMPLES_2000"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_045",
+    "domainId": "D12_medien",
+    "label": "Material reduziert unnötige Belastung",
+    "observationItem": "Medien und Material lenken Aufmerksamkeit auf den Lerngegenstand.",
+    "greenSignal": "Layout, Visualisierung und Sprache entlasten.",
+    "blueSignal": "Material ist überladen oder ablenkend.",
+    "keywords": [
+      "folie",
+      "arbeitsblatt",
+      "überladen",
+      "layout",
+      "ablenkung"
+    ],
+    "sourceIds": [
+      "MAYER_MULTIMEDIA_LEARNING"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_046",
+    "domainId": "D12_medien",
+    "label": "Text und Bild sind sinnvoll verbunden",
+    "observationItem": "Wörter und Bilder/Darstellungen unterstützen sich gegenseitig.",
+    "greenSignal": "Text-Bild-Bezug ist nah, klar und lernförderlich.",
+    "blueSignal": "Text und Bild sind getrennt oder konkurrieren.",
+    "keywords": [
+      "text",
+      "bild",
+      "diagramm",
+      "nebeneinander",
+      "split"
+    ],
+    "sourceIds": [
+      "MAYER_MULTIMEDIA_LEARNING"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_047",
+    "domainId": "D12_medien",
+    "label": "Technik dient dem Denken",
+    "observationItem": "Digitale Mittel machen mathematische Strukturen sichtbar oder bearbeitbar.",
+    "greenSignal": "Technik ermöglicht Exploration oder Kontrolle.",
+    "blueSignal": "Technik dominiert organisatorisch oder dekorativ.",
+    "keywords": [
+      "technik",
+      "geogebra",
+      "tablet",
+      "digital",
+      "dekorativ"
+    ],
+    "sourceIds": [
+      "MAYER_MULTIMEDIA_LEARNING",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_048",
+    "domainId": "D12_medien",
+    "label": "Reduktion schützt Fokus",
+    "observationItem": "Material verzichtet auf irrelevante Details, die Lernen ablenken.",
+    "greenSignal": "Darstellung ist fokussiert und klar.",
+    "blueSignal": "Seductive details oder Schmuck überlagern Fachlichkeit.",
+    "keywords": [
+      "detail",
+      "schmuck",
+      "bildchen",
+      "fokus",
+      "reduziert"
+    ],
+    "sourceIds": [
+      "MAYER_MULTIMEDIA_LEARNING"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_049",
+    "domainId": "D13_sicherung",
+    "label": "Sicherung bündelt zentrale Einsichten",
+    "observationItem": "Die Sicherung macht zentrale Ergebnisse verfügbar und fachlich klar.",
+    "greenSignal": "Gemeinsame Einsicht ist dokumentiert und anschlussfähig.",
+    "blueSignal": "Ergebnisse werden gesammelt, aber nicht gebündelt.",
+    "keywords": [
+      "sicherung",
+      "bündeln",
+      "tafelbild",
+      "merksatz"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "ROSENSHINE_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_050",
+    "domainId": "D13_sicherung",
+    "label": "Sicherung prüft Verständnis",
+    "observationItem": "Die Sicherung zeigt nicht nur Ergebnisse, sondern den Grad des Verstehens.",
+    "greenSignal": "Sicherung enthält Rückfragen, Begründungen oder Transfer.",
+    "blueSignal": "Sicherung bleibt Ergebnisvortrag.",
+    "keywords": [
+      "sicherung",
+      "verständnis",
+      "transfer",
+      "rückfrage"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_051",
+    "domainId": "D13_sicherung",
+    "label": "Transfer wird vorbereitet",
+    "observationItem": "Zentrale Einsicht wird auf neue oder leicht variierte Situationen bezogen.",
+    "greenSignal": "Lernende erkennen Übertragbarkeit.",
+    "blueSignal": "Transfer bleibt Behauptung.",
+    "keywords": [
+      "transfer",
+      "anwenden",
+      "neue aufgabe",
+      "variiert"
+    ],
+    "sourceIds": [
+      "ROSENSHINE_2012",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_052",
+    "domainId": "D13_sicherung",
+    "label": "Dokumentation ist lernbrauchbar",
+    "observationItem": "Heft, Tafelbild oder digitales Produkt ist fachlich korrekt und nutzbar.",
+    "greenSignal": "Dokumentation unterstützt spätere Nutzung.",
+    "blueSignal": "Dokumentation bleibt fragmentarisch.",
+    "keywords": [
+      "heft",
+      "tafelbild",
+      "notieren",
+      "abschreiben"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_053",
+    "domainId": "D14_reflexion",
+    "label": "Reflexion ist fachbezogen",
+    "observationItem": "Reflexion bezieht sich auf Strategien, Verständnis oder Lernstand.",
+    "greenSignal": "Lernende reflektieren fachliche Entscheidungen.",
+    "blueSignal": "Reflexion bleibt allgemein oder sozial.",
+    "keywords": [
+      "reflexion",
+      "strategie",
+      "was gelernt",
+      "lernstand"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998",
+      "KMK_MATHE_AHR_2012"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_054",
+    "domainId": "D14_reflexion",
+    "label": "Metakognition wird operationalisiert",
+    "observationItem": "Lernende erhalten konkrete Kriterien zur Steuerung ihres Lernens.",
+    "greenSignal": "Reflexion führt zu nächstem Lernschritt.",
+    "blueSignal": "Metakognition bleibt Schlagwort.",
+    "keywords": [
+      "metakognition",
+      "kriterium",
+      "nächster schritt"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_055",
+    "domainId": "D14_reflexion",
+    "label": "Nachbesprechungsimpuls ist belegbasiert",
+    "observationItem": "Beratung knüpft an konkrete Beobachtungen statt Eindrücke an.",
+    "greenSignal": "Impuls verbindet Beobachtung, Wirkung und Alternative.",
+    "blueSignal": "Gespräch bleibt allgemein.",
+    "keywords": [
+      "nachbesprechung",
+      "beleg",
+      "wirkung",
+      "alternative"
+    ],
+    "sourceIds": [
+      "IBBW_UFB_2024",
+      "USER_WORKFLOW_DESIGN"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_056",
+    "domainId": "D14_reflexion",
+    "label": "Lernende übernehmen Verantwortung",
+    "observationItem": "Selbststeuerung ist fachlich gerahmt und realistisch.",
+    "greenSignal": "Lernende planen oder prüfen ihr Vorgehen.",
+    "blueSignal": "Verantwortung wird nur appellativ eingefordert.",
+    "keywords": [
+      "selbstständig",
+      "verantwortung",
+      "planen",
+      "prüfen"
+    ],
+    "sourceIds": [
+      "BLACK_WILIAM_1998"
+    ],
+    "evidenceLevel": "source_anchored_modelled_item",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_057",
+    "domainId": "D15_kontext",
+    "label": "Kontextbeobachtung bleibt sichtbar",
+    "observationItem": "Nicht itemnahe Beobachtungen werden nicht gelöscht oder erzwungen zugeordnet.",
+    "greenSignal": "Kontext erklärt Verlauf oder Gesprächsanlass.",
+    "blueSignal": "Kontext wird fälschlich als Qualitätsurteil behandelt.",
+    "keywords": [
+      "kontext",
+      "technik",
+      "hektisch",
+      "organisatorisch"
+    ],
+    "sourceIds": [
+      "USER_WORKFLOW_DESIGN"
+    ],
+    "evidenceLevel": "design_decision",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_058",
+    "domainId": "D15_kontext",
+    "label": "Spider-Web-Markierungen werden gebündelt",
+    "observationItem": "Mehrere bewusste Itemklicks werden als ein Datensatz mit Zeit und Phase gespeichert.",
+    "greenSignal": "Spider-Web ergänzt das Logbuch ohne es zuzumüllen.",
+    "blueSignal": "Jeder Klick erzeugt einen eigenen Logbucheintrag.",
+    "keywords": [
+      "spider",
+      "batch",
+      "markierung",
+      "zeitstempel"
+    ],
+    "sourceIds": [
+      "USER_WORKFLOW_DESIGN"
+    ],
+    "evidenceLevel": "design_decision",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_059",
+    "domainId": "D15_kontext",
+    "label": "Inaktivität löst stille Analyse aus",
+    "observationItem": "Rechenlogik startet nur nach Tipp-Pausen oder Auswertungsaktion.",
+    "greenSignal": "UI bleibt ruhig und blockiert nicht.",
+    "blueSignal": "Live-Rechnen lässt Oberfläche springen.",
+    "keywords": [
+      "inaktiv",
+      "rechnet",
+      "freeze",
+      "ruhig"
+    ],
+    "sourceIds": [
+      "USER_WORKFLOW_DESIGN"
+    ],
+    "evidenceLevel": "design_decision",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  },
+  {
+    "id": "ITEM_060",
+    "domainId": "D15_kontext",
+    "label": "Grün/blau markiert Verdichtungen",
+    "observationItem": "Farben beziehen sich auf beratungsrelevante Verdichtungen, nicht auf automatische Urteile.",
+    "greenSignal": "Nutzer entscheidet über grün/blau.",
+    "blueSignal": "App bewertet automatisch.",
+    "keywords": [
+      "grün",
+      "blau",
+      "verdichtung",
+      "markieren"
+    ],
+    "sourceIds": [
+      "USER_WORKFLOW_DESIGN"
+    ],
+    "evidenceLevel": "design_decision",
+    "phaseHints": [
+      "Einstieg",
+      "Erarbeitung",
+      "Sicherung",
+      "Reflexion",
+      "Nachbesprechung"
+    ],
+    "uiRole": "background_item_or_spider_web_item",
+    "caution": "Keine automatische Bewertung; als möglicher Bezug oder bewusst gesetzte Markierung verwenden."
+  }
+]

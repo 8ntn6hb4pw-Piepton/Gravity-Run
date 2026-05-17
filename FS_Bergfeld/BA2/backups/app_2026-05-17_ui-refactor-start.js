@@ -219,10 +219,6 @@ let liveSuggestionCacheKey = "";
 let liveSuggestionCacheResult = null;
 let phase2CacheKey = "";
 let phase2CacheBoard = null;
-let phase2ComputeStatus = "idle";
-let phase2ComputeMessage = "";
-let phase2ComputeUpdatedAt = 0;
-let phase2ComputeTimer = null;
 let rawLogbookSplitWidth = Number(window.localStorage?.getItem("ufbRawLogSplitWidth") ?? 42) || 42;
 
 const detailPanel = document.querySelector("#detailPanel");
@@ -331,7 +327,6 @@ let pendingLiveSketchDataUrl = "";
 let pendingLiveSketchCreatedAt = null;
 let activeDiscussionCardId = null;
 let activeProtocolCardId = null;
-let activePhase2CardId = null;
 let activeLiveAssistField = null;
 let inputAssistanceCache = null;
 let liveSmartHintTimer = null;
@@ -407,41 +402,39 @@ function bindEvents() {
   bindLiveEvents();
   window.addEventListener("research-pattern-library-loaded", () => {
     updateLiveSuggestions();
-    scheduleIdleAnalysis();
+    (session.rawObservations ?? [])
+      .filter((event) => !event.excluded && !event.postAnalysis?.ignored && !event.postAnalysis?.updatedAt)
+      .slice(0, 30)
+      .forEach((event, index) => queueLivePostAnalysis(event.id, 360 + index * 60));
     if (currentView === "evaluate") {
       render();
     }
   });
 
   observeTab.addEventListener("click", () => {
-    flushPendingSpiderBatchForNavigation();
     currentView = "observe";
     render();
   });
 
   logbookTab.addEventListener("click", () => {
-    flushPendingSpiderBatchForNavigation();
     currentView = "logbook";
     detailOpen = false;
     render();
   });
 
   evaluateTab.addEventListener("click", () => {
-    flushPendingSpiderBatchForNavigation();
     currentView = "evaluate";
     detailOpen = false;
     render();
   });
 
   protocolTab.addEventListener("click", () => {
-    flushPendingSpiderBatchForNavigation();
     currentView = "protocol";
     detailOpen = false;
     render();
   });
 
   mehrTab?.addEventListener("click", () => {
-    flushPendingSpiderBatchForNavigation();
     currentView = "mehr";
     detailOpen = false;
     render();
@@ -473,12 +466,10 @@ function bindEvents() {
     phase2CacheKey = "";
     phase2CacheBoard = null;
     lastIdlePreparedKey = "";
-    setPhase2ComputeState("running", "Zusammenhänge werden berechnet");
     precomputeIdleAnalysis();
     window.setTimeout(() => {
       getPhase2Board({ includeOpen: true });
       getPhase2Board({ includeOpen: false });
-      setPhase2ComputeState("done", "Zusammenhänge aktualisiert");
       render();
     }, 200);
   });
@@ -609,6 +600,7 @@ function runIdleAnalysisIfStillQuiet() {
     session.lessonTiming?.endTime ?? ""
   ].join("|");
   if (prepareKey === lastIdlePreparedKey || !(session.rawObservations ?? []).length) {
+    scheduleIdleAnalysis();
     return;
   }
   lastIdlePreparedKey = prepareKey;
@@ -616,6 +608,7 @@ function runIdleAnalysisIfStillQuiet() {
   const run = () => {
     precomputeIdleAnalysis();
     idleAnalysisRunning = false;
+    scheduleIdleAnalysis();
   };
   if (window.analysisJobQueue?.enqueue) {
     window.analysisJobQueue.enqueue("idle-phase2-precompute", run, { delay: 0 });
@@ -625,7 +618,6 @@ function runIdleAnalysisIfStillQuiet() {
 }
 
 function precomputeIdleAnalysis() {
-  setPhase2ComputeState("running", "Nachanalyse und Verdichtung laufen");
   const pending = (session.rawObservations ?? [])
     .filter((event) => !event.excluded && event.type !== "sketch" && !event.postAnalysis?.ignored && !event.postAnalysis?.updatedAt)
     .slice(0, 12);
@@ -635,70 +627,11 @@ function precomputeIdleAnalysis() {
     getPhase2Board({ includeOpen: true });
     window.setTimeout(() => {
       getPhase2Board({ includeOpen: false });
-      setPhase2ComputeState("done", "Verdichtung aktualisiert");
       if (currentView === "evaluate") {
         renderCondensationMode();
       }
     }, 80);
   }, 80);
-}
-
-function setPhase2ComputeState(status, message = "") {
-  phase2ComputeStatus = status;
-  phase2ComputeMessage = message;
-  phase2ComputeUpdatedAt = Date.now();
-}
-
-function countPendingPostAnalyses() {
-  return (session.rawObservations ?? []).filter((event) =>
-    !event.excluded
-    && event.type !== "sketch"
-    && !event.postAnalysis?.ignored
-    && (event.postAnalysis?.status === "pending" || event.analysisStatus === "dirty")
-  ).length;
-}
-
-function schedulePhase2Recompute(message = "Verdichtung wird aktualisiert") {
-  phase2CacheKey = "";
-  phase2CacheBoard = null;
-  setPhase2ComputeState("running", message);
-  window.clearTimeout(phase2ComputeTimer);
-  phase2ComputeTimer = window.setTimeout(() => {
-    getPhase2Board({ includeOpen: true });
-    getPhase2Board({ includeOpen: false });
-    setPhase2ComputeState("done", "Verdichtung aktualisiert");
-    if (currentView === "evaluate") {
-      renderCondensationMode();
-    }
-  }, 320);
-}
-
-function renderPhase2ComputeStatus() {
-  const pendingCount = countPendingPostAnalyses();
-  if (pendingCount) {
-    return `
-      <div class="phase2-compute-status running" role="status" aria-live="polite">
-        <span class="phase2-compute-dot" aria-hidden="true"></span>
-        Nachanalyse läuft · ${pendingCount} Eintrag${pendingCount === 1 ? "" : "e"}
-      </div>
-    `;
-  }
-  const recentDone = phase2ComputeStatus === "done" && Date.now() - phase2ComputeUpdatedAt < 2500;
-  if (phase2ComputeStatus !== "running" && !recentDone) {
-    return "";
-  }
-  return `
-    <div class="phase2-compute-status ${phase2ComputeStatus === "running" ? "running" : "done"}" role="status" aria-live="polite">
-      <span class="phase2-compute-dot" aria-hidden="true"></span>
-      ${escapeHtml(phase2ComputeStatus === "running" ? (phase2ComputeMessage || "Verdichtung wird aktualisiert") : "Verdichtung aktualisiert")}
-    </div>
-  `;
-}
-
-function flushPendingSpiderBatchForNavigation() {
-  if (spiderBatchChanges.length) {
-    flushSpiderBatch();
-  }
 }
 
 function openSketchDialog() {
@@ -1146,14 +1079,12 @@ function updateLiveSuggestions() {
     activeLiveSuggestions = [];
     draftLiveDecisions = {};
     clearLiveSmartHints();
-    clearLiveSuggestionAnalysis(true);
+    clearLiveSuggestionAnalysis();
     renderLiveSuggestions();
     return;
   }
-  activeLiveSuggestions = [];
-  clearLiveSuggestionAnalysis(true);
-  renderLiveSuggestions();
   scheduleLiveSmartHints();
+  scheduleDirtyCheck();
 }
 
 function scheduleLiveSuggestionAnalysis(delay = 360) {
@@ -1164,13 +1095,9 @@ function scheduleLiveSuggestionAnalysis(delay = 360) {
   }, delay);
 }
 
-function clearLiveSuggestionAnalysis(clearCache = false) {
+function clearLiveSuggestionAnalysis() {
   window.clearTimeout(liveSuggestionTimer);
   liveSuggestionTimer = null;
-  if (clearCache) {
-    liveSuggestionCacheKey = "";
-    liveSuggestionCacheResult = null;
-  }
 }
 
 function runLiveSuggestionAnalysis() {
@@ -1186,7 +1113,7 @@ function runLiveSuggestionAnalysis() {
     renderLiveSuggestions(liveSuggestionCacheResult);
     return;
   }
-  const result = window.analyzeLiveObservation?.(draft, recentObservationHistory(6), { maxSuggestions: 3 }) ?? { suggestions: [], fallback: true };
+  const result = window.analyzeLiveObservation?.(draft, recentObservationHistory(20)) ?? { suggestions: [], fallback: true };
   liveSuggestionCacheKey = cacheKey;
   liveSuggestionCacheResult = result;
   activeLiveSuggestions = (result.suggestions ?? []).slice(0, 3);
@@ -1202,7 +1129,7 @@ function liveSuggestionAnalysisKey(draft) {
   ].join("|");
 }
 
-function scheduleLiveSmartHints(delay = 320) {
+function scheduleLiveSmartHints(delay = 240) {
   if (!liveSmartHints) {
     return;
   }
@@ -1305,21 +1232,20 @@ function buildInputAssistance(text) {
   const corrections = (prepared.corrections ?? [])
     .filter((entry) => entry.from && entry.to && currentWord.toLowerCase().includes(String(entry.from).slice(0, 4)))
     .slice(0, 2);
-  const prefix = normalizedCurrent.slice(0, 3);
   const words = normalizedCurrent.length >= 3
-    ? (lexicon.wordsByPrefix?.[prefix] ?? [])
+    ? lexicon.words
       .filter((word) => word.startsWith(normalizedCurrent) && word !== normalizedCurrent)
       .slice(0, 3)
     : [];
   const normalizedText = tools?.normalizeTextForHeuristics?.(text) ?? text.toLowerCase();
-  const phrases = normalizedCurrent.length >= 3
-    ? (lexicon.phrasesByPrefix?.[prefix] ?? [])
+  const phrases = lexicon.phrases
     .filter((phrase) => {
       const normalizedPhrase = tools?.normalizeTextForHeuristics?.(phrase) ?? phrase.toLowerCase();
-      return normalizedPhrase.includes(normalizedCurrent) && !normalizedText.includes(normalizedPhrase);
+      return normalizedCurrent.length >= 3
+        ? normalizedPhrase.includes(normalizedCurrent) && !normalizedText.includes(normalizedPhrase)
+        : false;
     })
-    .slice(0, 2)
-    : [];
+    .slice(0, 2);
   return { corrections, words, phrases };
 }
 
@@ -1368,30 +1294,10 @@ function inputAssistanceLexicon() {
     (pattern.patternMarkers ?? []).forEach((marker) => addText(marker, true));
     (pattern.possiblePrompts ?? []).forEach((prompt) => addText(prompt, true));
   });
-  const wordList = Array.from(words).sort((a, b) => a.length - b.length || a.localeCompare(b));
-  const phraseList = Array.from(phrases).sort((a, b) => a.length - b.length);
-  const wordsByPrefix = {};
-  wordList.forEach((word) => {
-    const prefix = (tools?.normalizeTextForHeuristics?.(word) ?? word.toLowerCase()).slice(0, 3);
-    if (prefix.length < 3) return;
-    (wordsByPrefix[prefix] ??= []).push(word);
-  });
-  const phrasesByPrefix = {};
-  phraseList.forEach((phrase) => {
-    const prepared = tools?.prepareTextForHeuristic?.(phrase) ?? { signalTokens: phrase.toLowerCase().split(/\s+/) };
-    (prepared.signalTokens ?? []).forEach((token) => {
-      const prefix = String(token ?? "").slice(0, 3);
-      if (prefix.length < 3) return;
-      const bucket = (phrasesByPrefix[prefix] ??= []);
-      if (!bucket.includes(phrase)) bucket.push(phrase);
-    });
-  });
   inputAssistanceCache = {
     key: libraryKey,
-    words: wordList,
-    phrases: phraseList,
-    wordsByPrefix,
-    phrasesByPrefix
+    words: Array.from(words).sort((a, b) => a.length - b.length || a.localeCompare(b)),
+    phrases: Array.from(phrases).sort((a, b) => a.length - b.length)
   };
   return inputAssistanceCache;
 }
@@ -1421,13 +1327,9 @@ function renderLiveSuggestions(result = null) {
     return;
   }
   const hasAnalysisText = Boolean(liveAnalysisText(currentLiveObservationDraft()));
-  const fallback = Boolean(result) && hasAnalysisText && result?.fallback && !activeLiveSuggestions.length;
+  const fallback = hasAnalysisText && (result?.fallback || !activeLiveSuggestions.length);
   const selectedIds = new Set(Object.keys(draftLiveDecisions ?? {}));
   const suggestions = mergeSuggestionsWithDecisions(activeLiveSuggestions, draftLiveDecisions);
-  if (!suggestions.length && !fallback) {
-    liveSuggestions.innerHTML = "";
-    return;
-  }
   liveSuggestions.innerHTML = `
     <div class="suggestion-row">
       ${suggestions.map((suggestion) => {
@@ -1455,8 +1357,10 @@ function saveRawObservation() {
   if (!draft.text) {
     return;
   }
-  clearLiveSuggestionAnalysis(true);
-  const suggestionsForSave = activeLiveSuggestions.length ? activeLiveSuggestions : [];
+  clearLiveSuggestionAnalysis();
+  const suggestionsForSave = activeLiveSuggestions.length
+    ? activeLiveSuggestions
+    : (liveSuggestionCacheResult?.suggestions ?? []);
   draft.suggestedItems = suggestionsForSave.slice(0, 3).map((suggestion) => ({
     id: suggestion.item.id,
     score: suggestion.score,
@@ -1506,9 +1410,7 @@ function saveRawObservation() {
   clearLiveSmartHints();
   persistSession();
   render();
-  scheduleDirtyCheck();
-  scheduleIdleAnalysis();
-  queueLivePostAnalysis(draft.id, 1600);
+  queueLivePostAnalysis(draft.id, 280);
   window.setTimeout(() => {
     if (recentLiveSavedId === draft.id) {
       recentLiveSavedId = null;
@@ -1520,18 +1422,6 @@ function saveRawObservation() {
 function queueLivePostAnalysis(eventId, delay = 240) {
   if (!eventId) {
     return;
-  }
-  const event = liveEventById(eventId);
-  if (event && !event.excluded && event.type !== "sketch" && !event.postAnalysis?.updatedAt && !event.postAnalysis?.ignored) {
-    event.postAnalysis = {
-      ...(event.postAnalysis ?? {}),
-      status: "pending",
-      queuedAt: event.postAnalysis?.queuedAt ?? new Date().toISOString()
-    };
-    persistSession();
-    if (currentView === "observe") {
-      renderRawObservationList();
-    }
   }
   const jobId = `live-post:${eventId}`;
   if (window.analysisJobQueue?.enqueue) {
@@ -1557,19 +1447,6 @@ function runLivePostAnalysis(eventId) {
     .slice(0, 3)
     .map(suggestionSnapshot);
   if (!additions.length) {
-    event.postAnalysis = {
-      ...(event.postAnalysis ?? {}),
-      status: "done",
-      suggestions: event.postAnalysis?.suggestions ?? [],
-      updatedAt: new Date().toISOString()
-    };
-    event.analysisStatus = "clean";
-    persistSession();
-    if (currentView === "observe") {
-      renderRawObservationList();
-    } else if (currentView === "evaluate") {
-      renderCondensationMode();
-    }
     return;
   }
   event.postAnalysis = {
@@ -1577,12 +1454,9 @@ function runLivePostAnalysis(eventId) {
     suggestions: additions,
     updatedAt: new Date().toISOString()
   };
-  event.analysisStatus = "clean";
   persistSession();
   if (currentView === "observe") {
     renderRawObservationList();
-  } else if (currentView === "evaluate") {
-    renderCondensationMode();
   }
 }
 
@@ -1658,20 +1532,12 @@ function renderRawObservationList() {
   rawObservationList.querySelectorAll("[data-live-post-star]").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
-      const eventId = button.dataset.livePostStar;
-      expandedLiveEventId = eventId;
-      const liveEvent = liveEventById(eventId);
-      const hasNewPostAnalysis = liveEvent?.postAnalysis?.status === "new";
+      expandedLiveEventId = button.dataset.livePostStar;
+      const liveEvent = liveEventById(button.dataset.livePostStar);
       if (liveEvent?.postAnalysis) {
         liveEvent.postAnalysis.status = "seen";
+        persistSession();
       }
-      if (liveEvent && !hasNewPostAnalysis) {
-        liveEvent.gespraechsrelevant = !liveEvent.gespraechsrelevant;
-        const meta = cardMeta(liveEvent.id);
-        meta.relevant = liveEvent.gespraechsrelevant;
-        if (liveEvent.gespraechsrelevant) meta.focus = true;
-      }
-      persistSession();
       renderRawObservationListKeepScroll();
     });
   });
@@ -1720,7 +1586,7 @@ function renderRawObservationCard(observation) {
     const isSelected = expandedLiveEventId === observation.id;
     return `
       <article class="raw-observation spider-batch-card ${isSelected ? "selected" : ""}" data-live-id="${observation.id}" title="Spider-Web-Sammeleintrag">
-        <button class="raw-post-star relevant-toggle ${observation.gespraechsrelevant ? "relevant" : ""}" type="button" data-live-post-star="${observation.id}" aria-label="Für Nachbesprechung vormerken">★</button>
+        <button class="raw-relevant-btn${observation.gespraechsrelevant ? " active" : ""}" type="button" data-live-relevant="${observation.id}" aria-label="Gesprächsrelevant markieren">❗</button>
         <div class="raw-time">${formatTime(observation.timestamp)}</div>
         <div class="raw-main">
           <strong>Spider-Web-Markierung${observation.phase ? " · " + escapeHtml(observation.phase) : ""} · ${count} Item${count !== 1 ? "s" : ""}</strong>
@@ -1734,11 +1600,11 @@ function renderRawObservationCard(observation) {
   const status = liveEventStatusInfo(observation);
   const isExpanded = expandedLiveEventId === observation.id;
   const postSuggestions = compactPostAnalysisSuggestions(observation);
-  const isPostPending = observation.postAnalysis?.status === "pending" || observation.analysisStatus === "dirty";
   const sketchImage = observation.sketchDataUrl ?? observation.sketchImage ?? "";
   return `
     <article class="raw-observation ${status.className} ${isExpanded ? "selected" : ""} ${recentLiveSavedId === observation.id ? "just-saved" : ""}" data-live-id="${observation.id}" title="Antippen zum Prüfen">
-      <button class="raw-post-star ${postSuggestions.length || isPostPending ? "has-post" : "plain"} ${isPostPending ? "pending" : ""} ${observation.postAnalysis?.status === "seen" ? "seen" : ""} ${observation.gespraechsrelevant ? "relevant" : ""}" type="button" data-live-post-star="${observation.id}" aria-label="${isPostPending ? "Nachanalyse läuft" : postSuggestions.length ? "Neue mögliche Lesart prüfen" : "Für Nachbesprechung vormerken"}">★</button>
+      ${postSuggestions.length ? `<button class="raw-post-star ${observation.postAnalysis?.status === "seen" ? "seen" : ""}" type="button" data-live-post-star="${observation.id}" aria-label="Neue mögliche Lesart">★</button>` : ""}
+      <button class="raw-relevant-btn${observation.gespraechsrelevant ? " active" : ""}" type="button" data-live-relevant="${observation.id}" aria-label="Gesprächsrelevant markieren" title="Für Nachbesprechung vormerken">❗</button>
       <div class="raw-time">${formatTime(observation.timestamp)}</div>
       <div class="raw-main">
         <strong>${typeLabel(observation.type)} · ${escapeHtml(observation.phase ?? "ohne Phase")} · ${escapeHtml(observation.socialForm ?? "ohne Sozialform")}</strong>
@@ -1784,10 +1650,15 @@ function renderRawObservationInspector(observation) {
       </div>
     `;
   }
+  const suggested = compactLiveEventSuggestions(observation);
   const postSuggestions = compactPostAnalysisSuggestions(observation);
+  const suggestedIds = new Set(suggested.map((suggestion) => suggestion.item.id));
+  const additionalSuggestions = postSuggestions.filter((suggestion) => !suggestedIds.has(suggestion.item.id));
   const hintText = observation.hintText ?? observation.professionalHint ?? "";
   const sketchImage = observation.sketchDataUrl ?? observation.sketchImage ?? "";
   const status = liveEventStatusInfo(observation);
+  const topItem = suggested[0]?.item ?? additionalSuggestions[0]?.item ?? null;
+  const topItemAttr = topItem ? `data-item-id="${topItem.id}"` : "";
   const isPositive = status.className === "positive";
   const isDevelopment = status.className === "development";
   const hasValence = isPositive || isDevelopment;
@@ -1815,12 +1686,20 @@ function renderRawObservationInspector(observation) {
     </div>
     ${sketchImage ? `<img class="raw-sketch-thumb" src="${escapeHtml(sketchImage)}" alt="Skizze">` : ""}
     <div class="raw-item-column">
-      <section class="raw-item-section raw-post-analysis">
-        <h4>Mögliche Bezüge aus Nachberechnung</h4>
+      <section class="raw-item-section">
+        <h4>Items bisher</h4>
         <div class="suggestion-row">
-          ${postSuggestions.length
-            ? postSuggestions.map((suggestion) => renderRawSuggestionChip(observation, suggestion, "post")).join("")
-            : `<span class="suggestion-empty">Noch keine nachberechneten Bezüge.</span>`}
+          ${suggested.length
+            ? suggested.map((suggestion) => renderRawSuggestionChip(observation, suggestion)).join("")
+            : `<span class="suggestion-empty">Noch kein Item bestätigt oder vorgeschlagen.</span>`}
+        </div>
+      </section>
+      <section class="raw-item-section raw-post-analysis">
+        <h4>Zusätzliche mögliche Bezüge</h4>
+        <div class="suggestion-row">
+          ${additionalSuggestions.length
+            ? additionalSuggestions.map((suggestion) => renderRawSuggestionChip(observation, suggestion, "post")).join("")
+            : `<span class="suggestion-empty">Keine weiteren Bezüge offen.</span>`}
         </div>
       </section>
     </div>
@@ -1868,7 +1747,16 @@ function compactLiveEventSuggestions(observation) {
   if (observation.suggestedItems?.length) {
     return mergeSuggestionsWithDecisions(observation.suggestedItems.slice(0, 3), observation.decisions ?? {});
   }
-  return mergeSuggestionsWithDecisions([], observation.decisions ?? {});
+  const analyzed = window.analyzeLiveObservation?.(observation, recentObservationHistory(60)) ?? { suggestions: [] };
+  observation.suggestedItems = (analyzed.suggestions ?? []).slice(0, 3).map((suggestion) => ({
+    id: suggestion.item.id,
+    score: suggestion.score,
+    confidence: suggestion.confidence,
+    confidenceLabel: suggestion.confidenceLabel,
+    tendency: suggestion.tendency,
+    reasons: suggestion.reasons
+  }));
+  return mergeSuggestionsWithDecisions(observation.suggestedItems, observation.decisions ?? {});
 }
 
 function compactPostAnalysisSuggestions(observation) {
@@ -2446,8 +2334,32 @@ function renderDetailPanel() {
     button.addEventListener("click", (event) => {
       event.stopPropagation();
       const key = button.dataset.key;
+      const previousValue = session.observations[key] ?? 0;
       const nextValue = Number(button.dataset.value);
-      setSpiderItemValue(key, nextValue, { captureReorder: true });
+      const wasGray = previousValue === 0 && nextValue !== 0;
+      itemMoveSnapshot = wasGray ? captureItemPositions() : null;
+      session.observations[key] = nextValue;
+      recentlySortedKey = wasGray ? key : null;
+      // Sync to logbook
+      if (nextValue === 0) {
+        const existing = (session.rawObservations ?? []).find(
+          (obs) => obs.spiderItemKey === key && !obs.excluded
+        );
+        if (existing) existing.excluded = true;
+        spiderBatchChanges = spiderBatchChanges.filter((c) => c.key !== key);
+      } else {
+        const valence = nextValue <= 2 ? "positive" : "development";
+        if (spiderSessionOpen) {
+          const spiderItem = itemByKey(key);
+          const itemText = spiderItem?.exactText ?? spiderItem?.text ?? spiderItem?.label ?? key;
+          spiderBatchChanges = spiderBatchChanges.filter((c) => c.key !== key);
+          spiderBatchChanges.push({ key, text: itemText, valence });
+        } else {
+          createSpiderLogbookEntry(key, valence);
+        }
+      }
+      session.updatedAt = new Date().toISOString();
+      persistSession();
       render();
     });
   });
@@ -2472,38 +2384,6 @@ function openObservationNote(key) {
   observationNoteText.value = cardMeta(key).observationNote ?? "";
   observationNoteDialog.classList.remove("hidden");
   observationNoteText.focus();
-}
-
-function setSpiderItemValue(key, nextValue, options = {}) {
-  const previousValue = session.observations[key] ?? 0;
-  const wasGray = previousValue === 0 && nextValue !== 0;
-  if (options.captureReorder) {
-    itemMoveSnapshot = wasGray ? captureItemPositions() : null;
-    recentlySortedKey = wasGray ? key : null;
-  }
-  session.observations[key] = nextValue;
-  if (nextValue === 0) {
-    const existing = (session.rawObservations ?? []).find(
-      (obs) => obs.spiderItemKey === key && !obs.excluded
-    );
-    if (existing) existing.excluded = true;
-    spiderBatchChanges = spiderBatchChanges.filter((change) => change.key !== key);
-  } else {
-    const valence = nextValue <= 2 ? "positive" : "development";
-    if (spiderSessionOpen || options.batch) {
-      const spiderItem = itemByKey(key);
-      const itemText = spiderItem?.exactText ?? spiderItem?.text ?? spiderItem?.label ?? key;
-      spiderBatchChanges = spiderBatchChanges.filter((change) => change.key !== key);
-      spiderBatchChanges.push({ key, text: itemText, valence });
-    } else {
-      createSpiderLogbookEntry(key, valence);
-    }
-  }
-  phase2CacheKey = "";
-  phase2CacheBoard = null;
-  session.updatedAt = new Date().toISOString();
-  persistSession();
-  schedulePhase2Recompute("Direktbearbeitung wird verdichtet");
 }
 
 function renderSpiderItem(subcategory, item, index) {
@@ -2560,9 +2440,6 @@ function flushSpiderBatch() {
   session.updatedAt = new Date().toISOString();
   persistSession();
   spiderBatchChanges = [];
-  scheduleDirtyCheck();
-  queueLivePostAnalysis(obs.id, 900);
-  schedulePhase2Recompute("Spider-Web-Markierungen werden verdichtet");
 }
 
 function createSpiderLogbookEntry(key, valence) {
@@ -2574,15 +2451,6 @@ function createSpiderLogbookEntry(key, valence) {
   if (existing) {
     if (valence && existing.manualValence !== valence) {
       existing.manualValence = valence;
-      existing.decisions = {
-        ...(existing.decisions ?? {}),
-        [key]: {
-          ...(existing.decisions?.[key] ?? {}),
-          itemId: key,
-          valence,
-          confirmedBy: "spider"
-        }
-      };
       decorateLiveEventForLegacy(existing);
       persistSession();
       renderLiveDecisionInPlace();
@@ -2590,9 +2458,6 @@ function createSpiderLogbookEntry(key, valence) {
     return existing;
   }
   const itemText = item.exactText ?? item.text ?? item.label ?? key;
-  const timestamp = new Date().toISOString();
-  const timing = lessonTimingConfig();
-  const minuteInLesson = timing ? window.getMinuteInLesson?.(timestamp, timing) ?? null : null;
   const obs = {
     id: `spider-${Date.now()}`,
     type: "observation",
@@ -2601,10 +2466,8 @@ function createSpiderLogbookEntry(key, valence) {
     hintText: "",
     phase: livePhase?.value ?? "",
     socialForm: liveSocialFormValue,
-    timestamp,
-    minuteInLesson,
-    lessonWindow: timing ? window.getLessonWindow?.(minuteInLesson, timing.durationMinutes) ?? null : null,
-    decisions: { [key]: { itemId: key, valence: valence ?? "positive", confirmedBy: "spider" } },
+    timestamp: new Date().toISOString(),
+    decisions: { [key]: { valence: valence ?? "positive", confirmedBy: "spider" } },
     manualValence: valence ?? "positive"
   };
   decorateLiveEventForLegacy(obs);
@@ -2724,7 +2587,7 @@ function addSpiderNoteToLogbook(itemKey, noteText) {
   };
   decorateLiveEventForLegacy(event);
   session.rawObservations.unshift(event);
-  queueLivePostAnalysis(event.id, 1600);
+  queueLivePostAnalysis(event.id, 500);
 }
 
 function captureItemPositions() {
@@ -2974,18 +2837,7 @@ function renderCondensationMode() {
   const board = getPhase2Board({ includeOpen: true });
 
   if (!board) {
-    synthesisCards.innerHTML = `
-      ${renderEvaluationSpiderStage(null)}
-      ${renderPhase2ComputeStatus()}
-      <div class="condense-summary">
-        <span>Zusammenhänge noch nicht berechnet</span>
-      </div>
-    `;
-    evidenceCards.innerHTML = `<p class="empty-state">Noch keine bestätigten lerntragenden Wirkungen.</p>`;
-    developmentCards.innerHTML = `<p class="empty-state">Noch keine bestätigten entwicklungsrelevanten Wirkungen.</p>`;
-    renderPhase2DetailPanel(null);
-    hiddenStack.innerHTML = "";
-    bindEvaluationSpiderStage();
+    renderLegacyCondensationMode();
     return;
   }
 
@@ -2995,19 +2847,11 @@ function renderCondensationMode() {
   }));
 
   synthesisCards.innerHTML = `
-    ${renderEvaluationSpiderStage(board)}
-    ${renderPhase2ComputeStatus()}
     <div class="condense-summary">
       ${visibleSections.map((section) => `<span>${section.cards.length} ${escapeHtml(section.title)}</span>`).join("")}
     </div>
   `;
   const forcedCards = relevantObsAsCards();
-  const visibleBoardCards = visibleSections.flatMap((section) => section.cards);
-  const allPhase2Cards = [...forcedCards, ...visibleBoardCards];
-  if (activePhase2CardId && !allPhase2Cards.some((card) => card.id === activePhase2CardId)) {
-    activePhase2CardId = null;
-  }
-  const activePhase2Card = allPhase2Cards.find((card) => card.id === activePhase2CardId) ?? null;
   const forcedPositive = forcedCards.filter((c) => c.direction === "positive").map(renderPhase2Card).join("");
   const forcedDevelopment = forcedCards.filter((c) => c.direction !== "positive").map(renderPhase2Card).join("");
   evidenceCards.innerHTML = (forcedPositive ? `<div class="phase2-card-flow forced-relevant-flow">${forcedPositive}</div>` : "")
@@ -3017,160 +2861,8 @@ function renderCondensationMode() {
     + renderPhase2Section(visibleSections.find((section) => section.id === "development"))
     + renderPhase2Section(visibleSections.find((section) => section.id === "free"))
     + renderPhase2Section(visibleSections.find((section) => section.id === "open"));
-  renderPhase2DetailPanel(activePhase2Card);
   hiddenStack.innerHTML = renderHiddenPhase2Stack(board.cards);
-  bindEvaluationSpiderStage();
   bindPhase2Actions();
-}
-
-function renderEvaluationSpiderStage(board) {
-  const entries = chartEntries();
-  const observationCount = session.rawObservations?.length ?? 0;
-  const positiveCount = (board?.sections ?? []).find((section) => section.id === "positive")?.cards?.length ?? 0;
-  const developmentCount = (board?.sections ?? []).find((section) => section.id === "development")?.cards?.length ?? 0;
-  const points = spiderSvgPoints(entries, "evidenceValue");
-  const developmentPoints = spiderSvgPoints(entries, "developmentValue");
-  return `
-    <section class="evaluation-diagnosis-stage" aria-label="Diagnose-Raum Spider-Web">
-      <div class="diagnosis-stage-copy">
-        <p class="eyebrow">Diagnose-Raum</p>
-        <h2>Sitzungsnetz</h2>
-        <p>Bestätigte Bezüge, keine Bewertung.</p>
-        <div class="diagnosis-stats">
-          <span>${observationCount} Beob.</span>
-          <span>${positiveCount} grün</span>
-          <span>${developmentCount} blau</span>
-        </div>
-      </div>
-      <div class="diagnosis-spider" aria-hidden="true">
-        <svg viewBox="0 0 500 500" role="img">
-          ${[190, 145, 95, 45].map((radius) => `<circle cx="250" cy="250" r="${radius}" class="diagnosis-orbit"></circle>`).join("")}
-          ${entries.map((entry, index) => {
-            const point = spiderPoint(index, entries.length, 190);
-            return `<line x1="250" y1="250" x2="${point.x}" y2="${point.y}" class="diagnosis-axis"></line>`;
-          }).join("")}
-          <polygon points="${developmentPoints}" class="diagnosis-poly development"></polygon>
-          <polygon points="${points}" class="diagnosis-poly positive"></polygon>
-          ${entries.map((entry, index) => {
-            const label = spiderPoint(index, entries.length, 223);
-            return `<text class="diagnosis-label ${entry.id === activeSubcategoryId ? "active" : ""}" x="${label.x}" y="${label.y}" text-anchor="middle" dominant-baseline="middle">${escapeHtml(shortSpiderLabel(entry.label))}</text>`;
-          }).join("")}
-        </svg>
-      </div>
-      ${renderEvaluationSpiderEditor()}
-    </section>
-  `;
-}
-
-function renderEvaluationSpiderEditor() {
-  const subcategory = subcategories.find((candidate) => candidate.id === activeSubcategoryId) ?? subcategories[0];
-  const activeDimension = subcategory.dimension;
-  const dimensionSubcategories = subcategories.filter((candidate) => candidate.dimension.id === activeDimension.id);
-  return `
-    <div class="diagnosis-editor" aria-label="Spider-Web in der Auswertung bearbeiten">
-      <div class="diagnosis-editor-header">
-        <div>
-          <p class="eyebrow">Direkt bearbeiten</p>
-          <h3>${escapeHtml(activeDimension.title)}</h3>
-        </div>
-        <p>Item antippen: grün, blau, wieder raus. Logbuch-Markierungen bleiben als Belege sichtbar.</p>
-      </div>
-      <div class="diagnosis-dimension-tabs" aria-label="Hauptkategorie wählen">
-        ${dimensions.map((dimension) => {
-          const firstSubcategory = dimension.subcategories[0];
-          return `
-            <button
-              class="diagnosis-dimension-tab ${dimension.id === activeDimension.id ? "active" : ""}"
-              type="button"
-              data-evaluation-subcategory="${firstSubcategory.id}"
-              style="--dimension-color: ${dimension.color}"
-            >
-              ${escapeHtml(dimension.title)}
-            </button>
-          `;
-        }).join("")}
-      </div>
-      <div class="diagnosis-subcategory-tabs" aria-label="Unterkategorie wählen">
-        ${dimensionSubcategories.map((candidate) => `
-          <button
-            class="diagnosis-subcategory-tab ${candidate.id === subcategory.id ? "active" : ""}"
-            type="button"
-            data-evaluation-subcategory="${candidate.id}"
-            style="--dimension-color: ${candidate.dimension.color}"
-          >
-            ${escapeHtml(candidate.chartLabel ?? candidate.title)}
-          </button>
-        `).join("")}
-      </div>
-      <div class="diagnosis-item-editor-list">
-        ${subcategory.items.map((item, index) => renderEvaluationSpiderItem(subcategory, item, index)).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderEvaluationSpiderItem(subcategory, item, index) {
-  const key = itemKey(subcategory.id, index);
-  const manualValue = session.observations?.[key] ?? 0;
-  const liveStats = liveDecisionStatsForItemKey(key);
-  const value = visualItemValue(key);
-  const state = states[value] ?? states[0];
-  const liveLabel = liveStats.total
-    ? `${liveStats.positive ? `${liveStats.positive}x grün` : ""}${liveStats.positive && liveStats.development ? " · " : ""}${liveStats.development ? `${liveStats.development}x blau` : ""}`
-    : "noch nicht belegt";
-  return `
-    <button
-      class="diagnosis-item-editor ${state.className} ${manualValue ? "manual" : ""}"
-      type="button"
-      data-evaluation-item-cycle="${escapeHtml(key)}"
-      aria-label="${escapeHtml(item)}"
-    >
-      <span>${escapeHtml(item)}</span>
-      <em>${escapeHtml(state.label)} · ${escapeHtml(liveLabel)}</em>
-    </button>
-  `;
-}
-
-function spiderSvgPoints(entries, key) {
-  return entries.map((entry, index) => {
-    const value = Math.max(0.03, Math.min(1, Number(entry[key]) || 0));
-    const point = spiderPoint(index, entries.length, 190 * value);
-    return `${point.x},${point.y}`;
-  }).join(" ");
-}
-
-function spiderPoint(index, count, radius) {
-  const angle = -Math.PI / 2 + index * (Math.PI * 2 / Math.max(1, count));
-  return {
-    x: Math.round((250 + Math.cos(angle) * radius) * 10) / 10,
-    y: Math.round((250 + Math.sin(angle) * radius) * 10) / 10
-  };
-}
-
-function shortSpiderLabel(label) {
-  return String(label ?? "").replace(/\s*\/\s*/g, "/").replace(/^(\d\.\d)\s+/, "$1 ");
-}
-
-function bindEvaluationSpiderStage() {
-  document.querySelectorAll("[data-evaluation-subcategory]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const nextSubcategoryId = button.dataset.evaluationSubcategory;
-      if (nextSubcategoryId !== activeSubcategoryId) {
-        flushSpiderBatch();
-      }
-      activeSubcategoryId = nextSubcategoryId;
-      render();
-    });
-  });
-  document.querySelectorAll("[data-evaluation-item-cycle]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const key = button.dataset.evaluationItemCycle;
-      const manualValue = session.observations?.[key] ?? 0;
-      const nextValue = manualValue === 0 ? 2 : manualValue <= 2 ? 4 : 0;
-      setSpiderItemValue(key, nextValue, { batch: true });
-      render();
-    });
-  });
 }
 
 function renderLegacyCondensationMode() {
@@ -3272,96 +2964,20 @@ function renderEvidenceSourceBlocks(card, { editable = false } = {}) {
 function renderPhase2Card(card) {
   const meta = cardMeta(card.id);
   const direction = sectionForPhase2Card(card);
-  const title = meta.customTitle ?? card.title;
-  const evidenceCount = card.evidence?.length ?? 0;
-  const directionLabel = direction === "positive"
-    ? "lerntragende Wirkung"
-    : direction === "development"
-      ? "entwicklungsrelevante Wirkung"
-      : direction === "mixed"
-        ? "Ambivalenz"
-        : direction === "free"
-          ? "freie Beobachtung"
-          : "offen";
   return `
-    <article class="phase2-card ${direction} ${activePhase2CardId === card.id ? "selected" : ""} ${meta.focus ? "focus" : ""} ${meta.relevant ? "relevant" : ""}" data-phase2-id="${escapeHtml(card.id)}">
+    <article class="phase2-card ${direction} ${meta.focus ? "focus" : ""} ${meta.relevant ? "relevant" : ""}" data-phase2-id="${escapeHtml(card.id)}">
       <button class="phase2-archive" type="button" data-phase2-action="archive" data-phase2-id="${escapeHtml(card.id)}" aria-label="Karte ausblenden">×</button>
-      <div class="phase2-card-summary">
-        <h3>${escapeHtml(title)}</h3>
-        <div class="phase2-card-meta">
-          <span>${escapeHtml(directionLabel)}</span>
-          ${evidenceCount ? `<span>${evidenceCount} Beleg${evidenceCount === 1 ? "" : "e"}</span>` : ""}
-          ${(meta.focus || meta.relevant) ? `<span>Nachbesprechung</span>` : ""}
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-function renderPhase2DetailPanel(card) {
-  const panel = document.querySelector("#phase2DetailPanel");
-  if (!panel) return;
-  if (!card) {
-    panel.innerHTML = `
-      <div class="phase2-side-empty">
-        <p class="eyebrow">Detail</p>
-        <h3>Karte antippen</h3>
-        <p>Links bleibt die Übersicht. Rechts erscheinen Deutung, Belege und Entscheidung für die Nachbesprechung.</p>
-      </div>
-    `;
-    return;
-  }
-  const meta = cardMeta(card.id);
-  const direction = sectionForPhase2Card(card);
-  const title = meta.customTitle ?? card.title;
-  const showStatement = card.statement && !phase2StatementDuplicatesEvidence(card);
-  panel.innerHTML = `
-    <article class="phase2-side-card ${direction}">
-      <div class="phase2-side-header">
-        <p class="eyebrow">Reflexionskarte</p>
-        <button class="close-button phase2-side-close" type="button" data-phase2-close-detail aria-label="Detail schließen">×</button>
-      </div>
-      <label class="phase2-title-editor">
-        <span>Titel</span>
-        <input class="phase2-title-input" type="text" data-phase2-title="${escapeHtml(card.id)}" value="${escapeHtml(title)}" placeholder="Titel…">
-      </label>
-      ${showStatement ? `
-        <section class="phase2-detail-section">
-          <strong>Mögliche Schlussfolgerung des Systems</strong>
-          <p>${escapeHtml(card.statement)}</p>
-        </section>
-      ` : ""}
-      ${card.impulse ? `
-        <section class="phase2-detail-section">
-          <strong>Möglicher Gesprächsimpuls</strong>
-          <p class="phase2-impulse">${escapeHtml(card.impulse)}</p>
-        </section>
-      ` : ""}
-      <section class="phase2-detail-section">
-        <strong>Belege</strong>
+      <input class="phase2-title-input" type="text" data-phase2-title="${escapeHtml(card.id)}" value="${escapeHtml(meta.customTitle ?? card.title)}" placeholder="Titel…">
+      <p>${escapeHtml(card.statement ?? "")}</p>
+      ${card.impulse ? `<p class="phase2-impulse">${escapeHtml(card.impulse)}</p>` : ""}
+      <div class="phase2-detail">
         ${renderEvidenceSourceBlocks(card)}
-      </section>
+      </div>
       <div class="card-actions inline-actions">
         <button type="button" class="${(meta.focus || meta.relevant) ? "active" : ""}" data-phase2-action="discuss" data-phase2-id="${escapeHtml(card.id)}">In Nachbesprechung</button>
       </div>
     </article>
   `;
-}
-
-function phase2StatementDuplicatesEvidence(card) {
-  if (card.source === "gespraechsrelevant") return true;
-  const statement = normalizeLooseText(card.statement ?? "");
-  if (!statement) return false;
-  return (card.evidence ?? []).some((entry) => normalizeLooseText(entry.text ?? "") === statement);
-}
-
-function normalizeLooseText(text) {
-  return String(text ?? "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
 }
 
 function getPhase2Board(options = {}) {
@@ -3377,9 +2993,6 @@ function getPhase2Board(options = {}) {
   if (cacheKey === phase2CacheKey && phase2CacheBoard) {
     return phase2CacheBoard;
   }
-  if (phase2ComputeStatus !== "running") {
-    setPhase2ComputeState("running", "Verdichtung wird aktualisiert");
-  }
   const phase2Observations = window.toPhase2Observations?.(session.rawObservations ?? [], { includeOpen }) ?? [];
   phase2CacheBoard = window.createPhase2Board?.(phase2Observations, {
     timing,
@@ -3392,7 +3005,6 @@ function getPhase2Board(options = {}) {
     }
   }) ?? null;
   phase2CacheKey = cacheKey;
-  setPhase2ComputeState("done", "Verdichtung aktualisiert");
   return phase2CacheBoard;
 }
 
@@ -3429,7 +3041,6 @@ function bindPhase2Actions() {
       }
       if (button.dataset.phase2Action === "archive") {
         meta.archived = true;
-        if (activePhase2CardId === id) activePhase2CardId = null;
       }
       if (button.dataset.phase2Action === "restore") {
         meta.archived = false;
@@ -3441,14 +3052,9 @@ function bindPhase2Actions() {
   });
   document.querySelectorAll(".phase2-card").forEach((card) => {
     card.addEventListener("click", (e) => {
-      if (e.target.closest("button") || e.target.closest(".sketch-detail-toggle") || e.target.closest("[data-phase2-title]")) return;
-      activePhase2CardId = card.dataset.phase2Id || null;
-      render();
+      if (e.target.closest(".sketch-detail-toggle") || e.target.closest("[data-phase2-title]")) return;
+      card.classList.toggle("show-detail");
     });
-  });
-  document.querySelector("[data-phase2-close-detail]")?.addEventListener("click", () => {
-    activePhase2CardId = null;
-    render();
   });
   document.querySelectorAll(".sketch-detail-toggle summary").forEach((summary) => {
     summary.addEventListener("click", (e) => e.stopPropagation());
@@ -3631,14 +3237,11 @@ function renderEvaluation() {
     ? crossItemSyntheses(visibleCards).filter((synthesis) => !hiddenSyntheses.has(synthesis.synthesisId))
     : [];
 
-  synthesisCards.innerHTML = `
-    ${renderEvaluationSpiderStage(null)}
-    ${session.synthesisRequested
-      ? (syntheses.length
-        ? syntheses.map(renderSynthesisCard).join("")
-        : `<p class="empty-state">Noch keine itemübergreifenden Zusammenhänge erkennbar.</p>`)
-      : `<div class="condense-summary"><span>Zusammenhänge noch nicht berechnet</span></div>`}
-  `;
+  synthesisCards.innerHTML = session.synthesisRequested
+    ? (syntheses.length
+      ? syntheses.map(renderSynthesisCard).join("")
+      : `<p class="empty-state">Noch keine itemübergreifenden Zusammenhänge erkennbar.</p>`)
+    : `<p class="empty-state">Wird erst auf Knopfdruck berechnet.</p>`;
 
   evidenceCards.innerHTML = evidence.length
     ? renderDimensionEvaluation(evidence, "evidence") + renderCustomCards(customEvidence)
@@ -3646,9 +3249,6 @@ function renderEvaluation() {
   developmentCards.innerHTML = development.length
     ? renderDimensionEvaluation(development, "development") + renderCustomCards(customDevelopment)
     : (customDevelopment.length ? renderCustomCards(customDevelopment) : `<p class="empty-state">Noch keine entwicklungsrelevanten Wirkungen markiert.</p>`);
-
-  renderPhase2DetailPanel(null);
-  bindEvaluationSpiderStage();
 
   document.querySelectorAll(".cluster-card").forEach((card) => {
     card.addEventListener("click", () => {
@@ -4377,7 +3977,7 @@ function relevantObsAsCards() {
         source: "gespraechsrelevant",
         direction,
         title: shortText,
-        statement: "",
+        statement: obs.text ?? "",
         impulse: "",
         itemIds: [],
         phases: [obs.phase].filter(Boolean),
@@ -5844,7 +5444,7 @@ function protocolCardPublicData(card) {
     title: card.title ?? "Gesprächspunkt",
     kind: protocolCardKind(card),
     statement: card.statement ?? "",
-    impulse: meta.impulseHidden ? "" : (card.impulse ?? ""),
+    impulse: "",
     status: statusLabel(meta.status || "thematisiert"),
     discussionNote: meta.discussionNote || meta.note || "",
     itemIds: (card.itemIds ?? []).filter(Boolean),
