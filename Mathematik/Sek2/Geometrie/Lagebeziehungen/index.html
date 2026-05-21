@@ -1,1 +1,906 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lagebeziehungen von Geraden im R3</title>
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182033;
+      --muted: #626f86;
+      --line: #d9dfeb;
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --g-line: #1f2937;
+      --h-line: #8b1e3f;
+      --g-support: #0f8ea8;
+      --g-direction: #2563eb;
+      --h-support: #c2418f;
+      --h-direction: #f97316;
+      --green: #168a5b;
+      --amber: #b66b00;
+      --violet: #7058c8;
+      --shadow: 0 14px 34px rgba(33, 46, 74, .12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
+    * { box-sizing: border-box; }
+
+    html {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(1200px, calc(100vw - 28px));
+      margin: 0 auto;
+      padding: 24px 0 30px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 2.6vw, 2.45rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .result-pill {
+      min-width: 188px;
+      padding: 13px 16px;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 850;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .result-pill.hidden {
+      background: #697386 !important;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 350px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .side {
+      padding: 14px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .examples {
+      display: grid;
+      gap: 9px;
+    }
+
+    .example {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 72px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .example:hover {
+      border-color: #aab6cc;
+      background: #f2f6ff;
+    }
+
+    .example.active {
+      border-color: currentColor;
+      box-shadow: inset 0 0 0 1px currentColor;
+      background: #ffffff;
+    }
+
+    .example strong {
+      display: block;
+      font-size: .95rem;
+    }
+
+    .badge {
+      width: 12px;
+      height: 28px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .toggle-case {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .toggle-case:hover {
+      background: #28334a;
+    }
+
+    .viewer {
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    #ggb {
+      width: 100%;
+      height: min(62svh, 600px);
+      min-height: 500px;
+      background: #eef3fb;
+    }
+
+    .ggb-fallback {
+      display: grid;
+      place-items: center;
+      min-height: 500px;
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .bottom {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
+      align-items: stretch;
+    }
+
+    .formula-panel {
+      padding: 15px;
+    }
+
+    .formula-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .formula-line {
+      display: grid;
+      gap: 6px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .formula-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 850;
+    }
+
+    .swatch {
+      width: 28px;
+      height: 6px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .equation {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      color: var(--ink);
+      font: 850 clamp(.92rem, 1.7vw, 1.16rem)/1.25 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .vcol {
+      display: inline-grid;
+      grid-template-rows: repeat(3, 1fr);
+      min-width: 34px;
+      padding: 2px 8px;
+      border-left: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      border-radius: 9px / 18px;
+      text-align: center;
+      line-height: 1.18;
+    }
+
+    .formula-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    @media (max-width: 940px) {
+      header,
+      .layout,
+      .bottom {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        padding-top: 18px;
+      }
+
+      .result-pill {
+        width: 100%;
+      }
+
+      .examples {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .example {
+        min-height: 62px;
+      }
+
+      #ggb,
+      .ggb-fallback {
+        min-height: 470px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      header {
+        gap: 12px;
+      }
+
+      .subtitle {
+        font-size: .94rem;
+      }
+
+      .examples {
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+      }
+
+      .example {
+        min-height: 58px;
+        padding: 10px;
+      }
+
+      .example strong {
+        font-size: .88rem;
+        line-height: 1.18;
+      }
+
+      .badge {
+        width: 9px;
+        height: 24px;
+      }
+
+      #ggb,
+      .ggb-fallback {
+        height: 56svh;
+        min-height: 390px;
+      }
+
+      .formula-panel {
+        padding: 12px;
+      }
+
+      .formula-line {
+        padding: 10px;
+      }
+
+      .equation {
+        gap: 6px;
+        font-size: .9rem;
+      }
+
+      .vcol {
+        min-width: 30px;
+        padding: 2px 6px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      main {
+        width: min(100vw - 18px, 1200px);
+        padding-top: 14px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .subtitle {
+        display: none;
+      }
+
+      .side {
+        padding: 10px;
+      }
+
+      .result-pill {
+        min-width: 0;
+        padding: 11px 12px;
+      }
+
+      #ggb,
+      .ggb-fallback {
+        height: 54svh;
+        min-height: 350px;
+      }
+
+      .formula-legend {
+        font-size: .78rem;
+        gap: 6px 10px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .examples {
+        grid-template-columns: 1fr;
+      }
+
+      #ggb,
+      .ggb-fallback {
+        min-height: 330px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Lagebeziehungen von Geraden im R<sup>3</sup></h1>
+        <p class="subtitle">Beispieltyp wählen, Geraden in GeoGebra-3D sehen, Parameterform lesen und den Fall erst bei Bedarf einblenden.</p>
+      </div>
+      <div class="result-pill hidden" id="resultPill">Fall verdeckt</div>
+    </header>
+
+    <section class="layout">
+      <aside class="panel side">
+        <h2>Beispieltyp</h2>
+        <div class="examples" id="examples"></div>
+        <button class="toggle-case" id="toggleCase" type="button">Fall einblenden</button>
+      </aside>
+
+      <section class="panel viewer">
+        <div id="ggb">
+          <div class="ggb-fallback">GeoGebra-3D wird geladen. Falls die Ansicht leer bleibt, braucht die Seite Internetzugriff auf geogebra.org.</div>
+        </div>
+      </section>
+    </section>
+
+    <section class="bottom">
+      <section class="panel formula-panel">
+        <h2>Parameterform</h2>
+        <div class="formula-grid">
+          <div class="formula-line" style="color: var(--g-line)">
+            <div class="formula-title"><span class="swatch"></span>g</div>
+            <div class="equation" id="eqG"></div>
+            <div class="formula-legend">
+              <span class="legend-item" style="color: var(--g-support)"><i class="legend-dot"></i>Stützvektor</span>
+              <span class="legend-item" style="color: var(--g-direction)"><i class="legend-dot"></i>Richtungsvektor</span>
+            </div>
+          </div>
+          <div class="formula-line" style="color: var(--h-line)">
+            <div class="formula-title"><span class="swatch"></span>h</div>
+            <div class="equation" id="eqH"></div>
+            <div class="formula-legend">
+              <span class="legend-item" style="color: var(--h-support)"><i class="legend-dot"></i>Stützvektor</span>
+              <span class="legend-item" style="color: var(--h-direction)"><i class="legend-dot"></i>Richtungsvektor</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const EPS = 1e-8;
+    let activeKey = "parallel";
+    let currentExample = null;
+    let caseVisible = false;
+    let ggbReady = false;
+    let pendingExample = null;
+
+    const colors = {
+      schnitt: "#168a5b",
+      windschief: "#7058c8",
+      parallel: "#b66b00",
+      identisch: "#2563eb"
+    };
+
+    const vectorColors = {
+      gLine: "#1f2937",
+      gSupport: "#0f8ea8",
+      gDirection: "#2563eb",
+      hLine: "#8b1e3f",
+      hSupport: "#c2418f",
+      hDirection: "#f97316"
+    };
+
+    const caseTypes = {
+      parallel: {
+        title: "2 parallele Geraden",
+        short: "Parallel"
+      },
+      identisch: {
+        title: "Identische Geraden",
+        short: "Identisch"
+      },
+      schnitt: {
+        title: "Schneidende Geraden",
+        short: "Schnitt"
+      },
+      windschief: {
+        title: "Windschiefe Geraden",
+        short: "Windschief"
+      }
+    };
+
+    function sub(a, b) { return a.map((x, i) => x - b[i]); }
+    function add(a, b) { return a.map((x, i) => x + b[i]); }
+    function mul(a, k) { return a.map((x) => x * k); }
+    function dot(a, b) { return a.reduce((sum, x, i) => sum + x * b[i], 0); }
+    function norm(a) { return Math.sqrt(dot(a, a)); }
+    function cross(a, b) {
+      return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+      ];
+    }
+
+    function fmt(n) {
+      if (Math.abs(n) < EPS) return "0";
+      if (Math.abs(n - Math.round(n)) < EPS) return String(Math.round(n));
+      return n.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    }
+
+    function vecHtml(v, color) {
+      return "<span class=\"vcol\" style=\"color:" + color + "\">" + v.map((n) => "<span>" + fmt(n) + "</span>").join("") + "</span>";
+    }
+
+    function tuple(v) {
+      return "(" + v.map(fmt).join(", ") + ")";
+    }
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function randomVec(min = -4, max = 4) {
+      return [randInt(min, max), randInt(min, max), randInt(min, max)];
+    }
+
+    function isZero(v) {
+      return norm(v) < EPS;
+    }
+
+    function collinear(a, b) {
+      return norm(cross(a, b)) < EPS;
+    }
+
+    function lineThroughOrigin(p, u) {
+      return collinear(p, u);
+    }
+
+    function randomDirection() {
+      let v;
+      do {
+        v = randomVec(-3, 3);
+      } while (isZero(v));
+      return v;
+    }
+
+    function randomPointForDirection(u) {
+      let p;
+      do {
+        p = randomVec(-4, 4);
+      } while (isZero(p) || lineThroughOrigin(p, u));
+      return p;
+    }
+
+    function samePoint(a, b) {
+      return norm(sub(a, b)) < EPS;
+    }
+
+    function validateExample(ex, key) {
+      const result = classify(ex);
+      return result.kind === key && !lineThroughOrigin(ex.p, ex.u) && !lineThroughOrigin(ex.q, ex.v);
+    }
+
+    function generateParallel() {
+      const u = randomDirection();
+      const scale = Math.random() < .5 ? 2 : -2;
+      const p = randomPointForDirection(u);
+      let q;
+      do {
+        q = randomPointForDirection(u);
+      } while (collinear(sub(q, p), u));
+      return { p, u, q, v: mul(u, scale) };
+    }
+
+    function generateIdentisch() {
+      const u = randomDirection();
+      const p = randomPointForDirection(u);
+      const k = randInt(-3, 3) || 2;
+      const q = add(p, mul(u, k));
+      const scale = Math.random() < .5 ? -1 : 2;
+      return { p, u, q, v: mul(u, scale) };
+    }
+
+    function generateSchnitt() {
+      const sPoint = randomVec(-3, 3);
+      let u, v, p, q;
+      do {
+        u = randomDirection();
+        v = randomDirection();
+      } while (collinear(u, v));
+      const t0 = randInt(-3, 3) || 2;
+      const s0 = randInt(-3, 3) || -2;
+      p = sub(sPoint, mul(u, t0));
+      q = sub(sPoint, mul(v, s0));
+      return { p, u, q, v };
+    }
+
+    function generateWindschief() {
+      const p = randomPointForDirection([1, 0, 0]);
+      let u, q, v;
+      do {
+        u = randomDirection();
+        v = randomDirection();
+        q = randomPointForDirection(v);
+      } while (collinear(u, v));
+      return { p, u, q, v };
+    }
+
+    function generateExample(key) {
+      const makers = {
+        parallel: generateParallel,
+        identisch: generateIdentisch,
+        schnitt: generateSchnitt,
+        windschief: generateWindschief
+      };
+      for (let i = 0; i < 300; i++) {
+        const ex = makers[key]();
+        if (validateExample(ex, key)) return ex;
+      }
+      return {
+        p: [1, 2, 1],
+        u: [1, 1, 2],
+        q: [2, -1, 2],
+        v: key === "parallel" ? [2, 2, 4] : [-1, 2, 1]
+      };
+    }
+
+    function classify(ex) {
+      const p = ex.p, u = ex.u, q = ex.q, v = ex.v;
+      const dirsCollinear = norm(cross(u, v)) < EPS;
+
+      if (dirsCollinear) {
+        const pointOnLine = norm(cross(sub(q, p), u)) < EPS;
+        return {
+          kind: pointOnLine ? "identisch" : "parallel",
+          title: pointOnLine ? "Identisch" : "Parallel",
+          dirsCollinear,
+          pointOnLine
+        };
+      }
+
+      const pairs = [[0, 1], [0, 2], [1, 2]];
+      let best = null;
+      for (const [a, b] of pairs) {
+        const det = -u[a] * v[b] + u[b] * v[a];
+        if (Math.abs(det) > (best?.absDet || 0)) best = { a, b, det, absDet: Math.abs(det) };
+      }
+
+      const a = best.a;
+      const b = best.b;
+      const rhsA = q[a] - p[a];
+      const rhsB = q[b] - p[b];
+      const t = (-rhsA * v[b] + rhsB * v[a]) / best.det;
+      const s = (u[a] * rhsB - u[b] * rhsA) / best.det;
+      const pg = add(p, mul(u, t));
+      const ph = add(q, mul(v, s));
+      const intersects = norm(sub(pg, ph)) < 1e-6;
+
+      return {
+        kind: intersects ? "schnitt" : "windschief",
+        title: intersects ? "Schnitt" : "Windschief",
+        dirsCollinear,
+        t,
+        s,
+        point: intersects ? pg : null
+      };
+    }
+
+    function renderExamples() {
+      $("examples").innerHTML = Object.entries(caseTypes).map(([key, ex]) => `
+        <button class="example ${key === activeKey ? "active" : ""}" data-key="${key}" style="color:${colors[key]}">
+          <span>
+            <strong>${ex.title}</strong>
+          </span>
+          <i class="badge"></i>
+        </button>
+      `).join("");
+
+      document.querySelectorAll(".example").forEach((button) => {
+        button.addEventListener("click", () => setExample(button.dataset.key));
+      });
+    }
+
+    function renderFormulas(ex) {
+      $("eqG").innerHTML = "<span>g: x =</span>" + vecHtml(ex.p, vectorColors.gSupport) + "<span>+ t ·</span>" + vecHtml(ex.u, vectorColors.gDirection);
+      $("eqH").innerHTML = "<span>h: x =</span>" + vecHtml(ex.q, vectorColors.hSupport) + "<span>+ s ·</span>" + vecHtml(ex.v, vectorColors.hDirection);
+    }
+
+    function geogebraCommand(cmd) {
+      if (window.ggbApplet && ggbReady) window.ggbApplet.evalCommand(cmd);
+    }
+
+    function geogebraSetColor(name, hex) {
+      if (!window.ggbApplet || !ggbReady) return;
+      const value = hex.replace("#", "");
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      window.ggbApplet.setColor(name, r, g, b);
+    }
+
+    function clearGeoGebraObjects() {
+      if (!window.ggbApplet || !ggbReady) return;
+      ["S", "VH", "UG", "OQ", "OP", "h", "g", "B", "A", "Q", "P", "O"].forEach((name) => {
+        try {
+          window.ggbApplet.deleteObject(name);
+        } catch (error) {
+          // GeoGebra may throw when an object does not exist yet.
+        }
+      });
+    }
+
+    function lockGeoGebraObjects(names) {
+      if (!window.ggbApplet || !ggbReady) return;
+      names.forEach((name) => {
+        if (typeof window.ggbApplet.setFixed === "function") {
+          window.ggbApplet.setFixed(name, true, false);
+        }
+      });
+    }
+
+    function drawGeoGebra(ex, result) {
+      if (!ggbReady || !window.ggbApplet) {
+        pendingExample = { ex, result };
+        return;
+      }
+
+      clearGeoGebraObjects();
+      geogebraCommand("O = (0, 0, 0)");
+      geogebraCommand("P = " + tuple(ex.p));
+      geogebraCommand("Q = " + tuple(ex.q));
+      geogebraCommand("A = " + tuple(add(ex.p, ex.u)));
+      geogebraCommand("B = " + tuple(add(ex.q, ex.v)));
+      geogebraCommand("g = Line(P, A)");
+      geogebraCommand("h = Line(Q, B)");
+      geogebraCommand("OP = Vector(O, P)");
+      geogebraCommand("OQ = Vector(O, Q)");
+      geogebraCommand("UG = Vector(P, A)");
+      geogebraCommand("VH = Vector(Q, B)");
+      geogebraSetColor("g", vectorColors.gLine);
+      geogebraSetColor("h", vectorColors.hLine);
+      geogebraSetColor("P", vectorColors.gSupport);
+      geogebraSetColor("Q", vectorColors.hSupport);
+      geogebraSetColor("OP", vectorColors.gSupport);
+      geogebraSetColor("OQ", vectorColors.hSupport);
+      geogebraSetColor("UG", vectorColors.gDirection);
+      geogebraSetColor("VH", vectorColors.hDirection);
+      window.ggbApplet.setLineThickness("g", 8);
+      window.ggbApplet.setLineThickness("h", 8);
+      window.ggbApplet.setLineThickness("OP", 5);
+      window.ggbApplet.setLineThickness("OQ", 5);
+      window.ggbApplet.setLineThickness("UG", 6);
+      window.ggbApplet.setLineThickness("VH", 6);
+      window.ggbApplet.setLabelVisible("g", true);
+      window.ggbApplet.setLabelVisible("h", true);
+      window.ggbApplet.setLabelVisible("P", true);
+      window.ggbApplet.setLabelVisible("Q", true);
+      window.ggbApplet.setLabelVisible("A", false);
+      window.ggbApplet.setLabelVisible("B", false);
+      window.ggbApplet.setLabelVisible("O", true);
+      window.ggbApplet.setLabelVisible("OP", true);
+      window.ggbApplet.setLabelVisible("OQ", true);
+      window.ggbApplet.setLabelVisible("UG", true);
+      window.ggbApplet.setLabelVisible("VH", true);
+      if (typeof window.ggbApplet.setCaption === "function") {
+        window.ggbApplet.setCaption("OP", "Stütz g");
+        window.ggbApplet.setCaption("OQ", "Stütz h");
+        window.ggbApplet.setCaption("UG", "Richtung g");
+        window.ggbApplet.setCaption("VH", "Richtung h");
+      }
+      lockGeoGebraObjects(["O", "P", "Q", "A", "B", "g", "h", "OP", "OQ", "UG", "VH"]);
+
+      if (result.point) {
+        geogebraCommand("S = " + tuple(result.point));
+        geogebraSetColor("S", "#168a5b");
+        window.ggbApplet.setPointSize("S", 7);
+        window.ggbApplet.setLabelVisible("S", true);
+        lockGeoGebraObjects(["S"]);
+      }
+
+      if (result.kind === "identisch") {
+        window.ggbApplet.setLineStyle("h", 1);
+      }
+
+      window.ggbApplet.setCoordSystem(-5, 5, -5, 5, -4, 5);
+      if (typeof window.ggbApplet.setPerspective === "function") {
+        window.ggbApplet.setPerspective("T");
+      }
+    }
+
+    function updateCasePill(result) {
+      const pill = $("resultPill");
+      if (caseVisible) {
+        pill.textContent = result.title;
+        pill.style.background = colors[result.kind];
+        pill.classList.remove("hidden");
+        $("toggleCase").textContent = "Fall ausblenden";
+      } else {
+        pill.textContent = "Fall verdeckt";
+        pill.style.background = "";
+        pill.classList.add("hidden");
+        $("toggleCase").textContent = "Fall einblenden";
+      }
+    }
+
+    function showCurrentExample() {
+      const result = classify(currentExample);
+      updateCasePill(result);
+      renderExamples();
+      renderFormulas(currentExample);
+      drawGeoGebra(currentExample, result);
+    }
+
+    function setExample(key) {
+      activeKey = key;
+      caseVisible = false;
+      currentExample = generateExample(activeKey);
+      showCurrentExample();
+    }
+
+    function toggleCase() {
+      if (caseVisible) {
+        caseVisible = false;
+      } else {
+        currentExample = generateExample(activeKey);
+        caseVisible = true;
+      }
+      showCurrentExample();
+    }
+
+    function onGeoGebraReady(api) {
+      if (api) window.ggbApplet = api;
+      ggbReady = true;
+      if (window.ggbApplet && typeof window.ggbApplet.setPerspective === "function") {
+        window.ggbApplet.setPerspective("T");
+      }
+      if (pendingExample) drawGeoGebra(pendingExample.ex, pendingExample.result);
+      else setExample(activeKey);
+    }
+
+    function getAppletSize() {
+      const box = $("ggb").getBoundingClientRect();
+      return {
+        width: Math.max(320, Math.round(box.width || 900)),
+        height: Math.max(330, Math.round(box.height || 520))
+      };
+    }
+
+    function resizeApplet() {
+      if (!window.ggbApplet || typeof window.ggbApplet.setSize !== "function") return;
+      const appletSize = getAppletSize();
+      window.ggbApplet.setSize(appletSize.width, appletSize.height);
+      if (typeof window.ggbApplet.setPerspective === "function") {
+        window.ggbApplet.setPerspective("T");
+      }
+    }
+
+    window.addEventListener("load", () => {
+      renderExamples();
+      $("toggleCase").addEventListener("click", toggleCase);
+      setExample(activeKey);
+
+      if (!window.GGBApplet) return;
+
+      const appletSize = getAppletSize();
+      const applet = new GGBApplet({
+        id: "ggbApplet",
+        appName: "3d",
+        perspective: "T",
+        width: appletSize.width,
+        height: appletSize.height,
+        showToolBar: false,
+        showAlgebraView: false,
+        showAlgebraInput: false,
+        showMenuBar: false,
+        showResetIcon: false,
+        enableLabelDrags: false,
+        enableRightClick: false,
+        enableShiftDragZoom: true,
+        useBrowserForJS: true,
+        appletOnLoad: onGeoGebraReady
+      }, true);
+
+      applet.inject("ggb");
+
+      let resizeTimer = null;
+      window.addEventListener("resize", () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(resizeApplet, 180);
+      });
+    });
+  </script>
+</body>
+</html>
