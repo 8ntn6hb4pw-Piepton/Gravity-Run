@@ -1,1 +1,589 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skalarprodukt entdecken</title>
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+  <style>
+    :root {
+      --ink: #1d2530;
+      --muted: #5f6975;
+      --paper: #f5f7f9;
+      --panel: #ffffff;
+      --line: #d8dee7;
+      --blue: #245f9f;
+      --green: #2e7d56;
+      --red: #b14a3b;
+      --amber: #a46b18;
+      --violet: #7257a4;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fbfcfd 0%, var(--paper) 58%, #edf1f5 100%);
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1220px, calc(100vw - 28px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px 0 24px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 16px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 3.2vw, 3.3rem);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 68ch;
+      line-height: 1.45;
+    }
+
+    .status-pill {
+      min-width: 190px;
+      min-height: 44px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      display: grid;
+      place-items: center;
+      padding: 8px 14px;
+      font-weight: 820;
+      color: var(--blue);
+      white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(27, 40, 54, 0.08);
+    }
+
+    .status-pill.zero {
+      color: var(--green);
+      border-color: rgba(46, 125, 86, 0.34);
+      background: #f0faf4;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 16px;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .geogebra-wrap,
+    .side {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 18px 45px rgba(27, 40, 54, 0.10);
+    }
+
+    .geogebra-wrap {
+      min-height: 620px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #ggb-element {
+      width: 100%;
+      height: 100%;
+      min-height: 620px;
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: var(--panel);
+      z-index: 2;
+    }
+
+    .loading.hidden {
+      display: none;
+    }
+
+    .side {
+      padding: 14px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .action {
+      min-height: 42px;
+      border-radius: 8px;
+      border: 1px solid #bfd0e1;
+      color: #174b7f;
+      background: #eef6ff;
+      font-weight: 780;
+      cursor: pointer;
+    }
+
+    .action:hover {
+      background: #e3f0ff;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfd;
+      min-height: 82px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+    }
+
+    .card.wide {
+      grid-column: 1 / -1;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 760;
+    }
+
+    .value {
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      line-height: 1;
+      font-weight: 860;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .value.green {
+      color: var(--green);
+    }
+
+    .value.red {
+      color: var(--red);
+    }
+
+    .value.amber {
+      color: var(--amber);
+    }
+
+    .formula {
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 12px;
+      background: #f8fafc;
+      font-size: 1rem;
+      line-height: 1.45;
+    }
+
+    .formula strong {
+      display: block;
+      font-size: 1.08rem;
+      margin-bottom: 6px;
+    }
+
+    .formula code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      color: var(--violet);
+      font-weight: 760;
+    }
+
+    .mission {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      overflow: auto;
+    }
+
+    .mission h2 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 8px;
+      padding: 10px 0;
+      border-top: 1px solid #edf0f3;
+      color: var(--muted);
+      line-height: 1.38;
+    }
+
+    .step:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 2px solid #c2ccd8;
+      color: transparent;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .step.done {
+      color: var(--ink);
+    }
+
+    .step.done .check {
+      color: white;
+      border-color: var(--green);
+      background: var(--green);
+    }
+
+    .insight {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1f8f4;
+      border: 1px solid rgba(46, 125, 86, 0.26);
+      color: #245d42;
+      font-weight: 760;
+      opacity: 0.35;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .insight.revealed {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 940px) {
+      header {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .status-pill {
+        min-width: 0;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .geogebra-wrap,
+      #ggb-element {
+        min-height: 560px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        width: min(100vw - 16px, 1220px);
+        padding-top: 10px;
+      }
+
+      .geogebra-wrap,
+      #ggb-element {
+        min-height: 480px;
+      }
+
+      .cards,
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>Skalarprodukt als Schatten</h1>
+        <p class="subtitle">Ziehe die Spitzen von <strong>a</strong> und <strong>b</strong>. Beobachte, wie der blaue Schatten von <strong>a</strong> auf die Richtung von <strong>b</strong> laenger, kuerzer, negativ oder null wird.</p>
+      </div>
+      <div class="status-pill" id="status">Noch nicht orthogonal</div>
+    </header>
+
+    <section class="workspace" aria-label="Interaktives Skalarprodukt-Werkzeug">
+      <div class="geogebra-wrap">
+        <div class="loading" id="loading">GeoGebra wird geladen...</div>
+        <div id="ggb-element"></div>
+      </div>
+
+      <aside class="side" aria-label="Beobachtungen">
+        <div class="controls">
+          <button class="action" type="button" id="orthogonal">90 Grad einstellen</button>
+          <button class="action" type="button" id="reset">Startlage</button>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="label">Winkel</div>
+            <div class="value" id="angle">--</div>
+          </div>
+          <div class="card">
+            <div class="label">Skalarprodukt</div>
+            <div class="value" id="dot">--</div>
+          </div>
+          <div class="card wide">
+            <div class="label">Schatten von a in b-Richtung</div>
+            <div class="value" id="shadow">--</div>
+          </div>
+        </div>
+
+        <div class="formula">
+          <strong>Leitgedanke</strong>
+          <code>a . b = |b| * Schattenlaenge</code><br>
+          Wenn der Schatten verschwindet, verschwindet auch das Skalarprodukt.
+        </div>
+
+        <div class="mission">
+          <h2>Entdeckungsauftrag</h2>
+          <div class="step" id="step-positive">
+            <div class="check">✓</div>
+            <div>Stelle einen spitzen Winkel ein. Der Schatten zeigt in Richtung <strong>b</strong>, das Skalarprodukt ist positiv.</div>
+          </div>
+          <div class="step" id="step-negative">
+            <div class="check">✓</div>
+            <div>Stelle einen stumpfen Winkel ein. Der Schatten zeigt gegen <strong>b</strong>, das Skalarprodukt ist negativ.</div>
+          </div>
+          <div class="step" id="step-zero">
+            <div class="check">✓</div>
+            <div>Triff den 90-Grad-Moment. Der Schatten hat Laenge 0 und das Skalarprodukt wird 0.</div>
+          </div>
+          <div class="insight" id="insight">Erkenntnis: Orthogonale Vektoren haben keinen Anteil in Richtung des jeweils anderen Vektors. Deshalb ist ihr Skalarprodukt 0.</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const els = {
+      loading: document.getElementById("loading"),
+      status: document.getElementById("status"),
+      angle: document.getElementById("angle"),
+      dot: document.getElementById("dot"),
+      shadow: document.getElementById("shadow"),
+      positive: document.getElementById("step-positive"),
+      negative: document.getElementById("step-negative"),
+      zero: document.getElementById("step-zero"),
+      insight: document.getElementById("insight"),
+      orthogonal: document.getElementById("orthogonal"),
+      reset: document.getElementById("reset")
+    };
+
+    const visited = {
+      positive: false,
+      negative: false,
+      zero: false
+    };
+
+    let appletReady = false;
+
+    window.ggbOnInit = function ggbOnInit(api) {
+      window.ggbApplet = api;
+      appletReady = true;
+      setupGeoGebra();
+      updateReadout();
+      els.loading.classList.add("hidden");
+      setInterval(updateReadout, 120);
+    };
+
+    const params = {
+      appName: "classic",
+      perspective: "G",
+      width: 820,
+      height: 620,
+      showToolBar: false,
+      showAlgebraInput: false,
+      showMenuBar: false,
+      showResetIcon: false,
+      enableRightClick: false,
+      enableShiftDragZoom: true,
+      useBrowserForJS: false,
+      appletOnLoad: window.ggbOnInit
+    };
+
+    const applet = new GGBApplet(params, true);
+    window.addEventListener("load", () => applet.inject("ggb-element"));
+
+    function setupGeoGebra() {
+      const g = ggbApplet;
+      g.setCoordSystem(-5.5, 5.5, -4.6, 4.6);
+      g.setAxesVisible(true, true);
+      g.setGridVisible(true);
+
+      [
+        "A=(0,0)",
+        "B=(4,0)",
+        "C=(2,3)",
+        "a=Vector(A,C)",
+        "b=Vector(A,B)",
+        "l=Line(A,B)",
+        "F=ClosestPoint(l,C)",
+        "shadow=Vector(A,F)",
+        "shadowSegment=Segment(A,F)",
+        "helper=Segment(C,F)",
+        "alpha=Angle(B,A,C)",
+        "dot=x(B)*x(C)+y(B)*y(C)"
+      ].forEach((command) => g.evalCommand(command));
+
+      g.setFixed("A", true, false);
+      g.setFixed("F", true, false);
+      g.setVisible("l", false);
+      g.setLabelVisible("A", false);
+      g.setLabelVisible("B", true);
+      g.setLabelVisible("C", true);
+      g.setLabelVisible("a", true);
+      g.setLabelVisible("b", true);
+      g.setLabelVisible("shadow", true);
+      g.setCaption("B", "Spitze von b");
+      g.setCaption("C", "Spitze von a");
+      g.setCaption("a", "a");
+      g.setCaption("b", "b");
+      g.setCaption("shadow", "Schatten");
+
+      color("a", 191, 67, 58);
+      color("b", 35, 95, 159);
+      color("shadow", 46, 125, 86);
+      color("shadowSegment", 46, 125, 86);
+      color("helper", 120, 128, 138);
+      color("alpha", 114, 87, 164);
+      color("B", 35, 95, 159);
+      color("C", 191, 67, 58);
+      color("F", 46, 125, 86);
+
+      g.setLineThickness("a", 8);
+      g.setLineThickness("b", 8);
+      g.setLineThickness("shadow", 9);
+      g.setLineThickness("shadowSegment", 7);
+      g.setLineThickness("helper", 3);
+      g.setLineStyle("helper", 1);
+      g.setPointSize("B", 6);
+      g.setPointSize("C", 6);
+      g.setPointSize("F", 5);
+    }
+
+    function color(name, r, g, b) {
+      ggbApplet.setColor(name, r, g, b);
+    }
+
+    function updateReadout() {
+      if (!appletReady || typeof ggbApplet === "undefined") return;
+
+      const bx = ggbApplet.getXcoord("B");
+      const by = ggbApplet.getYcoord("B");
+      const cx = ggbApplet.getXcoord("C");
+      const cy = ggbApplet.getYcoord("C");
+      const bLength = Math.hypot(bx, by);
+      const aLength = Math.hypot(cx, cy);
+
+      if (bLength < 0.2 || aLength < 0.2) {
+        els.angle.textContent = "--";
+        els.dot.textContent = "--";
+        els.shadow.textContent = "Vektoren verlaengern";
+        return;
+      }
+
+      const dot = bx * cx + by * cy;
+      const cos = clamp(dot / (aLength * bLength), -1, 1);
+      const angle = Math.acos(cos) * 180 / Math.PI;
+      const signedShadow = dot / bLength;
+      const nearZero = Math.abs(dot) < 0.08 || Math.abs(angle - 90) < 0.8;
+
+      els.angle.textContent = `${format(angle)}°`;
+      els.dot.textContent = format(dot);
+      els.shadow.textContent = `${format(signedShadow)} LE`;
+
+      els.dot.className = `value ${nearZero ? "green" : dot > 0 ? "" : "red"}`;
+      els.shadow.className = `value ${nearZero ? "green" : signedShadow > 0 ? "" : "red"}`;
+      els.status.className = `status-pill${nearZero ? " zero" : ""}`;
+      els.status.textContent = nearZero ? "Orthogonal: a . b = 0" : dot > 0 ? "Spitzer Winkel: positiv" : "Stumpfer Winkel: negativ";
+
+      if (dot > 0.25 && angle < 88) visited.positive = true;
+      if (dot < -0.25 && angle > 92) visited.negative = true;
+      if (nearZero) visited.zero = true;
+
+      setDone(els.positive, visited.positive);
+      setDone(els.negative, visited.negative);
+      setDone(els.zero, visited.zero);
+      els.insight.classList.toggle("revealed", visited.zero);
+    }
+
+    function setDone(element, done) {
+      element.classList.toggle("done", done);
+    }
+
+    function format(value) {
+      if (Math.abs(value) < 0.005) return "0";
+      return value.toLocaleString("de-DE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function setPoint(name, x, y) {
+      ggbApplet.setCoords(name, x, y);
+    }
+
+    els.orthogonal.addEventListener("click", () => {
+      if (!appletReady) return;
+      const bx = ggbApplet.getXcoord("B");
+      const by = ggbApplet.getYcoord("B");
+      const length = Math.max(2.2, Math.hypot(bx, by) * 0.85);
+      const bLength = Math.hypot(bx, by) || 1;
+      setPoint("C", -by / bLength * length, bx / bLength * length);
+      updateReadout();
+    });
+
+    els.reset.addEventListener("click", () => {
+      if (!appletReady) return;
+      setPoint("B", 4, 0);
+      setPoint("C", 2, 3);
+      updateReadout();
+    });
+  </script>
+</body>
+</html>
