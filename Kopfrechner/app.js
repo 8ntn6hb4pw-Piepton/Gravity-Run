@@ -42,8 +42,6 @@ const screens = {
   end: document.querySelector('#endScreen'),
 };
 
-const qrToggleButton = document.querySelector('#qrToggleButton');
-const qrPanel = document.querySelector('#qrPanel');
 const modeButtons = document.querySelectorAll('[data-mode]');
 const restartButton = document.querySelector('#restartButton');
 const changeModeButton = document.querySelector('#changeModeButton');
@@ -81,12 +79,6 @@ function showScreen(name) {
   screens[name].classList.remove('is-hidden');
 }
 
-function toggleQrPanel() {
-  const isHidden = qrPanel.classList.toggle('is-hidden');
-  qrToggleButton.textContent = isHidden ? 'QR-Code anzeigen' : 'QR-Code ausblenden';
-  qrToggleButton.setAttribute('aria-expanded', String(!isHidden));
-}
-
 function makeTask(id, text, answer) {
   return { id, text, answer: String(answer) };
 }
@@ -95,8 +87,8 @@ function buildTasks(mode = activeMode) {
   const settings = MODES[mode];
   const pool = [];
 
-  for (let a = 1; a <= settings.maxFactor; a += 1) {
-    for (let b = 1; b <= settings.maxFactor; b += 1) {
+  for (let a = 2; a <= settings.maxFactor; a += 1) {
+    for (let b = 2; b <= settings.maxFactor; b += 1) {
       pool.push(makeTask(`mul:${a}:${b}`, `${a} · ${b} = ?`, a * b));
       if (settings.includeGaps) {
         pool.push(makeTask(`gap-mul-left:${a}:${b}`, `? · ${b} = ${a * b}`, a));
@@ -233,7 +225,7 @@ function tick(now) {
 }
 
 function updateTimeBar() {
-  timeFill.style.height = `${timeLeft}%`;
+  timeFill.style.setProperty('--time-left', `${timeLeft}%`);
 }
 
 function updateStats() {
@@ -298,7 +290,6 @@ modeButtons.forEach((button) => {
   button.addEventListener('click', () => startGame(button.dataset.mode));
 });
 
-qrToggleButton.addEventListener('click', toggleQrPanel);
 restartButton.addEventListener('click', () => startGame(activeMode));
 changeModeButton.addEventListener('click', () => showScreen('start'));
 answerButton.addEventListener('click', () => {

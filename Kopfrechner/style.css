@@ -148,17 +148,37 @@ h2 {
   cursor: pointer;
 }
 
-.qr-toggle {
-  margin: 0 auto;
-  padding: 0.75rem 1rem;
-  font-size: 0.95rem;
-}
-
 .qr-panel {
   width: min(100%, 17rem);
   margin: 0.9rem auto 0;
-  border: 1px solid rgba(247, 240, 220, 0.18);
+  border: 0;
   border-radius: 1.3rem;
+}
+
+.qr-panel summary {
+  display: block;
+  border: 1px solid rgba(247, 240, 220, 0.24);
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  color: var(--ink);
+  background: rgba(247, 240, 220, 0.08);
+  box-shadow: 0 0.7rem 2rem var(--shadow);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.qr-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.qr-panel[open] summary {
+  margin-bottom: 0.85rem;
+}
+
+.qr-panel[open] {
+  border: 1px solid rgba(247, 240, 220, 0.18);
   padding: 0.85rem;
   background: rgba(247, 240, 220, 0.08);
   box-shadow: 0 0.8rem 2.2rem var(--shadow);
@@ -277,14 +297,16 @@ h2 {
 }
 
 .time-fill {
+  --time-left: 100%;
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: 100%;
+  height: var(--time-left);
+  width: 100%;
   border-radius: inherit;
   background: linear-gradient(180deg, var(--good), var(--accent));
-  transition: height 120ms linear, background-color 160ms ease;
+  transition: height 120ms linear, width 120ms linear, background-color 160ms ease;
 }
 
 .flash-good .problem {
@@ -304,16 +326,54 @@ h2 {
 
 @media (max-width: 420px) {
   .game-shell {
-    padding: max(0.75rem, env(safe-area-inset-top)) max(2.25rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom)) max(0.65rem, env(safe-area-inset-left));
+    padding: max(0.5rem, env(safe-area-inset-top)) max(0.65rem, env(safe-area-inset-right)) max(1.7rem, env(safe-area-inset-bottom)) max(0.65rem, env(safe-area-inset-left));
   }
 
   h1 {
-    font-size: clamp(2.45rem, 15vw, 3.6rem);
+    font-size: clamp(2.25rem, 13.5vw, 3.25rem);
+  }
+
+  .eyebrow {
+    margin-bottom: 0.3rem;
+    font-size: 0.66rem;
+  }
+
+  .course-label {
+    margin-top: 0.5rem;
+    padding: 0.34rem 0.68rem;
+    font-size: 0.82rem;
   }
 
   .intro {
-    margin: 1rem auto 1.35rem;
-    font-size: 1rem;
+    margin: 0.75rem auto 0.95rem;
+    max-width: 18rem;
+    font-size: 0.88rem;
+    line-height: 1.3;
+  }
+
+  .mode-buttons,
+  .end-buttons {
+    gap: 0.55rem;
+    width: min(100%, 15rem);
+  }
+
+  .primary-button,
+  .secondary-button {
+    padding: 0.78rem 1rem;
+  }
+
+  .qr-panel {
+    width: min(100%, 14.5rem);
+    margin-top: 0.65rem;
+  }
+
+  .qr-panel summary {
+    padding: 0.62rem 0.85rem;
+    font-size: 0.84rem;
+  }
+
+  .qr-panel[open] {
+    padding: 0.65rem;
   }
 
   .topline {
@@ -353,16 +413,27 @@ h2 {
   }
 
   .time-rail {
-    top: max(0.75rem, env(safe-area-inset-top));
-    right: max(0.55rem, env(safe-area-inset-right));
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
-    width: 0.7rem;
+    top: auto;
+    right: max(0.65rem, env(safe-area-inset-right));
+    bottom: max(0.55rem, env(safe-area-inset-bottom));
+    left: max(0.65rem, env(safe-area-inset-left));
+    width: auto;
+    height: 0.62rem;
+  }
+
+  .time-fill {
+    top: 0;
+    right: auto;
+    height: 100%;
+    width: var(--time-left);
+    background: linear-gradient(90deg, var(--good), var(--accent));
   }
 }
 
 @media (max-width: 340px) {
   .game-shell {
-    padding-right: max(1.7rem, env(safe-area-inset-right));
+    padding-right: max(0.45rem, env(safe-area-inset-right));
+    padding-left: max(0.45rem, env(safe-area-inset-left));
   }
 
   .topline {
