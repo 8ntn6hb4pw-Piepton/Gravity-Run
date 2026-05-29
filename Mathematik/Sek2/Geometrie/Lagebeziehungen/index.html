@@ -171,9 +171,95 @@
       background: #28334a;
     }
 
+    .random-case {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 900;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .random-case:hover {
+      border-color: #aab6cc;
+      background: #f2f6ff;
+    }
+
+    .answer-grid {
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .answer-grid button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      color: var(--ink);
+      font-weight: 900;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .answer-grid button:hover {
+      background: #f2f6ff;
+      border-color: #aab6cc;
+    }
+
+    .answer-grid button.wrong {
+      border-color: #dc4c64;
+      background: #fff1f3;
+      color: #a51f35;
+    }
+
+    .answer-grid button.correct {
+      border-color: var(--green);
+      background: #effaf5;
+      color: var(--green);
+    }
+
+    body.quiz-mode .examples,
+    body.quiz-mode #toggleCase {
+      display: none;
+    }
+
+    body.quiz-mode .answer-grid {
+      display: grid;
+    }
+
     .viewer {
+      position: relative;
       overflow: hidden;
       min-width: 0;
+    }
+
+    .viewer.quiz-hidden #ggb {
+      filter: blur(7px);
+      opacity: .48;
+      transform: scale(.995);
+      transform-origin: center;
+    }
+
+    .viewer.quiz-hidden::after {
+      content: "Geraden verborgen";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .88);
+      color: var(--muted);
+      font-weight: 900;
+      pointer-events: none;
     }
 
     #ggb {
@@ -419,12 +505,19 @@
 
     <section class="layout">
       <aside class="panel side">
-        <h2>Beispieltyp</h2>
+        <h2 id="sideTitle">Beispieltyp</h2>
         <div class="examples" id="examples"></div>
         <button class="toggle-case" id="toggleCase" type="button">Fall einblenden</button>
+        <button class="random-case" id="randomCase" type="button">Zufall</button>
+        <div class="answer-grid" id="answerGrid" aria-label="Antwort auswählen">
+          <button type="button" data-answer="windschief">Windschief</button>
+          <button type="button" data-answer="parallel">Parallel</button>
+          <button type="button" data-answer="schnitt">Schnitt</button>
+          <button type="button" data-answer="identisch">Identisch</button>
+        </div>
       </aside>
 
-      <section class="panel viewer">
+      <section class="panel viewer" id="viewer">
         <div id="ggb">
           <div class="ggb-fallback">GeoGebra-3D wird geladen. Falls die Ansicht leer bleibt, braucht die Seite Internetzugriff auf geogebra.org.</div>
         </div>
@@ -463,6 +556,8 @@
     let activeKey = "parallel";
     let currentExample = null;
     let caseVisible = false;
+    let quizMode = false;
+    let quizSolved = false;
     let ggbReady = false;
     let pendingExample = null;
 
@@ -637,6 +732,14 @@
       };
     }
 
+    function randomWeightedCase() {
+      const r = Math.random();
+      if (r < .50) return "schnitt";
+      if (r < .80) return "parallel";
+      if (r < .90) return "identisch";
+      return "windschief";
+    }
+
     function classify(ex) {
       const p = ex.p, u = ex.u, q = ex.q, v = ex.v;
       const dirsCollinear = norm(cross(u, v)) < EPS;
@@ -680,7 +783,7 @@
 
     function renderExamples() {
       $("examples").innerHTML = Object.entries(caseTypes).map(([key, ex]) => `
-        <button class="example ${key === activeKey ? "active" : ""}" data-key="${key}" style="color:${colors[key]}">
+        <button class="example ${!quizMode && key === activeKey ? "active" : ""}" data-key="${key}" style="color:${colors[key]}">
           <span>
             <strong>${ex.title}</strong>
           </span>
@@ -690,6 +793,13 @@
 
       document.querySelectorAll(".example").forEach((button) => {
         button.addEventListener("click", () => setExample(button.dataset.key));
+      });
+    }
+
+    function resetAnswerButtons() {
+      document.querySelectorAll("[data-answer]").forEach((button) => {
+        button.classList.remove("wrong", "correct");
+        button.disabled = false;
       });
     }
 
@@ -800,6 +910,28 @@
       }
     }
 
+    function hideGeoGebraForQuiz() {
+      $("viewer").classList.add("quiz-hidden");
+      pendingExample = null;
+      if (ggbReady && window.ggbApplet) {
+        clearGeoGebraObjects();
+        if (typeof window.ggbApplet.setPerspective === "function") {
+          window.ggbApplet.setPerspective("T");
+        }
+      }
+    }
+
+    function revealGeoGebraForQuiz(result) {
+      $("viewer").classList.remove("quiz-hidden");
+      drawGeoGebra(currentExample, result);
+    }
+
+    function updateQuizUi() {
+      document.body.classList.toggle("quiz-mode", quizMode);
+      $("sideTitle").textContent = quizMode ? "Was ist der Fall?" : "Beispieltyp";
+      if (!quizMode) $("viewer").classList.remove("quiz-hidden");
+    }
+
     function updateCasePill(result) {
       const pill = $("resultPill");
       if (caseVisible) {
@@ -820,13 +952,18 @@
       updateCasePill(result);
       renderExamples();
       renderFormulas(currentExample);
-      drawGeoGebra(currentExample, result);
+      updateQuizUi();
+      if (quizMode && !quizSolved) hideGeoGebraForQuiz();
+      else drawGeoGebra(currentExample, result);
     }
 
     function setExample(key) {
+      quizMode = false;
+      quizSolved = false;
       activeKey = key;
       caseVisible = false;
       currentExample = generateExample(activeKey);
+      resetAnswerButtons();
       showCurrentExample();
     }
 
@@ -840,13 +977,50 @@
       showCurrentExample();
     }
 
+    function startRandomQuiz() {
+      quizMode = true;
+      quizSolved = false;
+      caseVisible = false;
+      activeKey = randomWeightedCase();
+      currentExample = generateExample(activeKey);
+      resetAnswerButtons();
+      const result = classify(currentExample);
+      updateCasePill(result);
+      renderExamples();
+      renderFormulas(currentExample);
+      updateQuizUi();
+      hideGeoGebraForQuiz();
+    }
+
+    function answerQuiz(key, button) {
+      if (!quizMode || quizSolved || !currentExample) return;
+      const result = classify(currentExample);
+      if (key !== result.kind) {
+        button.classList.add("wrong");
+        $("resultPill").textContent = "Noch nicht";
+        $("resultPill").style.background = "#dc4c64";
+        $("resultPill").classList.remove("hidden");
+        return;
+      }
+
+      quizSolved = true;
+      caseVisible = true;
+      button.classList.add("correct");
+      document.querySelectorAll("[data-answer]").forEach((answerButton) => {
+        answerButton.disabled = answerButton !== button;
+      });
+      updateCasePill(result);
+      revealGeoGebraForQuiz(result);
+    }
+
     function onGeoGebraReady(api) {
       if (api) window.ggbApplet = api;
       ggbReady = true;
       if (window.ggbApplet && typeof window.ggbApplet.setPerspective === "function") {
         window.ggbApplet.setPerspective("T");
       }
-      if (pendingExample) drawGeoGebra(pendingExample.ex, pendingExample.result);
+      if (quizMode && !quizSolved) hideGeoGebraForQuiz();
+      else if (pendingExample) drawGeoGebra(pendingExample.ex, pendingExample.result);
       else setExample(activeKey);
     }
 
@@ -870,6 +1044,10 @@
     window.addEventListener("load", () => {
       renderExamples();
       $("toggleCase").addEventListener("click", toggleCase);
+      $("randomCase").addEventListener("click", startRandomQuiz);
+      document.querySelectorAll("[data-answer]").forEach((button) => {
+        button.addEventListener("click", () => answerQuiz(button.dataset.answer, button));
+      });
       setExample(activeKey);
 
       if (!window.GGBApplet) return;
