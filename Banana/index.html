@@ -1,1 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banane</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #1e1e2e;
+      gap: 2rem;
+      user-select: none;
+    }
+
+    svg {
+      width: 340px;
+      cursor: pointer;
+      filter: drop-shadow(0 6px 20px rgba(0,0,0,0.5));
+      transition: transform 0.08s;
+    }
+    svg:active { transform: scale(0.96); }
+
+    .dots {
+      display: flex;
+      gap: 0.8rem;
+    }
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #313244;
+      transition: background 0.3s;
+    }
+    .dot.used { background: #6c7086; }
+
+    #resetBtn {
+      background: none;
+      border: 1px solid #45475a;
+      color: #585b70;
+      padding: 0.35rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    #resetBtn:hover { color: #cdd6f4; border-color: #6c7086; }
+
+    h1 {
+      font-family: system-ui, sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #6c7086;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fragen-Kontingent:</h1>
+
+  <svg id="banana" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" onclick="handleClick()">
+    <defs>
+      <clipPath id="clip">
+        <path d="M 38,72 C 42,38 90,10 175,8 C 230,7 272,22 288,48 C 295,60 292,76 282,82 C 268,90 245,92 220,90 C 160,86 70,92 45,80 Z"/>
+      </clipPath>
+    </defs>
+
+    <rect id="s0" x="0"   y="0" width="107" height="110" clip-path="url(#clip)" fill="#f9e04b"/>
+    <rect id="s1" x="107" y="0" width="106" height="110" clip-path="url(#clip)" fill="#f9e04b"/>
+    <rect id="s2" x="213" y="0" width="107" height="110" clip-path="url(#clip)" fill="#f9e04b"/>
+
+    <!-- Zahlen -->
+    <text id="t0" x="57"  y="62" text-anchor="middle" font-size="28" font-weight="700" font-family="system-ui,sans-serif" fill="#a08c00" clip-path="url(#clip)">1</text>
+    <text id="t1" x="160" y="58" text-anchor="middle" font-size="28" font-weight="700" font-family="system-ui,sans-serif" fill="#a08c00" clip-path="url(#clip)">2</text>
+    <text id="t2" x="258" y="60" text-anchor="middle" font-size="28" font-weight="700" font-family="system-ui,sans-serif" fill="#a08c00" clip-path="url(#clip)">3</text>
+
+    <!-- Glanzstreifen -->
+    <path d="M 60,28 C 100,18 200,16 255,32" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="7" stroke-linecap="round" clip-path="url(#clip)"/>
+
+    <!-- Umriss -->
+    <path d="M 38,72 C 42,38 90,10 175,8 C 230,7 272,22 288,48 C 295,60 292,76 282,82 C 268,90 245,92 220,90 C 160,86 70,92 45,80 Z"
+          fill="none" stroke="#7c6514" stroke-width="2.5"/>
+
+    <!-- Stiel links -->
+    <path d="M 38,72 C 24,68 22,58 30,52 C 34,48 40,52 38,60" fill="#5a4a00"/>
+    <!-- Spitze rechts -->
+    <path d="M 288,48 C 300,44 304,54 298,62 C 294,67 287,65 288,56" fill="#5a4a00"/>
+  </svg>
+
+  <div class="dots">
+    <div class="dot" id="d0"></div>
+    <div class="dot" id="d1"></div>
+    <div class="dot" id="d2"></div>
+  </div>
+
+  <button id="resetBtn" onclick="reset()">↺ Reset</button>
+
+  <script>
+    const YELLOW = '#f9e04b';
+    const GRAY   = '#6c7086';
+    let count = 0;
+
+    function render() {
+      for (let i = 0; i < 3; i++) {
+        const used = i < count;
+        document.getElementById('s' + i).setAttribute('fill', used ? GRAY : YELLOW);
+        document.getElementById('t' + i).setAttribute('fill', used ? '#9399b2' : '#a08c00');
+        document.getElementById('d' + i).className = 'dot' + (used ? ' used' : '');
+      }
+    }
+
+    function handleClick() {
+      if (count < 3) count++;
+      render();
+    }
+
+    function reset() {
+      count = 0;
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
