@@ -1,1 +1,705 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaktives Quiz zu Dreiecken, Vierecken und ihren geometrischen Eigenschaften.">
+  <title>Figuren erkennen, Eigenschaften nutzen</title>
+  <style>
+    :root {
+      --ink: #17233f;
+      --muted: #5f6c83;
+      --paper: #ffffff;
+      --soft: #f3f7ff;
+      --line: #dce5f3;
+      --primary: #4257d6;
+      --primary-dark: #3042b5;
+      --accent: #13a69a;
+      --success: #18794e;
+      --success-bg: #eaf8f1;
+      --danger: #b4233e;
+      --danger-bg: #fff0f2;
+      --warning: #9a6700;
+      --warning-bg: #fff8df;
+      --shadow: 0 16px 45px rgba(31, 49, 93, .10);
+      --radius: 22px;
+    }
 
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 3%, rgba(74, 91, 220, .13), transparent 28rem),
+        radial-gradient(circle at 92% 18%, rgba(19, 166, 154, .10), transparent 23rem),
+        #f8faff;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -4rem;
+      z-index: 100;
+      padding: .7rem 1rem;
+      background: var(--ink);
+      color: white;
+      border-radius: 8px;
+    }
+    .skip-link:focus { top: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(248, 250, 255, .88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(220, 229, 243, .8);
+    }
+
+    .nav {
+      max-width: 1180px;
+      margin: auto;
+      padding: .8rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 36px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      color: white;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--primary), #7786f3);
+      box-shadow: 0 7px 18px rgba(66, 87, 214, .28);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: .3rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      padding: .5rem .7rem;
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 9px;
+      white-space: nowrap;
+    }
+    .nav-links a:hover, .nav-links a:focus-visible {
+      color: var(--primary);
+      background: #edf0ff;
+      outline: none;
+    }
+
+    main, footer {
+      width: min(1180px, calc(100% - 2rem));
+      margin-inline: auto;
+    }
+
+    .hero {
+      min-height: 520px;
+      padding: 5.8rem 0 4rem;
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      margin: 0 0 1rem;
+      padding: .4rem .7rem;
+      color: var(--primary-dark);
+      background: #eaedff;
+      border: 1px solid #d8ddff;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(2.5rem, 6.5vw, 5rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero p:not(.eyebrow) {
+      max-width: 730px;
+      margin: 1.5rem 0 1.8rem;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.24rem);
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: .45rem;
+      min-height: 46px;
+      padding: .75rem 1.05rem;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button:focus-visible { outline: 3px solid rgba(66, 87, 214, .25); outline-offset: 2px; }
+    .button.primary {
+      color: white;
+      background: var(--primary);
+      box-shadow: 0 10px 24px rgba(66, 87, 214, .25);
+    }
+    .button.primary:hover { background: var(--primary-dark); }
+    .button.secondary {
+      color: var(--primary-dark);
+      background: white;
+      border: 1px solid var(--line);
+    }
+
+    .hero-visual {
+      min-height: 340px;
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+    .shape-orbit {
+      width: min(330px, 85vw);
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border: 1px dashed #bfc9e1;
+      border-radius: 50%;
+      animation: float 5s ease-in-out infinite;
+    }
+    .shape-orbit::before, .shape-orbit::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+    }
+    .shape-orbit::before { inset: 16%; background: white; box-shadow: var(--shadow); }
+    .shape-orbit::after { inset: 40%; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+    .orbit-chip {
+      position: absolute;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(31, 49, 93, .12);
+      color: var(--primary);
+      font-weight: 900;
+    }
+    .orbit-chip:nth-child(1) { top: -15px; left: 47px; transform: rotate(-6deg); }
+    .orbit-chip:nth-child(2) { right: -12px; top: 105px; transform: rotate(7deg); }
+    .orbit-chip:nth-child(3) { bottom: -5px; left: 60px; transform: rotate(5deg); }
+    @keyframes float { 50% { transform: translateY(-10px); } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .shape-orbit { animation: none; }
+      .button { transition: none; }
+    }
+
+    section { scroll-margin-top: 90px; padding: 4.5rem 0; }
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 2rem;
+    }
+    .section-kicker {
+      margin: 0 0 .35rem;
+      color: var(--accent);
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -.035em;
+      line-height: 1.08;
+    }
+    .section-head > p:last-child { margin: .8rem 0 0; color: var(--muted); }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .quiz-card {
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card-top {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .sketch {
+      height: 110px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #f5f7ff, #edf9f7);
+      border: 1px solid #e1e8f3;
+      border-radius: 16px;
+    }
+    .sketch svg { width: 98px; height: 84px; overflow: visible; }
+    .sketch polygon, .sketch polyline, .sketch line, .sketch path {
+      fill: rgba(66, 87, 214, .08);
+      stroke: var(--primary);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .sketch .mark { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+    .card-number {
+      margin: 0 0 .2rem;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h3 { margin: 0; font-size: 1.42rem; line-height: 1.2; }
+    .question {
+      margin: .65rem 0 1rem;
+      font-weight: 750;
+    }
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+    legend {
+      width: 100%;
+      margin-bottom: .7rem;
+      font-size: .88rem;
+      color: var(--muted);
+    }
+    .options { display: grid; gap: .55rem; }
+    .option {
+      position: relative;
+      display: grid;
+      grid-template-columns: 23px 1fr;
+      gap: .7rem;
+      align-items: start;
+      padding: .78rem .85rem;
+      background: #fbfcff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .option:hover { border-color: #aeb9db; background: #f5f7ff; }
+    .option:has(input:focus-visible) { outline: 3px solid rgba(66, 87, 214, .18); }
+    .option:has(input:checked) { border-color: var(--primary); background: #f0f2ff; }
+    .option.is-correct { border-color: #76c59e; background: var(--success-bg); }
+    .option.is-wrong { border-color: #ed93a4; background: var(--danger-bg); }
+    .option input { width: 18px; height: 18px; margin: .15rem 0 0; accent-color: var(--primary); }
+    .card-actions { margin-top: auto; padding-top: 1rem; }
+    .check-button { width: 100%; }
+    .feedback {
+      margin-top: .85rem;
+      padding: .9rem 1rem;
+      border-radius: 12px;
+      font-size: .92rem;
+    }
+    .feedback:empty { display: none; }
+    .feedback.success { color: #0d603c; background: var(--success-bg); border: 1px solid #bce5cf; }
+    .feedback.error { color: #8f1830; background: var(--danger-bg); border: 1px solid #f5c3cd; }
+    .feedback.warning { color: #745000; background: var(--warning-bg); border: 1px solid #eadb9c; }
+    .feedback.mixed {
+      padding: 0;
+      background: transparent;
+      border: 0;
+    }
+    .feedback strong { display: block; margin-bottom: .35rem; }
+    .feedback ul { margin: .35rem 0 0; padding-left: 1.15rem; }
+    .feedback-group {
+      padding: .9rem 1rem;
+      border: 1px solid;
+      border-radius: 12px;
+    }
+    .feedback-group + .feedback-group { margin-top: .65rem; }
+    .feedback-group ul { margin-bottom: 0; }
+    .feedback-group.wrong {
+      color: #8f1830;
+      background: var(--danger-bg);
+      border-color: #f5c3cd;
+    }
+    .feedback-group.correct {
+      color: #0d603c;
+      background: var(--success-bg);
+      border-color: #bce5cf;
+    }
+    .feedback-group.missed {
+      color: #745000;
+      background: var(--warning-bg);
+      border-color: #eadb9c;
+    }
+
+    .footer {
+      margin-top: 3rem;
+      padding: 2rem 0 3rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: .9rem;
+    }
+
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; padding-top: 4rem; text-align: center; }
+      .hero p:not(.eyebrow) { margin-inline: auto; }
+      .actions { justify-content: center; }
+      .hero-visual { min-height: 310px; }
+      .quiz-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 590px) {
+      .nav { align-items: flex-start; flex-direction: column; }
+      .nav-links { width: 100%; }
+      .hero { padding-top: 3rem; }
+      .hero-visual { transform: scale(.88); margin: -1rem 0; }
+      section { padding: 3.4rem 0; }
+      .quiz-card { padding: 1rem; }
+      .card-top { grid-template-columns: 90px 1fr; }
+      .sketch { height: 90px; }
+      .sketch svg { width: 78px; height: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Direkt zum Inhalt</a>
+
+  <header class="topbar">
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="brand" href="#start">
+        <span class="brand-mark" aria-hidden="true">△</span>
+        <span>Figuren-Quiz</span>
+      </a>
+      <div class="nav-links">
+        <a href="#dreiecke">Dreiecke</a>
+        <a href="#vierecke">Vierecke</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="start">
+      <div>
+        <p class="eyebrow">Geometrie trifft Vektoren</p>
+        <h1>Figuren erkennen, Eigenschaften nutzen</h1>
+        <p>In der analytischen Geometrie muss man oft zeigen, dass Punkte ein bestimmtes Dreieck oder Viereck bilden. Dafür braucht man die Eigenschaften der Figuren. Dieses Quiz hilft dir, diese Eigenschaften sicher zu erkennen.</p>
+        <div class="actions">
+          <a class="button primary" href="#dreiecke">Quiz starten <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="shape-orbit">
+          <div class="orbit-chip">△</div>
+          <div class="orbit-chip">▱</div>
+          <div class="orbit-chip">□</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="dreiecke">
+      <div class="section-head">
+        <p class="section-kicker">Teil 1</p>
+        <h2>Dreiecke sicher unterscheiden</h2>
+        <p>Wähle alle passenden Eigenschaften. Mehrere Antworten können richtig sein.</p>
+      </div>
+      <div class="quiz-grid" id="triangle-grid"></div>
+    </section>
+
+    <section id="vierecke">
+      <div class="section-head">
+        <p class="section-kicker">Teil 2</p>
+        <h2>Vierecke mit Vektoren nachweisen</h2>
+        <p>Achte besonders auf Eigenschaften, die sich mit Längen, Parallelität oder dem Skalarprodukt prüfen lassen.</p>
+      </div>
+      <div class="quiz-grid" id="quadrilateral-grid"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>Figuren-Quiz</strong> · Läuft vollständig lokal, ohne Tracking, Cookies oder externe Dienste.</p>
+  </footer>
+
+  <script>
+    "use strict";
+
+    // Alle regulären Quizfragen liegen hier und können leicht ergänzt werden.
+    const quizData = [
+      {
+        category: "triangle",
+        name: "Allgemeines Dreieck",
+        question: "Welche Eigenschaften gelten für jedes Dreieck?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines allgemeinen Dreiecks"><polygon points="14,84 50,12 108,78"/><circle cx="14" cy="84" r="3"/><circle cx="50" cy="12" r="3"/><circle cx="108" cy="78" r="3"/></svg>`,
+        options: [
+          ["Es hat drei Eckpunkte und drei Seiten.", true, "Das gehört zur Definition eines Dreiecks."],
+          ["Die Innenwinkelsumme beträgt 180°.", true, "Das gilt in der ebenen euklidischen Geometrie für jedes Dreieck."],
+          ["Mindestens zwei Seiten sind gleich lang.", false, "Ein allgemeines Dreieck kann drei verschieden lange Seiten haben."],
+          ["Es besitzt immer einen rechten Winkel.", false, "Nur rechtwinklige Dreiecke haben zwingend einen 90°-Winkel."]
+        ]
+      },
+      {
+        category: "triangle",
+        name: "Rechtwinkliges Dreieck",
+        question: "Woran erkennst oder prüfst du ein rechtwinkliges Dreieck?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines rechtwinkligen Dreiecks"><polygon points="18,84 18,18 105,84"/><polyline class="mark" points="18,70 32,70 32,84"/></svg>`,
+        options: [
+          ["Ein Innenwinkel beträgt 90°.", true, "Genau dadurch ist das Dreieck rechtwinklig."],
+          ["Zwei Seitenvektoren haben das Skalarprodukt 0.", true, "Ein Skalarprodukt von 0 weist senkrechte Vektoren nach."],
+          ["Für die Seitenlängen gilt der Satz des Pythagoras.", true, "Bei richtiger Zuordnung der Hypotenuse gilt a² + b² = c²."],
+          ["Alle drei Seiten sind gleich lang.", false, "Das kennzeichnet ein gleichseitiges, nicht ein rechtwinkliges Dreieck."]
+        ]
+      },
+      {
+        category: "triangle",
+        name: "Gleichschenkliges Dreieck",
+        question: "Welche Eigenschaften passen zum gleichschenkligen Dreieck?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines gleichschenkligen Dreiecks"><polygon points="14,84 60,12 106,84"/><line class="mark" x1="34" y1="49" x2="43" y2="55"/><line class="mark" x1="77" y1="55" x2="86" y2="49"/></svg>`,
+        options: [
+          ["Zwei Seiten sind gleich lang.", true, "Diese beiden Seiten heißen Schenkel."],
+          ["Die beiden Basiswinkel sind gleich groß.", true, "Gleich lange Schenkel führen zu gleich großen gegenüberliegenden Basiswinkeln."],
+          ["Alle Innenwinkel betragen 60°.", false, "Das gilt nur für ein gleichseitiges Dreieck."],
+          ["Zwei Seitenvektoren müssen parallel sein.", false, "Benachbarte Dreiecksseiten können nicht parallel sein, sonst entstünde kein Dreieck."]
+        ]
+      },
+      {
+        category: "triangle",
+        name: "Gleichseitiges Dreieck",
+        question: "Welche Aussagen beschreiben ein gleichseitiges Dreieck?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines gleichseitigen Dreiecks"><polygon points="12,84 60,9 108,84"/><line class="mark" x1="31" y1="48" x2="40" y2="54"/><line class="mark" x1="80" y1="54" x2="89" y2="48"/><line class="mark" x1="60" y1="79" x2="60" y2="89"/></svg>`,
+        options: [
+          ["Alle drei Seiten sind gleich lang.", true, "Das ist die definierende Längeneigenschaft."],
+          ["Alle drei Innenwinkel sind jeweils 60° groß.", true, "Gleiche Winkel teilen die Winkelsumme 180° in drei gleiche Teile."],
+          ["Es hat genau zwei gleich große Winkel.", false, "Es hat sogar drei gleich große Winkel."],
+          ["Ein Winkel muss 90° betragen.", false, "Alle Winkel sind 60° groß."]
+        ]
+      },
+      {
+        category: "quadrilateral",
+        name: "Trapez",
+        question: "Welche Eigenschaften brauchst du später für einen Nachweis mit Vektoren?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines Trapezes"><polygon points="12,80 34,22 89,22 108,80"/><line class="mark" x1="50" y1="17" x2="67" y2="17"/><line class="mark" x1="49" y1="85" x2="71" y2="85"/></svg>`,
+        options: [
+          ["Mindestens ein Paar gegenüberliegender Seiten ist parallel.", true, "Das ist die entscheidende Trapez-Eigenschaft."],
+          ["Parallele Seitenvektoren sind Vielfache voneinander.", true, "So lässt sich die Parallelität rechnerisch zeigen."],
+          ["Alle vier Seiten müssen gleich lang sein.", false, "Dann läge eine Raute vor; für ein Trapez ist das nicht nötig."],
+          ["Die Diagonalen müssen senkrecht stehen.", false, "Das gehört nicht zur allgemeinen Trapez-Definition."]
+        ]
+      },
+      {
+        category: "quadrilateral",
+        name: "Parallelogramm",
+        question: "Welche Aussagen liefern einen passenden Parallelogramm-Nachweis?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines Parallelogramms"><polygon points="12,78 34,22 108,22 86,78"/><line class="mark" x1="49" y1="17" x2="64" y2="17"/><line class="mark" x1="54" y1="83" x2="69" y2="83"/></svg>`,
+        options: [
+          ["Gegenüberliegende Seiten sind parallel.", true, "Beide Paare gegenüberliegender Seiten verlaufen parallel."],
+          ["Gegenüberliegende Seiten sind gleich lang.", true, "Das ist eine typische Folgerung und ebenfalls für Nachweise nutzbar."],
+          ["Gleich orientierte gegenüberliegende Seitenvektoren sind gleich.", true, "Bei passender Orientierung gilt zum Beispiel AB⃗ = DC⃗."],
+          ["Alle Winkel sind rechte Winkel.", false, "Das ist nur bei der besonderen Form Rechteck zwingend."],
+          ["Nur ein Seitenpaar ist gleich lang.", false, "Das allein reicht für ein Parallelogramm nicht aus."]
+        ]
+      },
+      {
+        category: "quadrilateral",
+        name: "Rechteck",
+        question: "Welche Eigenschaften sind für den Rechteck-Nachweis nützlich?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines Rechtecks"><polygon points="12,76 12,24 108,24 108,76"/><polyline class="mark" points="12,62 26,62 26,76"/><line class="mark" x1="12" y1="24" x2="108" y2="76"/><line class="mark" x1="108" y1="24" x2="12" y2="76"/></svg>`,
+        options: [
+          ["Es ist ein Parallelogramm.", true, "Ein Rechteck besitzt alle Eigenschaften eines Parallelogramms."],
+          ["Alle Innenwinkel sind rechte Winkel.", true, "Diese zusätzliche Eigenschaft unterscheidet das Rechteck vom allgemeinen Parallelogramm."],
+          ["Benachbarte Seitenvektoren haben das Skalarprodukt 0.", true, "Damit weist du einen rechten Winkel nach."],
+          ["Die Diagonalen sind gleich lang.", true, "Diese Eigenschaft kann einen Nachweis ergänzen."],
+          ["Alle Seiten sind gleich lang.", false, "Das ist beim Quadrat nötig, beim Rechteck aber nicht."]
+        ]
+      },
+      {
+        category: "quadrilateral",
+        name: "Raute",
+        question: "Welche Prüfungen passen zu einer Raute?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze einer Raute"><polygon points="60,8 108,50 60,92 12,50"/><line class="mark" x1="60" y1="8" x2="60" y2="92"/><line class="mark" x1="12" y1="50" x2="108" y2="50"/></svg>`,
+        options: [
+          ["Sie ist ein Parallelogramm.", true, "Gegenüberliegende Seiten einer Raute sind parallel."],
+          ["Alle vier Seiten sind gleich lang.", true, "Das ist die wesentliche Längeneigenschaft der Raute."],
+          ["Die Diagonalen stehen senkrecht aufeinander.", true, "Das lässt sich über das Skalarprodukt der Diagonalen prüfen."],
+          ["Alle Winkel sind 90° groß.", false, "Das gilt nur für die besondere Raute Quadrat."],
+          ["Die Seitenlängen lassen sich über Vektorbeträge vergleichen.", true, "Am günstigsten vergleichst du die Quadrate der Vektorlängen."]
+        ]
+      },
+      {
+        category: "quadrilateral",
+        name: "Quadrat",
+        question: "Welche Kombination weist ein Quadrat besonders direkt nach?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines Quadrats"><polygon points="18,10 102,10 102,94 18,94"/><polyline class="mark" points="18,80 32,80 32,94"/><line class="mark" x1="56" y1="5" x2="64" y2="15"/><line class="mark" x1="56" y1="89" x2="64" y2="99"/></svg>`,
+        options: [
+          ["Alle Seiten sind gleich lang.", true, "Damit erfüllst du die Raute-Eigenschaft."],
+          ["Benachbarte Seitenvektoren sind orthogonal.", true, "Das Skalarprodukt 0 liefert den rechten Winkel."],
+          ["Es ist Rechteck und Raute zugleich.", true, "Ein Quadrat verbindet beide Eigenschaftsgruppen."],
+          ["Nur die Diagonalen sind gleich lang.", false, "Das reicht nicht: Auch ein nicht quadratisches Rechteck hat gleich lange Diagonalen."],
+          ["Gegenüberliegende Seiten sind lediglich parallel.", false, "Das weist höchstens ein Parallelogramm nach, noch kein Quadrat."]
+        ]
+      },
+      {
+        category: "quadrilateral",
+        name: "Drachenviereck",
+        question: "Welche Eigenschaften helfen beim Nachweis eines Drachenvierecks?",
+        svg: `<svg viewBox="0 0 120 100" role="img" aria-label="Skizze eines Drachenvierecks"><polygon points="60,5 100,40 60,95 20,40"/><line class="mark" x1="60" y1="5" x2="60" y2="95"/><line class="mark" x1="20" y1="40" x2="100" y2="40"/></svg>`,
+        options: [
+          ["Zwei Paare benachbarter Seiten sind jeweils gleich lang.", true, "Vergleiche dazu die Beträge der entsprechenden Seitenvektoren."],
+          ["Eine Diagonale ist eine Symmetrieachse.", true, "Sie teilt den Drachen in zwei spiegelbildliche Hälften."],
+          ["Die Diagonalen stehen senkrecht aufeinander.", true, "Das kannst du mit dem Skalarprodukt der Diagonalenvektoren prüfen."],
+          ["Beide Paare gegenüberliegender Seiten sind parallel.", false, "Das wäre die kennzeichnende Eigenschaft eines Parallelogramms."],
+          ["Alle vier Seiten müssen gleich lang sein.", false, "Das wäre eine Raute; beim Drachen genügen zwei benachbarte Paare."]
+        ]
+      }
+    ];
+
+    function renderQuizCards() {
+      const triangleGrid = document.querySelector("#triangle-grid");
+      const quadrilateralGrid = document.querySelector("#quadrilateral-grid");
+
+      quizData.forEach((item, index) => {
+        const card = document.createElement("article");
+        card.className = "quiz-card";
+        const inputs = item.options.map((option, optionIndex) => `
+          <label class="option">
+            <input type="checkbox" name="q-${index}" value="${optionIndex}">
+            <span>${option[0]}</span>
+          </label>
+        `).join("");
+
+        card.innerHTML = `
+          <div class="card-top">
+            <div class="sketch">${item.svg}</div>
+            <div>
+              <p class="card-number">Quiz ${index + 1}</p>
+              <h3>${item.name}</h3>
+            </div>
+          </div>
+          <p class="question">${item.question}</p>
+          <fieldset>
+            <legend>Wähle alle richtigen Antworten aus.</legend>
+            <div class="options">${inputs}</div>
+          </fieldset>
+          <div class="card-actions">
+            <button class="button primary check-button" type="button">Prüfen</button>
+            <div class="feedback" role="status" aria-live="polite"></div>
+          </div>
+        `;
+
+        card.querySelector(".check-button").addEventListener("click", () => evaluateCard(card, item));
+        (item.category === "triangle" ? triangleGrid : quadrilateralGrid).append(card);
+      });
+    }
+
+    function evaluateCard(card, item) {
+      const checkboxes = [...card.querySelectorAll("input[type='checkbox']")];
+      const selected = checkboxes.map((box, index) => box.checked ? index : -1).filter(index => index >= 0);
+      const correct = item.options.map((option, index) => option[1] ? index : -1).filter(index => index >= 0);
+      const feedback = card.querySelector(".feedback");
+
+      card.querySelectorAll(".option").forEach(label => label.classList.remove("is-correct", "is-wrong"));
+
+      if (selected.length === 0) {
+        feedback.className = "feedback warning";
+        feedback.innerHTML = "<strong>Noch keine Auswahl</strong>Wähle mindestens eine Eigenschaft aus und prüfe dann erneut.";
+        return;
+      }
+
+      const wrongSelected = selected.filter(index => !item.options[index][1]);
+      const missedCorrect = correct.filter(index => !selected.includes(index));
+      const fullyCorrect = wrongSelected.length === 0 && missedCorrect.length === 0;
+
+      checkboxes.forEach((box, index) => {
+        const label = box.closest(".option");
+        if (item.options[index][1]) label.classList.add("is-correct");
+        if (box.checked && !item.options[index][1]) label.classList.add("is-wrong");
+      });
+
+      if (fullyCorrect) {
+        const reasons = correct.map(index => `<li>${item.options[index][2]}</li>`).join("");
+        feedback.className = "feedback success";
+        feedback.innerHTML = `<strong>Richtig, weil …</strong><ul>${reasons}</ul>`;
+        return;
+      }
+
+      const groups = [];
+      const correctSelected = selected.filter(index => item.options[index][1]);
+
+      if (wrongSelected.length) {
+        const notes = wrongSelected.map(index =>
+          `<li><strong>„${item.options[index][0]}“</strong> war falsch, weil: ${item.options[index][2]}</li>`
+        ).join("");
+        groups.push(`<div class="feedback-group wrong"><strong>Falsch gewählt</strong><ul>${notes}</ul></div>`);
+      }
+
+      if (correctSelected.length) {
+        const notes = correctSelected.map(index =>
+          `<li><strong>„${item.options[index][0]}“</strong> ${item.options[index][2]}</li>`
+        ).join("");
+        groups.push(`<div class="feedback-group correct"><strong>Richtig gewählt</strong><ul>${notes}</ul></div>`);
+      }
+
+      if (missedCorrect.length) {
+        const notes = missedCorrect.map(index =>
+          `<li><strong>„${item.options[index][0]}“</strong> ${item.options[index][2]}</li>`
+        ).join("");
+        groups.push(`<div class="feedback-group missed"><strong>Richtige Eigenschaften noch übersehen</strong><ul>${notes}</ul></div>`);
+      }
+
+      feedback.className = "feedback mixed";
+      feedback.innerHTML = groups.join("");
+    }
+
+    renderQuizCards();
+  </script>
+</body>
+</html>
