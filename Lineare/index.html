@@ -1,1 +1,570 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geraden-Entdecker – Lineare Funktionen</title>
+  <meta
+    name="description"
+    content="Ein schülergerechtes GeoGebra-Tool zum Zeichnen linearer Funktionen der Form y = m · x + b."
+  >
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5c667a;
+      --paper: #ffffff;
+      --background: #eef4ff;
+      --primary: #2563eb;
+      --primary-dark: #1748b1;
+      --accent: #f59e0b;
+      --soft-blue: #e8f0ff;
+      --border: #cbd7ec;
+      --danger: #b42318;
+      --shadow: 0 14px 36px rgba(35, 61, 108, 0.13);
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #dce9ff 0, transparent 32rem),
+        var(--background);
+      font-family: Inter, ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 42px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 6px;
+      color: var(--primary-dark);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 6vw, 3.7rem);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    header p {
+      max-width: 720px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.14rem);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.75fr) minmax(420px, 1.55fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      border: 1px solid rgba(203, 215, 236, 0.9);
+      border-radius: 22px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      padding: 22px;
+    }
+
+    .controls h2,
+    .graph-card h2 {
+      margin: 0 0 14px;
+      font-size: 1.25rem;
+    }
+
+    .formula {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 82px;
+      margin-bottom: 18px;
+      border: 2px solid #bed0f5;
+      border-radius: 16px;
+      background: var(--soft-blue);
+      color: #123a83;
+      font-size: clamp(1.65rem, 5vw, 2.4rem);
+      font-weight: 850;
+      letter-spacing: 0.01em;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+    }
+
+    label span {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-height: 52px;
+      padding: 10px 13px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--ink);
+      background: #fff;
+      font-size: 1.2rem;
+      font-weight: 750;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .error {
+      min-height: 24px;
+      margin: 8px 0 0;
+      color: var(--danger);
+      font-weight: 750;
+    }
+
+    .draw-button {
+      width: 100%;
+      min-height: 54px;
+      margin-top: 12px;
+      border: 0;
+      border-radius: 13px;
+      color: white;
+      background: var(--primary);
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 7px 0 var(--primary-dark);
+      transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+    }
+
+    .draw-button:hover {
+      background: #1e56cf;
+    }
+
+    .draw-button:active {
+      transform: translateY(4px);
+      box-shadow: 0 3px 0 var(--primary-dark);
+    }
+
+    .examples {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .examples strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .example-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .example-button {
+      min-height: 40px;
+      padding: 7px 11px;
+      border: 1px solid #adc1e8;
+      border-radius: 999px;
+      color: #163d80;
+      background: #f6f9ff;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .example-button:hover {
+      background: var(--soft-blue);
+    }
+
+    .explanation {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .explanation-item {
+      padding: 12px 13px;
+      border-radius: 13px;
+      background: #f8fafc;
+      color: var(--muted);
+    }
+
+    .explanation-item b {
+      color: var(--ink);
+    }
+
+    .graph-card {
+      overflow: hidden;
+    }
+
+    .graph-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px 12px;
+    }
+
+    .graph-head h2 {
+      margin: 0;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .status::before {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      content: "";
+    }
+
+    .status.ready::before {
+      background: #22a06b;
+    }
+
+    #geogebra {
+      width: 100%;
+      min-height: 560px;
+      border-top: 1px solid var(--border);
+      background:
+        linear-gradient(#f7f9fd 1px, transparent 1px),
+        linear-gradient(90deg, #f7f9fd 1px, transparent 1px),
+        white;
+      background-size: 24px 24px;
+    }
+
+    .loading {
+      display: grid;
+      min-height: 560px;
+      place-items: center;
+      padding: 32px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 840px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      #geogebra,
+      .loading {
+        min-height: 500px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 18px, 1180px);
+        padding-top: 18px;
+      }
+
+      .controls {
+        padding: 17px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .graph-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      #geogebra,
+      .loading {
+        min-height: 430px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <span class="eyebrow">Mathematik · Klasse 8</span>
+      <h1>Geraden-Entdecker</h1>
+      <p>
+        Gib die Steigung <b>m</b> und den y-Achsenabschnitt <b>b</b> ein.
+        GeoGebra zeichnet dann die Gerade für dich.
+      </p>
+    </header>
+
+    <section class="layout" aria-label="Eingabe und Koordinatensystem">
+      <aside class="card controls">
+        <h2>1. Funktion eingeben</h2>
+        <div class="formula" id="formula" aria-live="polite">y = 1 · x + 0</div>
+
+        <div class="field-grid">
+          <label for="slope">
+            <span>Steigung m</span>
+            <input id="slope" type="text" inputmode="decimal" value="1" autocomplete="off">
+          </label>
+
+          <label for="intercept">
+            <span>Abschnitt b</span>
+            <input id="intercept" type="text" inputmode="decimal" value="0" autocomplete="off">
+          </label>
+        </div>
+
+        <p class="hint">Du kannst Komma oder Punkt benutzen, zum Beispiel 0,5.</p>
+        <p class="error" id="error" role="alert"></p>
+
+        <button class="draw-button" id="draw" type="button">Gerade zeichnen</button>
+
+        <div class="examples">
+          <strong>Beispiele ausprobieren:</strong>
+          <div class="example-buttons">
+            <button class="example-button" type="button" data-m="2" data-b="1">y = 2x + 1</button>
+            <button class="example-button" type="button" data-m="-1" data-b="3">y = −x + 3</button>
+            <button class="example-button" type="button" data-m="0.5" data-b="-2">y = 0,5x − 2</button>
+            <button class="example-button" type="button" data-m="0" data-b="2">y = 2</button>
+          </div>
+        </div>
+
+        <div class="explanation" aria-label="Bedeutung der Werte">
+          <div class="explanation-item" id="slope-text">
+            <b>m = 1:</b> Gehst du 1 nach rechts, geht die Gerade 1 nach oben.
+          </div>
+          <div class="explanation-item" id="intercept-text">
+            <b>b = 0:</b> Die Gerade schneidet die y-Achse bei 0.
+          </div>
+        </div>
+      </aside>
+
+      <section class="card graph-card">
+        <div class="graph-head">
+          <h2>2. Graph ansehen</h2>
+          <span class="status" id="status">GeoGebra wird geladen …</span>
+        </div>
+        <div id="geogebra">
+          <div class="loading">
+            <p>Das Koordinatensystem wird vorbereitet.<br>Bitte einen Moment warten.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer>Interaktives Lernwerkzeug mit GeoGebra · Lineare Funktionen: y = m · x + b</footer>
+  </main>
+
+  <script>
+    const slopeInput = document.querySelector("#slope");
+    const interceptInput = document.querySelector("#intercept");
+    const formula = document.querySelector("#formula");
+    const error = document.querySelector("#error");
+    const status = document.querySelector("#status");
+    const drawButton = document.querySelector("#draw");
+    let ggbApi = null;
+
+    function parseGermanNumber(value) {
+      const cleaned = String(value).trim().replace(",", ".");
+      if (cleaned === "") return NaN;
+      return Number(cleaned);
+    }
+
+    function displayNumber(value) {
+      const rounded = Math.abs(value) < 1e-10 ? 0 : Math.round(value * 1000) / 1000;
+      return new Intl.NumberFormat("de-DE", {
+        maximumFractionDigits: 3
+      }).format(rounded);
+    }
+
+    function formulaText(m, b) {
+      if (m === 0) return `y = ${displayNumber(b)}`;
+      const mPart = m === 1 ? "x" : m === -1 ? "−x" : `${displayNumber(m)} · x`;
+      if (b === 0) return `y = ${mPart}`;
+      const sign = b > 0 ? "+" : "−";
+      return `y = ${mPart} ${sign} ${displayNumber(Math.abs(b))}`;
+    }
+
+    function slopeExplanation(m) {
+      if (m === 0) {
+        return {
+          short: `<b>m = 0:</b> Die Gerade ist waagerecht.`
+        };
+      }
+
+      const direction = m > 0 ? "oben" : "unten";
+      const amount = displayNumber(Math.abs(m));
+      return {
+        short: `<b>m = ${displayNumber(m)}:</b> Gehst du 1 nach rechts, geht die Gerade ${amount} nach ${direction}.`
+      };
+    }
+
+    function updateLearningText(m, b) {
+      const explanation = slopeExplanation(m);
+      document.querySelector("#slope-text").innerHTML = explanation.short;
+      document.querySelector("#intercept-text").innerHTML =
+        `<b>b = ${displayNumber(b)}:</b> Die Gerade schneidet die y-Achse bei ${displayNumber(b)}.`;
+    }
+
+    function drawLine() {
+      const m = parseGermanNumber(slopeInput.value);
+      const b = parseGermanNumber(interceptInput.value);
+
+      if (!Number.isFinite(m) || !Number.isFinite(b)) {
+        error.textContent = "Bitte gib bei m und b jeweils eine Zahl ein.";
+        return;
+      }
+
+      if (Math.abs(m) > 100 || Math.abs(b) > 1000) {
+        error.textContent = "Bitte nutze kleinere Werte, damit der Graph gut erkennbar bleibt.";
+        return;
+      }
+
+      error.textContent = "";
+      formula.textContent = formulaText(m, b);
+      updateLearningText(m, b);
+
+      if (ggbApi) {
+        ggbApi.evalCommand(`m = ${m}`);
+        ggbApi.evalCommand(`b = ${b}`);
+        ggbApi.evalCommand("f(x) = m*x + b");
+        ggbApi.setColor("f", 37, 99, 235);
+        ggbApi.setLineThickness("f", 7);
+        ggbApi.setLabelVisible("f", true);
+        ggbApi.setCaption("f", formulaText(m, b));
+        ggbApi.setLabelStyle("f", 3);
+
+        ggbApi.evalCommand("A = (0, b)");
+        ggbApi.setColor("A", 245, 158, 11);
+        ggbApi.setPointSize("A", 7);
+        ggbApi.setCaption("A", `y-Achsenabschnitt: (0 | ${displayNumber(b)})`);
+        ggbApi.setLabelStyle("A", 3);
+        ggbApi.setLabelVisible("A", true);
+      }
+    }
+
+    drawButton.addEventListener("click", drawLine);
+    [slopeInput, interceptInput].forEach((input) => {
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") drawLine();
+      });
+      input.addEventListener("input", () => {
+        const m = parseGermanNumber(slopeInput.value);
+        const b = parseGermanNumber(interceptInput.value);
+        if (Number.isFinite(m) && Number.isFinite(b)) {
+          formula.textContent = formulaText(m, b);
+        }
+      });
+    });
+
+    document.querySelectorAll(".example-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        slopeInput.value = button.dataset.m.replace(".", ",");
+        interceptInput.value = button.dataset.b.replace(".", ",");
+        drawLine();
+      });
+    });
+
+    function startGeoGebra() {
+      if (typeof GGBApplet === "undefined") {
+        status.textContent = "GeoGebra konnte nicht geladen werden";
+        document.querySelector("#geogebra").innerHTML =
+          '<div class="loading"><p>GeoGebra braucht eine Internetverbindung.<br>Prüfe die Verbindung und lade die Seite neu.</p></div>';
+        return;
+      }
+
+      const parameters = {
+        appName: "classic",
+        width: 900,
+        height: 560,
+        showToolBar: false,
+        showAlgebraInput: false,
+        showMenuBar: false,
+        showResetIcon: true,
+        enableLabelDrags: false,
+        enableShiftDragZoom: true,
+        enableRightClick: false,
+        showZoomButtons: true,
+        errorDialogsActive: false,
+        useBrowserForJS: true,
+        language: "de",
+        borderColor: "#ffffff",
+        appletOnLoad(api) {
+          ggbApi = api;
+          ggbApi.setPerspective("G");
+          ggbApi.setCoordSystem(-10, 10, -10, 10);
+          ggbApi.setAxesVisible(true, true);
+          ggbApi.setGridVisible(true);
+          status.textContent = "GeoGebra ist bereit";
+          status.classList.add("ready");
+          drawLine();
+        }
+      };
+
+      const applet = new GGBApplet(parameters, true);
+      applet.inject("geogebra");
+    }
+
+    window.addEventListener("load", startGeoGebra);
+  </script>
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+</body>
+</html>
