@@ -1,1 +1,831 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stationen zentraler Prüfungen</title>
+  <style>
+    :root {
+      --paper: #f8f6ef;
+      --ink: #1d2430;
+      --muted: #5b6472;
+      --line: #d92735;
+      --blue: #2e62b8;
+      --field: #dfe8f6;
+      --field-strong: #cbdcf2;
+      --green: #24745b;
+      --amber: #9b6414;
+      --shadow: 0 18px 42px rgba(20, 27, 39, .16);
+      --border: #222936;
+    }
 
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.68), rgba(255,255,255,.2)),
+        var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    header {
+      padding: 14px clamp(18px, 4vw, 56px) 6px;
+      display: block;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.35vw, 2.35rem);
+      line-height: 1.02;
+      max-width: 740px;
+      overflow-wrap: anywhere;
+    }
+
+    .tagline {
+      margin: 8px 0 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: clamp(.95rem, 1.3vw, 1.1rem);
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+
+    .stage {
+      position: relative;
+      overflow: hidden;
+      padding: 6px clamp(12px, 3vw, 44px) 28px;
+    }
+
+    .timeline {
+      position: relative;
+      min-height: min(66vh, 640px);
+      border-top: 1px solid rgba(37, 44, 57, .14);
+      touch-action: none;
+    }
+
+    .rail {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .rail path.main {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 5px 4px rgba(130, 13, 24, .22));
+    }
+
+    .rail path.ghost {
+      fill: none;
+      stroke: rgba(217, 39, 53, .18);
+      stroke-width: 24;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .divider {
+      position: absolute;
+      top: 18%;
+      bottom: 8%;
+      width: 0;
+      border-left: 5px dashed rgba(46, 98, 184, .82);
+      border-radius: 999px;
+      pointer-events: none;
+      opacity: .38;
+      z-index: 1;
+    }
+
+    .station {
+      position: absolute;
+      z-index: 5;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+    }
+
+    .station button {
+      appearance: none;
+      position: absolute;
+      pointer-events: auto;
+      border: 3px solid #4778d2;
+      background: #efefef;
+      color: #161b24;
+      min-width: 74px;
+      min-height: 48px;
+      padding: 8px 12px;
+      border-radius: 3px;
+      font-weight: 800;
+      line-height: 1.05;
+      box-shadow: 0 9px 16px rgba(16, 23, 35, .13);
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      white-space: nowrap;
+    }
+
+    .station::before {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: -6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      border: 4px solid var(--blue);
+      box-shadow: 0 4px 10px rgba(20, 27, 39, .18);
+    }
+
+    .station::after {
+      content: "";
+      position: absolute;
+      left: -1px;
+      width: 2px;
+      height: 36px;
+      background: var(--blue);
+      opacity: .9;
+    }
+
+    .station.above::after { top: -38px; }
+    .station.below::after { top: 8px; }
+
+    .station.above button {
+      transform: translate(-50%, calc(-100% - 44px));
+    }
+
+    .station.below button {
+      transform: translate(-50%, 44px);
+    }
+
+    .station.active button,
+    .station button:focus-visible {
+      background: #ffffff;
+      border-color: var(--line);
+      outline: 4px solid rgba(217, 39, 53, .2);
+      outline-offset: 3px;
+    }
+
+    .station.above.active button,
+    .station.above button:focus-visible {
+      transform: translate(-50%, calc(-100% - 50px));
+    }
+
+    .station.below.active button,
+    .station.below button:focus-visible {
+      transform: translate(-50%, 50px);
+    }
+
+    .detail {
+      position: absolute;
+      z-index: 6;
+      width: min(520px, 37vw);
+      min-height: 156px;
+      padding: 18px 20px;
+      border: 3px solid var(--border);
+      background: var(--field);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .detail.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .detail h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.1rem, 1.5vw, 1.45rem);
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .detail p {
+      margin: 0 0 12px;
+      line-height: 1.35;
+      font-size: clamp(.95rem, 1.1vw, 1.08rem);
+      overflow-wrap: anywhere;
+    }
+
+    .facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 14px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .facts li {
+      border: 1px solid rgba(34, 41, 54, .24);
+      background: rgba(255,255,255,.58);
+      padding: 5px 8px;
+      border-radius: 4px;
+      color: #303948;
+      font-size: .88rem;
+      font-weight: 650;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .actions button,
+    .actions a {
+      min-height: 38px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 7px 11px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .actions .source {
+      background: #1f2937;
+      color: white;
+      border-color: #1f2937;
+    }
+
+    .detail[data-id="vera3"] { left: 2%; top: 0; width: min(570px, 42vw); }
+    .detail[data-id="vera8"] { left: 20%; top: 0; width: min(560px, 42vw); }
+    .detail[data-id="zp10"] { left: 25%; top: 56%; width: min(610px, 44vw); }
+    .detail[data-id="ef"] { left: 55%; top: 50%; width: min(410px, 31vw); }
+    .detail[data-id="abitur"] { left: 55%; top: 5%; width: min(540px, 38vw); }
+
+    .traveller {
+      position: absolute;
+      z-index: 10;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fff;
+      border: 8px solid var(--line);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 8px 20px rgba(126, 18, 30, .35);
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .traveller:active { cursor: grabbing; }
+
+    .source-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(13, 18, 26, .58);
+    }
+
+    .source-modal.open { display: grid; }
+
+    .modal-panel {
+      width: min(900px, 96vw);
+      max-height: min(760px, 90vh);
+      overflow: auto;
+      border: 3px solid var(--border);
+      background: #fffaf0;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+    }
+
+    .modal-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      background: #1f2937;
+      color: #fff;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .close {
+      width: 42px;
+      height: 42px;
+      border: 2px solid rgba(255,255,255,.8);
+      color: white;
+      background: transparent;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 22px;
+    }
+
+    .source-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 12px;
+    }
+
+    .source-list li {
+      border-left: 6px solid var(--blue);
+      background: rgba(223, 232, 246, .7);
+    }
+
+    .source-list strong { display: block; margin-bottom: 4px; }
+
+    .source-item {
+      display: grid;
+      gap: 8px;
+      padding: 13px;
+    }
+
+    .source-url {
+      color: #123f8c;
+      overflow-wrap: anywhere;
+      font-weight: 700;
+      text-decoration: underline;
+      display: block;
+    }
+
+    .source-hint {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .86rem;
+      font-weight: 700;
+    }
+
+    .source-open {
+      justify-self: start;
+      min-height: 38px;
+      border-radius: 4px;
+      border: 2px solid #1f2937;
+      background: #1f2937;
+      color: white;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 11px;
+      font-weight: 800;
+    }
+
+    .source-open:hover,
+    .source-open:focus-visible {
+      outline: 4px solid rgba(31, 41, 55, .22);
+      outline-offset: 2px;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-weight: 800;
+      font-size: .88rem;
+    }
+
+    .status.open { background: rgba(36, 116, 91, .12); color: var(--green); }
+    .status.restricted { background: rgba(155, 100, 20, .13); color: var(--amber); }
+    .status.warn { background: rgba(217, 39, 53, .12); color: #a91d2a; }
+
+
+    @media (max-width: 980px) {
+      header {
+        display: block;
+        padding-bottom: 14px;
+      }
+
+      .timeline {
+        min-height: 920px;
+      }
+
+      .rail {
+        transform: rotate(90deg) scale(1.22);
+        transform-origin: 50% 50%;
+        opacity: .38;
+      }
+
+      .divider { display: none; }
+
+      .detail,
+      .traveller {
+        position: static;
+        transform: none;
+      }
+
+      .station {
+        display: none;
+      }
+
+      .mobile-stack {
+        position: relative;
+        z-index: 7;
+        display: grid;
+        gap: 14px;
+        padding: 12px 0 24px;
+      }
+
+      .detail {
+        width: 100%;
+        min-height: 0;
+        opacity: 1;
+        pointer-events: auto;
+        display: none;
+        padding: 16px;
+      }
+
+      .detail p {
+        font-size: .98rem;
+        line-height: 1.34;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .actions button,
+      .actions a {
+        width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .detail.active { display: block; }
+
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>Prüfungsstationen der Schullaufbahn</h1>
+        <p class="tagline">Von VERA als Lernstandserhebung bis zum Abitur: Die Stationen zeigen, wann zentrale Formate in der Schullaufbahn auftauchen, wie verbindlich sie sind und wo Aufgaben bzw. Quellen liegen.</p>
+      </div>
+    </header>
+
+    <main class="stage">
+      <section class="timeline" aria-label="Interaktive Schullaufbahn">
+        <svg class="rail" viewBox="0 0 1400 760" preserveAspectRatio="none" aria-hidden="true">
+          <path class="ghost" d="M70,390 C150,310 270,285 340,385 S520,345 580,370 S675,360 710,325 S810,285 875,310 S930,250 970,250 C1040,250 1115,290 1120,220 S1260,185 1320,95" />
+          <path id="lifePath" class="main" d="M70,390 C150,310 270,285 340,385 S520,345 580,370 S675,360 710,325 S810,285 875,310 S930,250 970,250 C1040,250 1115,290 1120,220 S1260,185 1320,95" />
+        </svg>
+
+        <div class="divider" data-break="grundschule"></div>
+        <div class="divider" data-break="sek1"></div>
+        <div class="traveller" id="traveller" aria-hidden="true"></div>
+
+        <div class="station above" data-id="vera3">
+          <button type="button">VERA 3</button>
+        </div>
+        <div class="station above" data-id="vera8">
+          <button type="button">VERA 8</button>
+        </div>
+        <div class="station below" data-id="zp10">
+          <button type="button">ZP 10</button>
+        </div>
+        <div class="station below" data-id="ef">
+          <button type="button">ZK EF</button>
+        </div>
+        <div class="station below" data-id="abitur">
+          <button type="button">Abitur</button>
+        </div>
+
+        <div class="mobile-stack">
+          <article class="detail" data-id="vera3">
+            <h2>VERA 3</h2>
+            <p><strong>VERA3/8 sind Lernstandserhebungen.</strong> Sie ersetzt keine Klassenarbeit, werden bewertet, aber nicht benotet. Eine intensive Vorbereitung ist nicht sinnvoll. Nur das Format sollte geübt werden.</p>
+            <ul class="facts"><li>Klasse 3</li><li>Lernstand</li><li>nicht benotet</li></ul>
+            <div class="actions">
+              <button class="source" type="button" data-source="vera">Quellen</button>
+            </div>
+          </article>
+
+          <article class="detail" data-id="vera8">
+            <h2>VERA 8</h2>
+            <p>Das Format wird erneut in Klasse 8 sichtbar. Aufgaben gibt es über das IQB. Passwort gibt es über ihre Schule.</p>
+            <ul class="facts"><li>Klasse 8</li><li>Diagnose</li><li>Schulzugang</li></ul>
+            <div class="actions">
+              <button class="source" type="button" data-source="vera">Quellen</button>
+            </div>
+          </article>
+
+          <article class="detail" data-id="zp10">
+            <h2>Zentrale Prüfung 10</h2>
+            <p>Die zentrale Prüfung ist ein aufwändiges Format. Hier gibt es verschiedene Niveaus.</p>
+            <p><strong>Gesamtschulen:</strong><br>MSA - Mittlerer Schulabschluss<br>EESA - Erster erweiterter Schulabschluss (früher Hauptschulabschluss)</p>
+            <p><strong>Gymnasien:</strong><br>GYM - Fürs Gymnasium, nah am MSA aber nicht gleich (andere Lehrpläne)</p>
+            <ul class="facts"><li>Klasse 10</li><li>Abschlussbezug</li><li>NRW-Portal</li></ul>
+            <div class="actions">
+              <button class="source" type="button" data-source="zp10">Quellen</button>
+            </div>
+          </article>
+
+          <article class="detail" data-id="ef">
+            <h2>Zentrale Klausur EF</h2>
+            <p>Die zentrale Klausur ersetzt in der EF die zweite Klausur im zweiten Halbjahr.</p>
+            <ul class="facts"><li>Einführungsphase</li><li>zentrale Klausur</li><li>Übergang Oberstufe</li></ul>
+            <div class="actions">
+              <button class="source" type="button" data-source="ef">Quellen</button>
+            </div>
+          </article>
+
+          <article class="detail" data-id="abitur">
+            <h2>Abitur</h2>
+            <p>Seit 2026 werden 50% der Abituraufgaben aus dem Pool des IQB 1:1 (d.h. unverändert) entnommen.</p>
+            <ul class="facts"><li>Qualifikationsphase</li><li>IQB-Pool</li><li>zentrale Abschlussprüfung</li></ul>
+            <div class="actions">
+              <button class="source" type="button" data-source="abitur">Quellen</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="source-modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <section class="modal-panel">
+      <div class="modal-head">
+        <h3 id="modal-title">Quellen</h3>
+        <button class="close" id="closeModal" type="button" aria-label="Schließen">×</button>
+      </div>
+      <div class="modal-body">
+        <ul class="source-list" id="modalSources"></ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const schoolYears = {
+      grundschule: 4,
+      sek1: 6,
+      oberstufe: 3,
+      total: 13
+    };
+    const progressFromSchoolYear = year => year / schoolYears.total * 100;
+    const phaseBreaks = [
+      { id: "grundschule", progress: progressFromSchoolYear(schoolYears.grundschule) },
+      { id: "sek1", progress: progressFromSchoolYear(schoolYears.grundschule + schoolYears.sek1) }
+    ];
+    const stations = [
+      { id: "vera3", progress: progressFromSchoolYear(2.55) },
+      { id: "vera8", progress: progressFromSchoolYear(7.45) },
+      { id: "zp10", progress: progressFromSchoolYear(9.75) },
+      { id: "ef", progress: progressFromSchoolYear(10.85) },
+      { id: "abitur", progress: progressFromSchoolYear(12.85) }
+    ];
+
+    const sources = {
+      vera: {
+        title: "VERA 3/8: Aufgabenbrowser",
+        items: [
+          {
+            label: "IQB Aufgabenbrowser",
+            url: "https://www.aufgabenbrowser.de/itemdb/wui/Login",
+            status: "Erreichbar, aber Login-/Schulzugang",
+            kind: "restricted"
+          }
+        ]
+      },
+      zp10: {
+        title: "Zentrale Prüfung 10",
+        items: [
+          {
+            label: "NRW Standardsicherung: ZP10 Prüfungsaufgaben",
+            url: "https://www.standardsicherung.schulministerium.nrw.de/zentrale-pruefungen-10/zp10-pruefungsaufgaben",
+            status: "Erreichbar; Downloads mit schulspezifischen Zugangsdaten",
+            kind: "restricted"
+          }
+        ]
+      },
+      ef: {
+        title: "Zentrale Klausur EF",
+        items: [
+          {
+            label: "NRW Standardsicherung: Zentrale Klausuren EF Mathematik",
+            url: "https://www.standardsicherung.schulministerium.nrw.de/zentrale-klausuren-einfuehrungsphase/faecher/zke-mathematik-fachliche-vorgaben-hinweise-und",
+            status: "Fachliche Vorgaben, Hinweise und Materialien",
+            kind: "open"
+          }
+        ]
+      },
+      abitur: {
+        title: "Abitur: Quellen für Aufgaben",
+        items: [
+          {
+            label: "IQB Abituraufgabenpools",
+            url: "https://www.iqb.hu-berlin.de/de/schule/sekundarstufe-ii/abituraufgabenpools/",
+            status: "Erreichbar; stabile Hub-Seite",
+            kind: "open"
+          },
+          {
+            label: "Niedersachsen: Aufgaben der schriftlichen Abiturprüfungen",
+            url: "https://za-aufgaben.nibis.de",
+            status: "Erreichbar; Downloadportal mit Auswahl/Session",
+            kind: "restricted"
+          },
+          {
+            label: "Bayern ISB: Abiturprüfung Mathematik",
+            url: "https://www.isb.bayern.de/schularten/gymnasium/leistungserhebungen/abiturpruefung/mathematik/",
+            status: "Erreichbar; frei sichtbare PDF-Materialien",
+            kind: "open"
+          }
+        ]
+      }
+    };
+
+    const traveller = document.querySelector("#traveller");
+    const timeline = document.querySelector(".timeline");
+    const lifePath = document.querySelector("#lifePath");
+    const detailEls = [...document.querySelectorAll(".detail")];
+    const stationEls = [...document.querySelectorAll(".station")];
+    const breakEls = [...document.querySelectorAll(".divider[data-break]")];
+    const modal = document.querySelector("#modal");
+    const modalTitle = document.querySelector("#modal-title");
+    const modalSources = document.querySelector("#modalSources");
+    const viewBox = { width: 1400, height: 760 };
+    const pathLength = lifePath.getTotalLength();
+    const pathSamples = Array.from({ length: 501 }, (_, index) => {
+      const progress = index / 5;
+      const point = lifePath.getPointAtLength(pathLength * progress / 100);
+      return { progress, x: point.x, y: point.y };
+    });
+
+    function nearestStation(value) {
+      return stations.reduce((best, station) => {
+        const distance = Math.abs(station.progress - value);
+        return distance < best.distance ? { station, distance } : best;
+      }, { station: stations[0], distance: Infinity }).station;
+    }
+
+    function pointAtProgress(value) {
+      const bounded = Math.max(0, Math.min(100, Number(value)));
+      const point = lifePath.getPointAtLength(pathLength * bounded / 100);
+      return {
+        x: point.x / viewBox.width * 100,
+        y: point.y / viewBox.height * 100
+      };
+    }
+
+    function placeOnPath(element, progress) {
+      const point = pointAtProgress(progress);
+      element.style.left = point.x + "%";
+      element.style.top = point.y + "%";
+    }
+
+    function positionStationFlags() {
+      stationEls.forEach(element => {
+        const station = stations.find(item => item.id === element.dataset.id);
+        if (station) placeOnPath(element, station.progress);
+      });
+    }
+
+    function positionPhaseBreaks() {
+      breakEls.forEach(element => {
+        const phase = phaseBreaks.find(item => item.id === element.dataset.break);
+        if (!phase) return;
+        const point = pointAtProgress(phase.progress);
+        element.style.left = point.x + "%";
+      });
+    }
+
+    function setActiveDetail(id) {
+      detailEls.forEach(el => el.classList.toggle("active", el.dataset.id === id));
+      stationEls.forEach(el => el.classList.toggle("active", el.dataset.id === id));
+    }
+
+    function renderProgress(value) {
+      const bounded = Math.max(0, Math.min(100, Number(value)));
+      placeOnPath(traveller, bounded);
+      setActiveDetail(nearestStation(bounded).id);
+    }
+
+    function activate(id) {
+      const station = stations.find(item => item.id === id);
+      if (station) renderProgress(station.progress);
+    }
+
+    function progressFromPointer(event) {
+      const rect = timeline.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width * viewBox.width;
+      const y = (event.clientY - rect.top) / rect.height * viewBox.height;
+      return pathSamples.reduce((best, sample) => {
+        const distance = (sample.x - x) ** 2 + (sample.y - y) ** 2;
+        return distance < best.distance ? { progress: sample.progress, distance } : best;
+      }, { progress: 0, distance: Infinity }).progress;
+    }
+
+    function beginPathDrag(event) {
+      if (event.target.closest(".detail, .station, .source-modal")) return;
+      event.preventDefault();
+      timeline.setPointerCapture(event.pointerId);
+      renderProgress(progressFromPointer(event));
+    }
+
+    function continuePathDrag(event) {
+      if (!timeline.hasPointerCapture(event.pointerId)) return;
+      event.preventDefault();
+      renderProgress(progressFromPointer(event));
+    }
+
+    function endPathDrag(event) {
+      if (timeline.hasPointerCapture(event.pointerId)) {
+        timeline.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    function openSources(key) {
+      const data = sources[key];
+      if (!data) return;
+      modalTitle.textContent = data.title;
+      modalSources.innerHTML = data.items.map(item => `
+        <li>
+          <div class="source-item">
+            <strong>${item.label}</strong>
+            <span class="source-url">${item.url}</span>
+            <span class="status ${item.kind}">${item.status}</span>
+            <a class="source-open" href="${item.url}" target="_blank" rel="noopener noreferrer">Quelle öffnen</a>
+          </div>
+        </li>
+      `).join("");
+      modal.classList.add("open");
+      document.querySelector("#closeModal").focus();
+    }
+
+    timeline.addEventListener("pointerdown", beginPathDrag);
+    timeline.addEventListener("pointermove", continuePathDrag);
+    timeline.addEventListener("pointerup", endPathDrag);
+    timeline.addEventListener("pointercancel", endPathDrag);
+    stationEls.forEach(el => {
+      el.querySelector("button").addEventListener("click", () => activate(el.dataset.id));
+    });
+    document.querySelectorAll("[data-source]").forEach(button => {
+      button.addEventListener("click", () => openSources(button.dataset.source));
+    });
+    document.querySelector("#closeModal").addEventListener("click", () => {
+      modal.classList.remove("open");
+    });
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        modal.classList.remove("open");
+      }
+    });
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        modal.classList.remove("open");
+      }
+    });
+
+    positionPhaseBreaks();
+    positionStationFlags();
+    renderProgress(stations[0].progress);
+  </script>
+</body>
+</html>
