@@ -1,1 +1,450 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KLP-Vergleich Mathematik</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f6f8;
+      --panel: #ffffff;
+      --ink: #17202a;
+      --muted: #5f6b7a;
+      --line: #d8dde5;
+      --accent: #1f6feb;
+      --accent-dark: #174ea6;
+      --field: #fbfcfe;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 650;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button,
+    .link-button {
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 0.9rem;
+      color: #ffffff;
+      background: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      line-height: 1.2;
+    }
+
+    button:hover,
+    .link-button:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px;
+      min-height: calc(100vh - 58px);
+    }
+
+    .viewer {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      min-width: 0;
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--panel);
+    }
+
+    .viewer-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 650;
+    }
+
+    .viewer-title span {
+      color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+
+    .pdf-search {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--line);
+      background: #f9fafc;
+    }
+
+    .pdf-search input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 9px;
+      font: inherit;
+      background: #ffffff;
+    }
+
+    .pdf-search input:focus {
+      outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-color: var(--accent);
+    }
+
+    .pdf-search button {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .search-results {
+      grid-column: 1 / -1;
+      display: grid;
+      gap: 6px;
+      max-height: 170px;
+      overflow: auto;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .search-status {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .result-button {
+      width: 100%;
+      border-color: var(--line);
+      padding: 7px 8px;
+      color: var(--ink);
+      background: #ffffff;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .result-button:hover {
+      border-color: var(--accent);
+      color: var(--accent-dark);
+      background: #eef5ff;
+    }
+
+    .result-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    mark {
+      border-radius: 3px;
+      padding: 0 2px;
+      color: inherit;
+      background: #ffe58a;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      background: #e7e9ed;
+    }
+
+    @media (max-width: 900px) {
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .pdf-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .viewer {
+        min-height: 70vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KLP-Vergleich Mathematik: Gesamtschule und Gymnasium G9</h1>
+    <div class="actions">
+      <a class="link-button" href="assets/klp-gesamtschule-mathematik.pdf" target="_blank" rel="noopener">Gesamtschule öffnen</a>
+      <a class="link-button" href="assets/klp-gymnasium-g9-mathematik.pdf" target="_blank" rel="noopener">Gymnasium öffnen</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="pdf-grid" aria-label="Kernlehrplaene">
+      <article class="viewer">
+        <div class="viewer-title">
+          Gesamtschule
+          <span>Kernlehrplan Mathematik 2022</span>
+        </div>
+        <form class="pdf-search" data-doc="gesamtschule" data-target="gesamtschulePdf" data-pdf="assets/klp-gesamtschule-mathematik.pdf">
+          <input type="search" placeholder="Im Gesamtschul-KLP suchen" aria-label="Im Gesamtschul-KLP suchen">
+          <button type="submit">Suchen</button>
+          <div class="search-results" aria-live="polite"></div>
+        </form>
+        <iframe id="gesamtschulePdf" title="KLP Mathematik Gesamtschule" src="assets/klp-gesamtschule-mathematik.pdf"></iframe>
+      </article>
+
+      <article class="viewer">
+        <div class="viewer-title">
+          Gymnasium G9
+          <span>Kernlehrplan Mathematik 2019</span>
+        </div>
+        <form class="pdf-search" data-doc="gymnasium" data-target="gymnasiumPdf" data-pdf="assets/klp-gymnasium-g9-mathematik.pdf">
+          <input type="search" placeholder="Im Gymnasial-KLP suchen" aria-label="Im Gymnasial-KLP suchen">
+          <button type="submit">Suchen</button>
+          <div class="search-results" aria-live="polite"></div>
+        </form>
+        <iframe id="gymnasiumPdf" title="KLP Mathematik Gymnasium G9" src="assets/klp-gymnasium-g9-mathematik.pdf"></iframe>
+      </article>
+    </section>
+  </main>
+
+  <script src="search-index.js"></script>
+  <script>
+    for (const form of document.querySelectorAll(".pdf-search")) {
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const query = form.querySelector("input").value.trim();
+        renderSearchResults(form, query);
+      });
+
+      form.querySelector("input").addEventListener("input", debounce((event) => {
+        renderSearchResults(form, event.target.value.trim());
+      }, 180));
+    }
+
+    function renderSearchResults(form, query) {
+      const results = form.querySelector(".search-results");
+      results.innerHTML = "";
+
+      if (!query) {
+        results.textContent = "Suchbegriff eingeben.";
+        return;
+      }
+
+      const documentIndex = window.KLP_SEARCH_INDEX.find((entry) => entry.id === form.dataset.doc);
+      const matches = findMatches(documentIndex.pages, query);
+      const visibleMatches = matches.slice(0, 16);
+
+      if (matches.length === 0) {
+        results.textContent = "Keine Treffer gefunden.";
+        return;
+      }
+
+      const status = document.createElement("p");
+      status.className = "search-status";
+      status.textContent = `${matches.length} passende Seiten, die besten ${visibleMatches.length} angezeigt.`;
+      results.appendChild(status);
+
+      for (const match of visibleMatches) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "result-button";
+        button.innerHTML = [
+          `<strong>Seite ${match.page}</strong>`,
+          `<span class="result-meta">${match.reason}</span><br>`,
+          highlight(match.snippet, match.highlightTerms)
+        ].join(" ");
+        button.addEventListener("click", () => {
+          const viewer = document.getElementById(form.dataset.target);
+          viewer.src = `${form.dataset.pdf}#page=${match.page}`;
+        });
+        results.appendChild(button);
+      }
+    }
+
+    function findMatches(pages, query) {
+      const parsed = parseQuery(query);
+      const strictMatches = rankPages(pages, parsed, true);
+      return strictMatches.length > 0 ? strictMatches : rankPages(pages, parsed, false);
+    }
+
+    function rankPages(pages, parsed, requireAllTerms) {
+      return pages
+        .map((page) => scorePage(page, parsed, requireAllTerms))
+        .filter(Boolean)
+        .sort((first, second) => second.score - first.score || first.page - second.page);
+    }
+
+    function scorePage(page, parsed, requireAllTerms) {
+      const searchText = page.searchText || normalizeForSearch(page.text);
+      const phraseCount = parsed.phrase ? countOccurrences(searchText, parsed.phrase) : 0;
+      const termCounts = parsed.terms.map((term) => countOccurrences(searchText, term));
+      const matchedTerms = termCounts.filter((count) => count > 0).length;
+      const allTermsMatch = parsed.terms.length > 0 && matchedTerms === parsed.terms.length;
+
+      if (phraseCount === 0 && requireAllTerms && !allTermsMatch) return null;
+      if (phraseCount === 0 && !requireAllTerms && matchedTerms === 0) return null;
+
+      const totalTermHits = termCounts.reduce((sum, count) => sum + count, 0);
+      const score =
+        phraseCount * 120 +
+        (allTermsMatch ? 80 : 0) +
+        matchedTerms * 18 +
+        totalTermHits;
+      const highlightTerms = parsed.rawTerms.length > 0 ? parsed.rawTerms : [parsed.rawQuery];
+      return {
+        page: page.page,
+        score,
+        reason: buildReason(phraseCount, matchedTerms, parsed.terms.length, totalTermHits),
+        snippet: createSnippet(page.text, parsed),
+        highlightTerms
+      };
+    }
+
+    function parseQuery(query) {
+      const rawTerms = query
+        .split(/\s+/)
+        .map((term) => term.trim())
+        .filter((term) => term.length > 0);
+      const terms = [...new Set(rawTerms.map(normalizeForSearch).filter((term) => term.length >= 2))];
+      return {
+        rawQuery: query,
+        rawTerms,
+        phrase: normalizeForSearch(query),
+        terms
+      };
+    }
+
+    function buildReason(phraseCount, matchedTerms, termCount, totalTermHits) {
+      if (phraseCount > 0) return `exakter Ausdruck, ${phraseCount} Treffer`;
+      if (matchedTerms === termCount) return `alle Suchwörter, ${totalTermHits} Treffer`;
+      return `${matchedTerms} von ${termCount} Suchwörtern, ${totalTermHits} Treffer`;
+    }
+
+    function countOccurrences(text, needle) {
+      if (!needle) return 0;
+      let count = 0;
+      let position = text.indexOf(needle);
+      while (position !== -1) {
+        count += 1;
+        position = text.indexOf(needle, position + Math.max(needle.length, 1));
+      }
+      return count;
+    }
+
+    function normalizeForSearch(value) {
+      return value
+        .replace(/[äÄ]/g, "ae")
+        .replace(/[öÖ]/g, "oe")
+        .replace(/[üÜ]/g, "ue")
+        .replace(/ß/g, "ss")
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase("de-DE")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    function createSnippet(text, parsed) {
+      const candidates = [parsed.rawQuery, ...parsed.rawTerms].filter((term) => term.length > 0);
+      let index = -1;
+      let length = 0;
+      for (const candidate of candidates) {
+        index = text.toLocaleLowerCase("de-DE").indexOf(candidate.toLocaleLowerCase("de-DE"));
+        if (index !== -1) {
+          length = candidate.length;
+          break;
+        }
+      }
+      if (index === -1) {
+        const normalizedText = normalizeForSearch(text);
+        const normalizedIndex = parsed.terms
+          .map((term) => normalizedText.indexOf(term))
+          .filter((position) => position >= 0)
+          .sort((first, second) => first - second)[0];
+        index = Number.isInteger(normalizedIndex)
+          ? Math.min(text.length - 1, normalizedIndex)
+          : 0;
+        length = 30;
+      }
+
+      const start = Math.max(0, index - 80);
+      const end = Math.min(text.length, index + length + 130);
+      const prefix = start > 0 ? "... " : "";
+      const suffix = end < text.length ? " ..." : "";
+      return `${prefix}${text.slice(start, end)}${suffix}`;
+    }
+
+    function highlight(text, terms) {
+      let escapedText = escapeHtml(text);
+      const sortedTerms = [...new Set(terms)]
+        .filter((term) => term.length > 1)
+        .sort((first, second) => second.length - first.length);
+      for (const term of sortedTerms) {
+        escapedText = escapedText.replace(new RegExp(escapeRegExp(escapeHtml(term)), "gi"), "<mark>$&</mark>");
+      }
+      return escapedText;
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[character]);
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function debounce(callback, wait) {
+      let timeoutId;
+      return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => callback(...args), wait);
+      };
+    }
+
+  </script>
+</body>
+</html>
