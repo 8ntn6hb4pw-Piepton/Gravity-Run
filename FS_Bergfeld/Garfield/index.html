@@ -346,10 +346,13 @@
     function ggbOnInit() {
       const ggb = ggbApplet;
 
-      ggb.evalCommand('a = 4');
+      ggb.evalCommand('a = 5');
       ggb.evalCommand('b = 3');
       ggb.evalCommand('c = sqrt(a^2 + b^2)');
 
+      // Exakte Garfield-Konstruktion:
+      // PQ und RS sind die parallelen Seiten des Trapezes mit Längen a bzw. b.
+      // PS ist die Höhe des Trapezes und hat die Länge a+b.
       ggb.evalCommand('P = (0,0)');
       ggb.evalCommand('Q = (0,a)');
       ggb.evalCommand('O = (b,0)');
@@ -361,62 +364,80 @@
       ggb.evalCommand('poly3 = Polygon(O,R,S)');
       ggb.evalCommand('trap = Polygon(P,Q,R,S)');
 
-      ggb.evalCommand('ang1 = Angle(Q,O,R)');
-      ggb.evalCommand('ang2 = Angle(P,Q,O)');
-      ggb.evalCommand('ang3 = Angle(O,S,R)');
-
       ggb.evalCommand('segPQ = Segment(P,Q)');
-      ggb.evalCommand('segQR = Segment(Q,R)');
-      ggb.evalCommand('segRS = Segment(R,S)');
       ggb.evalCommand('segPS = Segment(P,S)');
+      ggb.evalCommand('segRS = Segment(R,S)');
       ggb.evalCommand('segQO = Segment(Q,O)');
       ggb.evalCommand('segOR = Segment(O,R)');
+      ggb.evalCommand('segOS = Segment(O,S)');
 
-      ggb.evalCommand('Text("a", (-0.45, a/2))');
+      ggb.evalCommand('A1 = Angle(P,Q,O)');
+      ggb.evalCommand('A2 = Angle(Q,O,R)');
+      ggb.evalCommand('A3 = Angle(O,S,R)');
+
+      // Texte genau an den betreffenden Strecken
+      ggb.evalCommand('Text("a", (-0.55, a/2))');
       ggb.evalCommand('Text("b", (a+b+0.35, b/2))');
       ggb.evalCommand('Text("b", (b/2, -0.45))');
-      ggb.evalCommand('Text("a", (b+a/2, -0.45))');
-      ggb.evalCommand('Text("c", (b/2-0.18, a/2+0.28))');
-      ggb.evalCommand('Text("c", ((a+2*b)/2+0.18, b/2+0.28))');
-      ggb.evalCommand('Text("a + b", ((a+b)/2, -0.98))');
+      ggb.evalCommand('Text("a", ((b+a+b)/2, -0.45))');
+      ggb.evalCommand('Text("c", (b/2-0.25, a/2+0.35))');
+      ggb.evalCommand('Text("c", ((a+2*b)/2+0.18, b/2+0.35))');
+      ggb.evalCommand('Text("a + b", ((a+b)/2, -0.95))');
+
+      // optionale Gleichheitsmarken zur Verdeutlichung
+      ggb.evalCommand('M1 = Midpoint(P,Q)');
+      ggb.evalCommand('M2 = Midpoint(O,S)');
+      ggb.evalCommand('M3 = Midpoint(P,O)');
+      ggb.evalCommand('M4 = Midpoint(R,S)');
+      ggb.evalCommand('mA1 = Segment((x(M1)-0.18, y(M1)), (x(M1)+0.18, y(M1)))');
+      ggb.evalCommand('mA2 = Segment((x(M2)-0.18, y(M2)), (x(M2)+0.18, y(M2)))');
+      ggb.evalCommand('mB1 = Segment((x(M3)-0.12, y(M3)-0.12), (x(M3)+0.12, y(M3)+0.12))');
+      ggb.evalCommand('mB2 = Segment((x(M4)-0.12, y(M4)-0.12), (x(M4)+0.12, y(M4)+0.12))');
 
       ggb.setColor('poly1', 197, 211, 236);
       ggb.setColor('poly2', 236, 223, 155);
       ggb.setColor('poly3', 198, 222, 203);
       ggb.setColor('trap', 255, 255, 255);
-      ggb.setColor('segPQ', 35, 45, 60);
-      ggb.setColor('segQR', 35, 45, 60);
-      ggb.setColor('segRS', 35, 45, 60);
-      ggb.setColor('segPS', 35, 45, 60);
-      ggb.setColor('segQO', 35, 45, 60);
-      ggb.setColor('segOR', 35, 45, 60);
+
+      ['segPQ','segPS','segRS','segQO','segOR','segOS'].forEach(x => {
+        ggb.setColor(x, 35, 45, 60);
+        ggb.setLineThickness(x, 4);
+        ggb.setLabelVisible(x, false);
+      });
+      ['mA1','mA2','mB1','mB2'].forEach(x => {
+        ggb.setColor(x, 35, 45, 60);
+        ggb.setLineThickness(x, 4);
+        ggb.setLabelVisible(x, false);
+      });
 
       ggb.setFilling('trap', 0);
       ggb.setFilling('poly1', 0.9);
       ggb.setFilling('poly2', 0.92);
       ggb.setFilling('poly3', 0.9);
       ggb.setLineThickness('trap', 5);
-      ['segPQ','segQR','segRS','segPS','segQO','segOR'].forEach(x => ggb.setLineThickness(x, 4));
-      ['ang1','ang2','ang3'].forEach(x => ggb.setLineThickness(x, 3));
 
-      ['P','Q','O','R','S'].forEach(x => {
+      ['poly1','poly2','poly3','trap'].forEach(x => ggb.setLabelVisible(x, false));
+      ['A1','A2','A3'].forEach(x => {
+        ggb.setLabelVisible(x, false);
+        ggb.setLineThickness(x, 3);
+      });
+
+      ['P','Q','O','R','S','M1','M2','M3','M4'].forEach(x => {
         ggb.setVisible(x, false);
         ggb.setLabelVisible(x, false);
       });
-      ['poly1','poly2','poly3','trap','segPQ','segQR','segRS','segPS','segQO','segOR'].forEach(x => ggb.setLabelVisible(x, false));
-      ['ang1','ang2','ang3'].forEach(x => ggb.setLabelVisible(x, false));
 
       ggb.setAxesVisible(false, false);
       ggb.setGridVisible(false);
-      ggb.setCoordSystem(-1.2, 8.9, -1.35, 4.9);
-      ggb.setFontSize(24);
+      ggb.setCoordSystem(-1.3, 9.2, -1.35, 6.1);
+      ggb.setFontSize(22);
     }
 
     window.addEventListener('load', () => {
       const params = {
         appName: 'geometry',
-        width: 760,
-        height: 500,
+        width: 720,
+        height: 420,
         showToolBar: false,
         showAlgebraInput: false,
         showMenuBar: false,
@@ -436,7 +457,7 @@
       { id:'G', title:'Karte G', text:'Die Fläche eines Trapezes berechnet man mit:', math:'\\[A=\\frac{a+b}{2}\\cdot h\\] Für dieses Trapez gilt: \\[A=\\frac{a+b}{2}\\cdot(a+b)\\]' },
       { id:'H', title:'Karte H', text:'Damit gilt:', math:'\\[A=\\frac{(a+b)^2}{2}\\]' },
       { id:'A', title:'Karte A', text:'Das Trapez besteht aus drei Dreiecken: zwei gleich großen rechtwinkligen Dreiecken und einem mittleren gleichschenklig-rechtwinkligen Dreieck.' },
-      { id:'B', title:'Karte B', text:'Die Fläche eines der beiden äußeren rechtwinkligen Dreiecke beträgt \(\\frac12ab\). Da es zwei solche Dreiecke gibt, haben sie zusammen die Fläche:', math:'\\[ab\\]' },
+      { id:'B', title:'Karte B', text:'Die Fläche eines der beiden äußeren rechtwinkligen Dreiecke beträgt:', math:'\\[\\frac{1}{2}ab\\] Da es zwei solche Dreiecke gibt, haben sie zusammen die Fläche: \\[ab\\]' },
       { id:'D', title:'Karte D', text:'Das mittlere Dreieck ist gleichschenklig-rechtwinklig: Die beiden spitzen Winkel der äußeren Dreiecke ergänzen sich unten zu \(90^\circ\), also ist der Winkel in der Mitte recht. Die beiden Katheten haben jeweils die Länge \(c\). Daher gilt:', math:'\\[A_\\text{Mitte}=\\frac12\\cdot c\\cdot c=\\frac12c^2\\]' },
       { id:'F', title:'Karte F', text:'Also kann man die Fläche des Trapezes auch so schreiben:', math:'\\[A=ab+\\frac12c^2\\]' },
       { id:'I', title:'Karte I', text:'Beide Terme beschreiben dieselbe Trapezfläche. Also gilt:', math:'\\[\\frac{(a+b)^2}{2}=ab+\\frac12c^2\\]' },
