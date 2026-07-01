@@ -1,1 +1,566 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beweispuzzle – Garfield-Beweis des Satzes von Pythagoras</title>
 
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <script src="https://www.geogebra.org/apps/deployggb.js"></script>
+
+  <style>
+    :root{
+      --bg:#e9eef5;
+      --panel:#ffffff;
+      --line:#b9c4d6;
+      --line-strong:#8fa0b8;
+      --text:#17212f;
+      --muted:#4d5b6d;
+      --accent:#1d4ed8;
+      --accent-dark:#163ea9;
+      --accent-soft:#dbe8ff;
+      --ok:#166534;
+      --ok-soft:#e7f7ec;
+      --warn:#b91c1c;
+      --warn-soft:#fdecec;
+      --card-shadow:0 10px 26px rgba(23,33,47,.08);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+
+    .wrap{
+      max-width:1360px;
+      margin:0 auto;
+      padding:24px;
+    }
+
+    h1{
+      margin:0 0 8px 0;
+      font-size:2rem;
+      line-height:1.2;
+    }
+
+    h2{
+      margin:0 0 14px 0;
+      font-size:1.35rem;
+    }
+
+    .subtitle{
+      margin:0 0 20px 0;
+      color:var(--muted);
+      font-size:1.03rem;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: minmax(560px, 1.1fr) minmax(420px, .9fr);
+      gap:22px;
+      align-items:start;
+    }
+
+    @media (max-width: 1120px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--card-shadow);
+      padding:22px;
+    }
+
+    .panel-left{ padding-bottom:18px; }
+
+    #ggb-shell{
+      border:2px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      padding:8px;
+    }
+
+    #ggb-element{
+      width:100%;
+      min-height:520px;
+      background:#fff;
+    }
+
+    .legend-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(220px, 1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+
+    @media (max-width: 740px){
+      .legend-grid{ grid-template-columns:1fr; }
+    }
+
+    .pill{
+      background:#f6f8fb;
+      border:1.5px solid var(--line);
+      border-radius:999px;
+      padding:9px 14px;
+      color:#334155;
+      font-size:1rem;
+    }
+
+    .explain-box{
+      margin-top:14px;
+      background:#f8fbff;
+      border:1.5px solid #c8d5eb;
+      border-radius:16px;
+      padding:14px 16px;
+    }
+
+    .explain-box strong{ color:#11284f; }
+
+    .small-note{
+      margin-top:14px;
+      font-size:1rem;
+      color:#334155;
+    }
+
+    .small-note a{
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:700;
+    }
+
+    .small-note a:hover{ text-decoration:underline; }
+
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 18px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      color:white;
+      background:var(--accent);
+      box-shadow:0 6px 16px rgba(29,78,216,.18);
+    }
+
+    button:hover{ background:var(--accent-dark); }
+    button.secondary{ background:#475569; box-shadow:0 6px 16px rgba(71,85,105,.16); }
+    button.secondary:hover{ background:#334155; }
+
+    #feedback{
+      margin:10px 0 14px 0;
+      font-weight:700;
+      min-height:1.6em;
+      font-size:1rem;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-height:240px;
+    }
+
+    .card{
+      background:#fff;
+      border:2px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      cursor:grab;
+      box-shadow:0 6px 20px rgba(23,33,47,.05);
+      user-select:none;
+      transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+
+    .card:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 24px rgba(23,33,47,.08);
+    }
+
+    .card:active{ cursor:grabbing; }
+    .card.dragging{ opacity:.45; border-style:dashed; }
+    .card.correct{ border-color:#22a35a; background:var(--ok-soft); }
+    .card.wrong{ border-color:#d64545; background:var(--warn-soft); }
+
+    .card-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      background:#eef4ff;
+      border-bottom:1px solid #d7e2f5;
+      padding:12px 14px;
+    }
+
+    .badge{
+      background:#d7e5ff;
+      color:#1e48bb;
+      font-weight:700;
+      border-radius:999px;
+      padding:5px 12px;
+      font-size:.97rem;
+      white-space:nowrap;
+    }
+
+    .pos{
+      color:#60708a;
+      font-size:.98rem;
+      white-space:nowrap;
+      font-weight:700;
+    }
+
+    .card-body{
+      padding:16px;
+      font-size:1.02rem;
+    }
+
+    .card-body p{ margin:0 0 10px 0; }
+
+    .mathline{
+      background:#f7f9fc;
+      border:1.5px solid #d8e0ec;
+      border-radius:14px;
+      padding:12px 14px;
+      margin-top:10px;
+      overflow:auto;
+    }
+
+    .hint{
+      font-size:.98rem;
+      color:var(--muted);
+      margin-top:12px;
+    }
+
+    details{ margin-top:14px; }
+    summary{
+      cursor:pointer;
+      font-weight:700;
+      color:#27364b;
+    }
+
+    .info-box{
+      margin-top:10px;
+      background:#f8fbff;
+      border:1.5px solid #c8d5eb;
+      border-radius:16px;
+      padding:14px 16px;
+      color:#2b3a4f;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      color:#566578;
+      font-size:.95rem;
+    }
+
+
+    @media (max-width: 700px){
+      body{ background:#f2f5f9; }
+      .wrap{ padding:12px; }
+      h1{ font-size:1.35rem; }
+      h2{ font-size:1.08rem; margin-bottom:10px; }
+      .subtitle{ font-size:.95rem; margin-bottom:12px; }
+      .panel{ padding:12px; border-radius:16px; margin-bottom:14px; }
+      .grid{ gap:14px; }
+      #ggb-shell{ padding:4px; border-radius:14px; }
+      #ggb-element{ min-height:330px; }
+      .legend-grid{ grid-template-columns:1fr; gap:8px; margin-top:10px; }
+      .pill{ font-size:.92rem; padding:7px 10px; border-radius:12px; }
+      .small-note{ font-size:.92rem; }
+      .controls{ position:sticky; top:0; z-index:20; background:var(--panel); padding:6px 0 10px; margin-bottom:8px; }
+      button{ padding:10px 14px; font-size:.95rem; }
+      .list{ gap:10px; }
+      .card{ border-radius:14px; }
+      .card-head{ padding:9px 10px; }
+      .badge{ font-size:.86rem; padding:4px 10px; }
+      .pos{ font-size:.86rem; }
+      .card-body{ padding:12px; font-size:.96rem; }
+      .mathline{ padding:9px 10px; border-radius:10px; }
+      .footer-note{ display:none; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Beweispuzzle: Garfield-Beweis des Satzes von Pythagoras</h1>
+    <p class="subtitle">Ordne die Karten per Drag &amp; Drop zu einem schlüssigen Beweis.</p>
+
+    <div class="grid">
+      <section class="panel panel-left">
+        <h2>Grafik</h2>
+        <div id="ggb-shell">
+          <div id="ggb-element"></div>
+        </div>
+
+        <div class="legend-grid">
+          <div class="pill">äußere Dreiecke: je \(\tfrac12ab\)</div>
+          <div class="pill">Trapezhöhe: \(a+b\)</div>
+          <div class="pill">mittleres Dreieck: gleichschenklig-rechtwinklig</div>
+          <div class="pill">mittlere Dreiecksfläche: \(\tfrac12c^2\)</div>
+        </div>
+
+        <p class="small-note">
+          <a href="https://de.wikipedia.org/wiki/James_A._Garfield" target="_blank" rel="noopener noreferrer">Wer war Garfield?</a>
+          James A. Garfield war ein US-Präsident. Der Beweis ist also nach ihm benannt – nicht nach der Katze.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Puzzlekarten ordnen</h2>
+
+        <div class="controls">
+          <button id="checkBtn">Prüfen</button>
+          <button id="shuffleBtn" class="secondary">Neu mischen</button>
+        </div>
+
+        <div id="feedback"></div>
+        <div id="cardList" class="list" aria-label="Beweispuzzle-Karten"></div>
+      </section>
+    </div>
+
+    <p class="footer-note">Hinweis: Für GeoGebra und MathJax braucht die Datei eine Internetverbindung. Die Karten funktionieren auch ohne Internet, die Formeln sehen dann nur nicht so schön aus.</p>
+  </div>
+
+  <script>
+    function ggbOnInit() {
+      const ggb = ggbApplet;
+
+      ggb.evalCommand('a = 4');
+      ggb.evalCommand('b = 3');
+      ggb.evalCommand('c = sqrt(a^2 + b^2)');
+
+      ggb.evalCommand('P = (0,0)');
+      ggb.evalCommand('Q = (0,a)');
+      ggb.evalCommand('O = (b,0)');
+      ggb.evalCommand('R = (a+b,b)');
+      ggb.evalCommand('S = (a+b,0)');
+
+      ggb.evalCommand('poly1 = Polygon(P,Q,O)');
+      ggb.evalCommand('poly2 = Polygon(Q,O,R)');
+      ggb.evalCommand('poly3 = Polygon(O,R,S)');
+      ggb.evalCommand('trap = Polygon(P,Q,R,S)');
+
+      ggb.evalCommand('ang1 = Angle(Q,O,R)');
+      ggb.evalCommand('ang2 = Angle(P,Q,O)');
+      ggb.evalCommand('ang3 = Angle(O,S,R)');
+
+      ggb.evalCommand('segPQ = Segment(P,Q)');
+      ggb.evalCommand('segQR = Segment(Q,R)');
+      ggb.evalCommand('segRS = Segment(R,S)');
+      ggb.evalCommand('segPS = Segment(P,S)');
+      ggb.evalCommand('segQO = Segment(Q,O)');
+      ggb.evalCommand('segOR = Segment(O,R)');
+
+      ggb.evalCommand('Text("a", (-0.45, a/2))');
+      ggb.evalCommand('Text("b", (a+b+0.35, b/2))');
+      ggb.evalCommand('Text("b", (b/2, -0.45))');
+      ggb.evalCommand('Text("a", (b+a/2, -0.45))');
+      ggb.evalCommand('Text("c", (b/2-0.18, a/2+0.28))');
+      ggb.evalCommand('Text("c", ((a+2*b)/2+0.18, b/2+0.28))');
+      ggb.evalCommand('Text("a + b", ((a+b)/2, -0.98))');
+
+      ggb.setColor('poly1', 197, 211, 236);
+      ggb.setColor('poly2', 236, 223, 155);
+      ggb.setColor('poly3', 198, 222, 203);
+      ggb.setColor('trap', 255, 255, 255);
+      ggb.setColor('segPQ', 35, 45, 60);
+      ggb.setColor('segQR', 35, 45, 60);
+      ggb.setColor('segRS', 35, 45, 60);
+      ggb.setColor('segPS', 35, 45, 60);
+      ggb.setColor('segQO', 35, 45, 60);
+      ggb.setColor('segOR', 35, 45, 60);
+
+      ggb.setFilling('trap', 0);
+      ggb.setFilling('poly1', 0.9);
+      ggb.setFilling('poly2', 0.92);
+      ggb.setFilling('poly3', 0.9);
+      ggb.setLineThickness('trap', 5);
+      ['segPQ','segQR','segRS','segPS','segQO','segOR'].forEach(x => ggb.setLineThickness(x, 4));
+      ['ang1','ang2','ang3'].forEach(x => ggb.setLineThickness(x, 3));
+
+      ['P','Q','O','R','S'].forEach(x => {
+        ggb.setVisible(x, false);
+        ggb.setLabelVisible(x, false);
+      });
+      ['poly1','poly2','poly3','trap','segPQ','segQR','segRS','segPS','segQO','segOR'].forEach(x => ggb.setLabelVisible(x, false));
+      ['ang1','ang2','ang3'].forEach(x => ggb.setLabelVisible(x, false));
+
+      ggb.setAxesVisible(false, false);
+      ggb.setGridVisible(false);
+      ggb.setCoordSystem(-1.2, 8.9, -1.35, 4.9);
+      ggb.setFontSize(24);
+    }
+
+    window.addEventListener('load', () => {
+      const params = {
+        appName: 'geometry',
+        width: 760,
+        height: 500,
+        showToolBar: false,
+        showAlgebraInput: false,
+        showMenuBar: false,
+        showResetIcon: true,
+        enableLabelDrags: false,
+        enableShiftDragZoom: true,
+        useBrowserForJS: true,
+        appletOnLoad: ggbOnInit
+      };
+      const applet = new GGBApplet(params, true);
+      applet.inject('ggb-element');
+    });
+
+    const steps = [
+      { id:'C', title:'Karte C', text:'Zwei gleiche rechtwinklige Dreiecke mit den Katheten \(a\) und \(b\) und der Hypotenuse \(c\) werden so angeordnet, dass ein Trapez entsteht.' },
+      { id:'E', title:'Karte E', text:'Die parallelen Seiten des Trapezes haben die Längen \(a\) und \(b\). Die Höhe des Trapezes beträgt \(a+b\).' },
+      { id:'G', title:'Karte G', text:'Die Fläche eines Trapezes berechnet man mit:', math:'\\[A=\\frac{a+b}{2}\\cdot h\\] Für dieses Trapez gilt: \\[A=\\frac{a+b}{2}\\cdot(a+b)\\]' },
+      { id:'H', title:'Karte H', text:'Damit gilt:', math:'\\[A=\\frac{(a+b)^2}{2}\\]' },
+      { id:'A', title:'Karte A', text:'Das Trapez besteht aus drei Dreiecken: zwei gleich großen rechtwinkligen Dreiecken und einem mittleren gleichschenklig-rechtwinkligen Dreieck.' },
+      { id:'B', title:'Karte B', text:'Die Fläche eines der beiden äußeren rechtwinkligen Dreiecke beträgt \(\\frac12ab\). Da es zwei solche Dreiecke gibt, haben sie zusammen die Fläche:', math:'\\[ab\\]' },
+      { id:'D', title:'Karte D', text:'Das mittlere Dreieck ist gleichschenklig-rechtwinklig: Die beiden spitzen Winkel der äußeren Dreiecke ergänzen sich unten zu \(90^\circ\), also ist der Winkel in der Mitte recht. Die beiden Katheten haben jeweils die Länge \(c\). Daher gilt:', math:'\\[A_\\text{Mitte}=\\frac12\\cdot c\\cdot c=\\frac12c^2\\]' },
+      { id:'F', title:'Karte F', text:'Also kann man die Fläche des Trapezes auch so schreiben:', math:'\\[A=ab+\\frac12c^2\\]' },
+      { id:'I', title:'Karte I', text:'Beide Terme beschreiben dieselbe Trapezfläche. Also gilt:', math:'\\[\\frac{(a+b)^2}{2}=ab+\\frac12c^2\\]' },
+      { id:'J', title:'Karte J', text:'Nun wird die Gleichung ausmultipliziert:', math:'\\[\\frac{a^2+2ab+b^2}{2}=ab+\\frac12c^2\\]' },
+      { id:'K', title:'Karte K', text:'Man multipliziert die Gleichung mit 2:', math:'\\[a^2+2ab+b^2=2ab+c^2\\]' },
+      { id:'L', title:'Karte L', text:'Auf beiden Seiten steht \(2ab\). Das kann man auf beiden Seiten abziehen. Damit ist der Satz des Pythagoras bewiesen:', math:'\\[a^2+b^2=c^2\\]' }
+    ];
+
+    const correctOrder = steps.map(s => s.id);
+    const cardList = document.getElementById('cardList');
+    const feedback = document.getElementById('feedback');
+
+    function shuffle(array){
+      const a = [...array];
+      for(let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function typeset(){
+      if(window.MathJax && window.MathJax.typesetPromise){
+        window.MathJax.typesetPromise().catch(() => {});
+      }
+    }
+
+    function renderCards(cardArray){
+      cardList.innerHTML = '';
+      feedback.textContent = '';
+      cardArray.forEach((step, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.draggable = true;
+        card.dataset.id = step.id;
+
+        card.innerHTML = `
+          <div class="card-head">
+            <span class="badge">${step.title}</span>
+            <span class="pos">Position ${index + 1}</span>
+          </div>
+          <div class="card-body">
+            <p>${step.text}</p>
+            ${step.math ? `<div class="mathline">${step.math}</div>` : ''}
+          </div>
+        `;
+
+        card.addEventListener('dragstart', () => card.classList.add('dragging'));
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+          updatePositionLabels();
+        });
+
+        cardList.appendChild(card);
+      });
+      typeset();
+    }
+
+    function updatePositionLabels(){
+      [...cardList.children].forEach((card, index) => {
+        const pos = card.querySelector('.pos');
+        if(pos) pos.textContent = 'Position ' + (index + 1);
+      });
+    }
+
+    function getDragAfterElement(container, y){
+      const draggableElements = [...container.querySelectorAll('.card:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if(offset < 0 && offset > closest.offset){
+          return { offset, element: child };
+        }
+        return closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    cardList.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const afterElement = getDragAfterElement(cardList, e.clientY);
+      const current = document.querySelector('.dragging');
+      if(!current) return;
+      if(afterElement == null){
+        cardList.appendChild(current);
+      } else {
+        cardList.insertBefore(current, afterElement);
+      }
+    });
+
+    function clearMarks(){
+      [...cardList.children].forEach(card => card.classList.remove('correct', 'wrong'));
+    }
+
+    function checkOrder(){
+      clearMarks();
+      const currentOrder = [...cardList.children].map(card => card.dataset.id);
+      let correctCount = 0;
+      [...cardList.children].forEach((card, index) => {
+        if(card.dataset.id === correctOrder[index]){
+          card.classList.add('correct');
+          correctCount++;
+        } else {
+          card.classList.add('wrong');
+        }
+      });
+
+      if(correctCount === correctOrder.length){
+        feedback.textContent = 'Super! Alle Karten liegen in der richtigen Reihenfolge.';
+        feedback.style.color = 'var(--ok)';
+      } else {
+        feedback.textContent = `Noch nicht ganz: ${correctCount} von ${correctOrder.length} Karten sind an der richtigen Position.`;
+        feedback.style.color = 'var(--warn)';
+      }
+    }
+
+    function reshuffle(){
+      clearMarks();
+      renderCards(shuffle(steps));
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', checkOrder);
+    document.getElementById('shuffleBtn').addEventListener('click', reshuffle);
+
+    renderCards(shuffle(steps));
+  </script>
+</body>
+</html>
