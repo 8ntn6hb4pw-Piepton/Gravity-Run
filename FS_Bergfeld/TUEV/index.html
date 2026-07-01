@@ -278,6 +278,10 @@
       border-color: #1f2937;
     }
 
+    .mobile-nav {
+      display: none;
+    }
+
     .detail[data-id="vera3"] { left: 2%; top: 0; width: min(570px, 42vw); }
     .detail[data-id="vera8"] { left: 20%; top: 0; width: min(560px, 42vw); }
     .detail[data-id="zp10"] { left: 25%; top: 56%; width: min(610px, 44vw); }
@@ -434,25 +438,44 @@
     @media (max-width: 980px) {
       header {
         display: block;
-        padding-bottom: 14px;
+        padding: 14px 16px 8px;
+      }
+
+      h1 {
+        font-size: clamp(1.55rem, 8vw, 2.1rem);
+        line-height: 1.05;
+        max-width: none;
+      }
+
+      .tagline {
+        font-size: .98rem;
+        line-height: 1.35;
+      }
+
+      .stage {
+        overflow: visible;
+        padding: 0 12px 18px;
       }
 
       .timeline {
-        min-height: 920px;
+        min-height: 0;
+        border-top: 1px solid rgba(37, 44, 57, .14);
+        touch-action: auto;
       }
 
       .rail {
-        transform: rotate(90deg) scale(1.22);
-        transform-origin: 50% 50%;
-        opacity: .38;
+        display: none;
       }
 
       .divider { display: none; }
 
-      .detail,
-      .traveller {
+      .detail {
         position: static;
         transform: none;
+      }
+
+      .traveller {
+        display: none;
       }
 
       .station {
@@ -463,17 +486,57 @@
         position: relative;
         z-index: 7;
         display: grid;
-        gap: 14px;
-        padding: 12px 0 24px;
+        gap: 12px;
+        padding: 12px 0 20px;
       }
 
-      .detail {
+      .mobile-nav {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 6px;
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 8px 0;
+        background: rgba(248, 246, 239, .94);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(37, 44, 57, .14);
+      }
+
+      .mobile-nav button {
+        min-height: 44px;
+        border: 2px solid #4778d2;
+        border-radius: 4px;
+        background: #efefef;
+        color: #161b24;
+        font-size: .78rem;
+        font-weight: 850;
+        line-height: 1.05;
+        padding: 6px 4px;
+      }
+
+      .mobile-nav button.active {
+        border-color: var(--line);
+        background: white;
+        box-shadow: 0 6px 14px rgba(126, 18, 30, .16);
+      }
+
+      .mobile-stack .detail {
         width: 100%;
+        max-width: none;
         min-height: 0;
+        left: auto;
+        top: auto;
         opacity: 1;
         pointer-events: auto;
         display: none;
         padding: 16px;
+        border-width: 2px;
+        box-shadow: 0 10px 22px rgba(20, 27, 39, .12);
+      }
+
+      .detail h2 {
+        font-size: 1.32rem;
       }
 
       .detail p {
@@ -497,6 +560,46 @@
 
       .modal-body {
         grid-template-columns: 1fr;
+        padding: 14px;
+      }
+
+      .source-modal {
+        padding: 10px;
+        align-items: stretch;
+      }
+
+      .modal-panel {
+        width: 100%;
+        max-height: calc(100vh - 20px);
+      }
+
+      .modal-head {
+        padding: 12px 14px;
+      }
+
+      .modal-head h3 {
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+
+      .source-list {
+        gap: 10px;
+      }
+
+      .source-list li {
+        border-left-width: 4px;
+      }
+
+      .source-item {
+        padding: 12px;
+      }
+
+      .source-open {
+        width: 100%;
+      }
+
+      .status {
+        font-size: .82rem;
       }
     }
   </style>
@@ -538,6 +641,14 @@
         </div>
 
         <div class="mobile-stack">
+          <nav class="mobile-nav" aria-label="Stationen">
+            <button type="button" data-mobile-station="vera3">VERA<br>3</button>
+            <button type="button" data-mobile-station="vera8">VERA<br>8</button>
+            <button type="button" data-mobile-station="zp10">ZP<br>10</button>
+            <button type="button" data-mobile-station="ef">ZK<br>EF</button>
+            <button type="button" data-mobile-station="abitur">Abi</button>
+          </nav>
+
           <article class="detail" data-id="vera3">
             <h2>VERA 3</h2>
             <p><strong>VERA3/8 sind Lernstandserhebungen.</strong> Sie ersetzt keine Klassenarbeit, werden bewertet, aber nicht benotet. Eine intensive Vorbereitung ist nicht sinnvoll. Nur das Format sollte geübt werden.</p>
@@ -686,6 +797,7 @@
     const lifePath = document.querySelector("#lifePath");
     const detailEls = [...document.querySelectorAll(".detail")];
     const stationEls = [...document.querySelectorAll(".station")];
+    const mobileStationEls = [...document.querySelectorAll("[data-mobile-station]")];
     const breakEls = [...document.querySelectorAll(".divider[data-break]")];
     const modal = document.querySelector("#modal");
     const modalTitle = document.querySelector("#modal-title");
@@ -739,6 +851,7 @@
     function setActiveDetail(id) {
       detailEls.forEach(el => el.classList.toggle("active", el.dataset.id === id));
       stationEls.forEach(el => el.classList.toggle("active", el.dataset.id === id));
+      mobileStationEls.forEach(el => el.classList.toggle("active", el.dataset.mobileStation === id));
     }
 
     function renderProgress(value) {
@@ -805,6 +918,9 @@
     timeline.addEventListener("pointercancel", endPathDrag);
     stationEls.forEach(el => {
       el.querySelector("button").addEventListener("click", () => activate(el.dataset.id));
+    });
+    mobileStationEls.forEach(el => {
+      el.addEventListener("click", () => activate(el.dataset.mobileStation));
     });
     document.querySelectorAll("[data-source]").forEach(button => {
       button.addEventListener("click", () => openSources(button.dataset.source));
