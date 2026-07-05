@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arbeitsblatt: Zuordnungs-Check Vorbereitung</title>
+    <style>
+      :root {
+        --ink: #1f241f;
+        --muted: #5e6759;
+        --line: #cfd6c6;
+        --soft: #f6f7f2;
+        --blue: #235e9f;
+        --green: #137a52;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #eef1e8;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      main {
+        width: min(100%, 920px);
+        margin: 0 auto;
+        padding: 24px;
+        background: white;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        margin-top: 28px;
+        font-size: 1.2rem;
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 6px;
+      }
+
+      p {
+        margin: 8px 0;
+      }
+
+      .nameRow {
+        display: grid;
+        grid-template-columns: 1fr 150px;
+        gap: 18px;
+        margin: 18px 0 22px;
+      }
+
+      .line {
+        border-bottom: 1px solid var(--ink);
+        min-height: 28px;
+      }
+
+      .hintBox {
+        margin: 16px 0;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--soft);
+      }
+
+      .three {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .taskGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        break-inside: avoid;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0;
+        table-layout: fixed;
+      }
+
+      th,
+      td {
+        border: 1px solid var(--line);
+        padding: 7px;
+        text-align: center;
+      }
+
+      th {
+        background: var(--soft);
+      }
+
+      .options {
+        display: grid;
+        gap: 5px;
+        margin-top: 8px;
+      }
+
+      .box {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 1.5px solid var(--ink);
+        vertical-align: -2px;
+        margin-right: 6px;
+      }
+
+      .miniGraph {
+        width: 100%;
+        height: 150px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcf8;
+      }
+
+      .writeLine {
+        height: 32px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .solution {
+        color: var(--green);
+      }
+
+      @media print {
+        body {
+          background: white;
+        }
+
+        main {
+          width: 100%;
+          padding: 12mm;
+        }
+
+        .pageBreak {
+          break-before: page;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .taskGrid,
+        .three,
+        .nameRow {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Zuordnungs-Check: Vorbereitung</h1>
+      <p>Trainiere den Wechsel zwischen Tabelle, Graph und Term.</p>
+
+      <div class="nameRow">
+        <div>Name: <span class="line"></span></div>
+        <div>Datum: <span class="line"></span></div>
+      </div>
+
+      <div class="hintBox">
+        <strong>Merke:</strong> Proportional bedeutet: Gerade durch den Ursprung und Term ohne Plus oder Minus. Linear, aber nicht proportional bedeutet: Gerade, aber nicht durch den Ursprung. Keins von beiden bedeutet: nicht gerade, nicht eindeutig oder unpassende Werte.
+      </div>
+
+      <h2>1. Tabelle prüfen</h2>
+      <p>Kreuze an: proportional, linear aber nicht proportional oder keins von beiden.</p>
+      <div class="taskGrid">
+        <section class="card">
+          <table><tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>0</td><td>4</td><td>8</td><td>12</td></tr></table>
+          <div class="options"><span><i class="box"></i>proportional</span><span><i class="box"></i>linear, nicht proportional</span><span><i class="box"></i>keins von beiden</span></div>
+        </section>
+        <section class="card">
+          <table><tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>2</td><td>5</td><td>8</td><td>11</td></tr></table>
+          <div class="options"><span><i class="box"></i>proportional</span><span><i class="box"></i>linear, nicht proportional</span><span><i class="box"></i>keins von beiden</span></div>
+        </section>
+        <section class="card">
+          <table><tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>1</td><td>2</td><td>5</td><td>10</td></tr></table>
+          <div class="options"><span><i class="box"></i>proportional</span><span><i class="box"></i>linear, nicht proportional</span><span><i class="box"></i>keins von beiden</span></div>
+        </section>
+        <section class="card">
+          <table><tr><th>x</th><td>0</td><td>1</td><td>1</td><td>2</td></tr><tr><th>y</th><td>0</td><td>3</td><td>5</td><td>6</td></tr></table>
+          <div class="options"><span><i class="box"></i>proportional</span><span><i class="box"></i>linear, nicht proportional</span><span><i class="box"></i>keins von beiden</span></div>
+        </section>
+      </div>
+
+      <h2>2. Tabelle ergänzen</h2>
+      <div class="taskGrid">
+        <section class="card">
+          <p>Term: <strong>y = 3x + 1</strong></p>
+          <table><tr><th>x</th><td>0</td><td>1</td><td>2</td><td>4</td></tr><tr><th>y</th><td></td><td></td><td></td><td></td></tr></table>
+        </section>
+        <section class="card">
+          <p>Term: <strong>y = 5x</strong></p>
+          <table><tr><th>x</th><td>0</td><td>1</td><td>3</td><td>5</td></tr><tr><th>y</th><td></td><td></td><td></td><td></td></tr></table>
+        </section>
+      </div>
+
+      <h2>3. Graph und Term verbinden</h2>
+      <p>Ordne jedem Graphen einen Term zu.</p>
+      <div class="three">
+        <section class="card">
+          <svg class="miniGraph" viewBox="0 0 160 120" aria-label="Graph A">
+            <path d="M20 100H145M40 110V15" stroke="#222" stroke-width="2" />
+            <path d="M40 100L130 25" stroke="#235e9f" stroke-width="5" fill="none" />
+            <text x="12" y="20">A</text>
+          </svg>
+          <p>Term: <span class="line"></span></p>
+        </section>
+        <section class="card">
+          <svg class="miniGraph" viewBox="0 0 160 120" aria-label="Graph B">
+            <path d="M20 100H145M40 110V15" stroke="#222" stroke-width="2" />
+            <path d="M40 75L135 35" stroke="#235e9f" stroke-width="5" fill="none" />
+            <text x="12" y="20">B</text>
+          </svg>
+          <p>Term: <span class="line"></span></p>
+        </section>
+        <section class="card">
+          <p><strong>Terme:</strong></p>
+          <p>y = 2x</p>
+          <p>y = x + 2</p>
+        </section>
+      </div>
+
+      <h2>4. Kurz begründen</h2>
+      <p>Woran erkennst du „keins von beiden“ in einer Tabelle?</p>
+      <div class="writeLine"></div>
+      <div class="writeLine"></div>
+
+      <section class="pageBreak">
+        <h2>Lösungen für die Kontrolle</h2>
+        <ol class="solution">
+          <li>proportional; linear, nicht proportional; keins von beiden (quadratisch); keins von beiden (x = 1 hat zwei y-Werte)</li>
+          <li>y = 3x + 1: 1, 4, 7, 13. y = 5x: 0, 5, 15, 25.</li>
+          <li>A: y = 2x. B: y = x + 2.</li>
+          <li>Zum Beispiel: Die y-Werte wachsen nicht gleichmäßig oder ein x-Wert hat zwei verschiedene y-Werte.</li>
+        </ol>
+      </section>
+    </main>
+  </body>
+</html>

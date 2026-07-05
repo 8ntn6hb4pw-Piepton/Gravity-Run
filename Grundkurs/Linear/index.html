@@ -1,1 +1,80 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zuordnungs-Check</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23137a52'/%3E%3Cpath d='M10 48 54 14' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='40' r='5' fill='%23f1c84b'/%3E%3Ccircle cx='42' cy='24' r='5' fill='%23f1c84b'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Lineare und proportionale Zuordnungen</p>
+          <h1>Zuordnungs-Check</h1>
+        </div>
+        <div class="scorebox" aria-live="polite">
+          <span>Punkte</span>
+          <strong id="score">0</strong>
+        </div>
+      </header>
 
+      <section id="startScreen" class="startScreen">
+        <p class="prompt">Spiele acht Level der Reihe nach durch.</p>
+        <p class="subprompt">Jedes Level hat drei Aufgaben. Du entscheidest, ergänzt Tabellen und stellst Terme auf. Du darfst beliebig oft versuchen; je weniger Versuche und Hilfen du brauchst, desto mehr Punkte bekommst du.</p>
+        <div class="segmented" role="group" aria-label="Schwierigkeit">
+          <button class="active" data-difficulty="noob" type="button">Noob</button>
+          <button data-difficulty="pro" type="button">Pro</button>
+          <button data-difficulty="hacker" type="button">Hacker</button>
+        </div>
+        <button id="startButton" class="primary" type="button">Start</button>
+        <a class="worksheetLink" href="arbeitsblatt-vorbereitung.html">Arbeitsblatt zur Vorbereitung öffnen</a>
+      </section>
+
+      <section id="gameStatus" class="statusLine hidden">
+        <span id="levelTitle"></span>
+        <span id="attemptsText">Serie 0</span>
+      </section>
+
+      <section id="progressPanel" class="progressPanel hidden" aria-label="Spielfortschritt">
+        <div class="progressTrack"><div id="progressFill" class="progressFill"></div></div>
+        <div id="levelDots" class="levelDots"></div>
+      </section>
+
+      <section id="gameWorkspace" class="workspace hidden" aria-live="polite">
+        <div id="taskArea" class="taskArea"></div>
+        <form id="answerForm" class="answerForm"></form>
+      </section>
+
+      <section id="gameActions" class="actions hidden">
+        <button id="hintButton" class="secondary" type="button">Hilfe</button>
+        <button id="checkButton" class="primary" type="submit" form="answerForm">Prüfen</button>
+      </section>
+
+      <p id="feedback" class="feedback" aria-live="assertive"></p>
+
+      <section id="finishScreen" class="finishScreen hidden">
+        <p class="prompt">Geschafft.</p>
+        <p id="finishText" class="subprompt"></p>
+        <button id="restartButton" class="primary" type="button">Zur Startseite</button>
+      </section>
+
+      <section id="checkScreen" class="checkScreen hidden">
+        <p class="prompt">Automatischer Check</p>
+        <p class="subprompt">Prüft Generatoren, Leveltypen, Tabellenstart, Hilfen und zentrale Antwortlogik.</p>
+        <div id="checkResults" class="checkResults"></div>
+      </section>
+    </main>
+
+    <dialog id="hintDialog">
+      <form method="dialog">
+        <button class="closeButton" aria-label="Schließen">×</button>
+      </form>
+      <h2>Beispiel</h2>
+      <div id="hintContent"></div>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+</html>
