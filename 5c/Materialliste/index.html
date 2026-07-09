@@ -1,1 +1,78 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Materialliste Klasse 5 fuer das Schuljahr 2026/2027 mit Sprachwahl und digitaler Checkliste.">
+    <title>Materialliste Klasse 5</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero__content">
+        <p class="eyebrow" id="eyebrow">Schulmaterial</p>
+        <h1 id="page-title">Materialliste Klasse 5</h1>
+        <p class="subtitle" id="subtitle">Schuljahr 2026/2027</p>
+        <p class="notice" id="landing-notice">
+          Bitte wählen Sie eine Sprache. Die Übersetzungen wurden mithilfe von KI erstellt. Maßgeblich ist die deutsche Originalfassung.
+        </p>
+      </div>
+    </header>
 
+    <main class="page-shell">
+      <section class="section" aria-labelledby="language-title">
+        <h2 id="language-title">Elternbrief</h2>
+        <div class="language-grid">
+          <a class="language-card" href="pages/de.html" lang="de">
+            <span class="flag" aria-hidden="true">🇩🇪</span>
+            <span>Deutsch</span>
+          </a>
+          <a class="language-card" href="pages/tr.html" lang="tr">
+            <span class="flag" aria-hidden="true">🇹🇷</span>
+            <span>Türkçe</span>
+          </a>
+          <a class="language-card" href="pages/el.html" lang="el">
+            <span class="flag" aria-hidden="true">🇬🇷</span>
+            <span>Ελληνικά</span>
+          </a>
+          <a class="language-card" href="pages/ar.html" lang="ar">
+            <span class="flag" aria-hidden="true">🇸🇦</span>
+            <span>العربية</span>
+          </a>
+          <a class="language-card" href="pages/en.html" lang="en">
+            <span class="flag" aria-hidden="true">🇬🇧</span>
+            <span>English</span>
+          </a>
+          <a class="language-card" href="pages/it.html" lang="it">
+            <span class="flag" aria-hidden="true">🇮🇹</span>
+            <span>Italiano</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="section checklist-section" aria-labelledby="checklist-title">
+        <div class="section-heading">
+          <div>
+            <h2 id="checklist-title">Digitale Checkliste zum Einkaufen</h2>
+            <p id="progress" class="progress-text" aria-live="polite">0 von 0 erledigt</p>
+          </div>
+          <button class="reset-button" type="button" id="resetChecklist">Checkliste zurücksetzen</button>
+        </div>
+        <div class="checklist-language" id="checklist-language" aria-label="Sprache der Checkliste ändern">
+          <button class="flag-button is-active" type="button" data-language="de" lang="de" aria-pressed="true">🇩🇪 <span>Deutsch</span></button>
+          <button class="flag-button" type="button" data-language="tr" lang="tr" aria-pressed="false">🇹🇷 <span>Türkçe</span></button>
+          <button class="flag-button" type="button" data-language="el" lang="el" aria-pressed="false">🇬🇷 <span>Ελληνικά</span></button>
+          <button class="flag-button" type="button" data-language="ar" lang="ar" aria-pressed="false">🇸🇦 <span>العربية</span></button>
+          <button class="flag-button" type="button" data-language="en" lang="en" aria-pressed="false">🇬🇧 <span>English</span></button>
+          <button class="flag-button" type="button" data-language="it" lang="it" aria-pressed="false">🇮🇹 <span>Italiano</span></button>
+        </div>
+        <div id="checklist" class="checklist" aria-label="Digitale Material-Checkliste"></div>
+        <p class="privacy-note" id="privacy-note">
+          Die Checkliste speichert nur lokal im Browser dieses Geräts. Es werden keine personenbezogenen Daten gespeichert.
+        </p>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
