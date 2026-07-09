@@ -56,7 +56,7 @@ const checklistData = {
     },
     {
       category: "Ein Buch kann jedes Kind",
-      items: ["Roman", "Sachbuch", "Comic", "Manga", "Zeitschrift", "Sonstiges"]
+      items: ["Sachbuch, Comic, Zeitschrift, Roman o.ä."]
     }
   ],
   tr: [
@@ -113,7 +113,7 @@ const checklistData = {
     },
     {
       category: "Her çocuk bir kitap getirebilir",
-      items: ["Roman", "Bilgi kitabı", "Çizgi roman", "Manga", "Dergi", "Diğer"]
+      items: ["Bilgi kitabı, çizgi roman, dergi, roman vb."]
     }
   ],
   el: [
@@ -170,7 +170,7 @@ const checklistData = {
     },
     {
       category: "Κάθε παιδί μπορεί να έχει ένα βιβλίο",
-      items: ["Μυθιστόρημα", "Βιβλίο γνώσεων", "Κόμικ", "Manga", "Περιοδικό", "Λοιπά"]
+      items: ["Βιβλίο γνώσεων, κόμικ, περιοδικό, μυθιστόρημα κ.ά."]
     }
   ],
   ar: [
@@ -227,7 +227,7 @@ const checklistData = {
     },
     {
       category: "يمكن لكل طفل أن يكون لديه كتاب",
-      items: ["رواية", "كتاب معلوماتي", "قصة مصورة", "مانغا", "مجلة", "أشياء أخرى"]
+      items: ["كتاب معلوماتي، قصة مصورة، مجلة، رواية وما شابه"]
     }
   ],
   en: [
@@ -284,7 +284,7 @@ const checklistData = {
     },
     {
       category: "Every child can have a book",
-      items: ["Novel", "Non-fiction book", "Comic", "Manga", "Magazine", "Other"]
+      items: ["Non-fiction book, comic, magazine, novel, etc."]
     }
   ],
   it: [
@@ -341,7 +341,7 @@ const checklistData = {
     },
     {
       category: "Ogni bambino può avere un libro",
-      items: ["Romanzo", "Libro di divulgazione", "Fumetto", "Manga", "Rivista", "Altro"]
+      items: ["Libro di divulgazione, fumetto, rivista, romanzo ecc."]
     }
   ]
 };
