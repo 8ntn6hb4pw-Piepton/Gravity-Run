@@ -6,15 +6,15 @@ const checklistData = {
     {
       category: "Federmappe",
       items: [
-        "Einen Schulfüller, einschließlich passender Ersatzpatronen",
+        "Einen Schulfüller o.ä. (kein: Kugelschreiber), einschließlich passender Ersatzpatronen",
         "zwei Bleistifte (Härte: HB)",
         "Buntstifte (min. 12 Farben)",
         "Radiergummi (blau/rot)",
         "Anspitzer",
-        "2 Textmarker, gelb, rosa",
+        "2 Textmarker gelb, pink",
         "ein Geodreieck",
         "ein Klebestift",
-        "Bastelschere (abgerundete Spitzen, die in die Federmappe passt)"
+        "kleine Bastelschere"
       ]
     },
     {
@@ -22,7 +22,7 @@ const checklistData = {
       items: [
         "8 Hefte DIN-A4, Lineatur Nr. 25 (liniert, breiter Rand)",
         "3 Hefte DIN-A4, Lineatur Nr. 26 (kariert, breiter Rand)",
-        "ein Heft, Lineatur Nr. 20 (unliniert)",
+        "7 Schnellhefter (rot, blau, grün, gelb, grau, schwarz, violett)",
         "ein Notizbuch, DIN A5, kariert",
         "1 transparente Sammelmappe DIN-A4 für Elterninformationen",
         "Collageblock DIN A 4, mit kariertem und liniertem Papier"
@@ -43,7 +43,7 @@ const checklistData = {
     },
     {
       category: "Sonstiges",
-      items: ["eine Trinkflasche zum wieder befüllen"]
+      items: ["eine wiederverwendbare Trinkflasche"]
     },
     {
       category: "Sport",
@@ -63,15 +63,15 @@ const checklistData = {
     {
       category: "Kalem kutusu",
       items: [
-        "Bir dolma kalem, uygun yedek kartuşlarla birlikte",
+        "Bir okul dolma kalemi veya benzeri (tükenmez kalem değil), uygun yedek kartuşlarla birlikte",
         "iki kurşun kalem (sertlik: HB)",
         "boya kalemleri (en az 12 renk)",
         "silgi (mavi/kırmızı)",
         "kalemtıraş",
-        "2 fosforlu kalem, sarı, pembe",
+        "2 fosforlu kalem sarı, pembe",
         "bir geometri üçgeni",
         "bir yapıştırıcı",
-        "el işi makası (yuvarlak uçlu, kalem kutusuna sığan)"
+        "küçük el işi makası"
       ]
     },
     {
@@ -79,7 +79,7 @@ const checklistData = {
       items: [
         "8 defter DIN-A4, çizgi tipi No. 25 (çizgili, geniş kenar boşluklu)",
         "3 defter DIN-A4, çizgi tipi No. 26 (kareli, geniş kenar boşluklu)",
-        "bir defter, çizgi tipi No. 20 (çizgisiz)",
+        "7 telli dosya (kırmızı, mavi, yeşil, sarı, gri, siyah, mor)",
         "bir not defteri, DIN A5, kareli",
         "Veliler için bilgilendirmeler için 1 şeffaf dosya DIN-A4",
         "Kolaj bloğu DIN A 4, kareli ve çizgili kağıtlı"
@@ -100,7 +100,7 @@ const checklistData = {
     },
     {
       category: "Diğer",
-      items: ["yeniden doldurmak için bir içme şişesi"]
+      items: ["yeniden kullanılabilir bir içme şişesi"]
     },
     {
       category: "Spor",
@@ -120,15 +120,15 @@ const checklistData = {
     {
       category: "Κασετίνα",
       items: [
-        "Ένα σχολικό στυλό μελάνης, μαζί με κατάλληλες ανταλλακτικές αμπούλες",
+        "Ένα σχολικό στυλό μελάνης ή παρόμοιο (όχι στυλό διαρκείας), μαζί με κατάλληλες ανταλλακτικές αμπούλες",
         "δύο μολύβια (σκληρότητα: HB)",
         "ξυλομπογιές (τουλάχιστον 12 χρώματα)",
         "γόμα (μπλε/κόκκινη)",
         "ξύστρα",
-        "2 μαρκαδόροι υπογράμμισης, κίτρινο, ροζ",
+        "2 μαρκαδόροι υπογράμμισης κίτρινο, φούξια",
         "ένας γεωμετρικός τρίγωνος χάρακας",
         "μία κόλλα στικ",
-        "ψαλίδι χειροτεχνίας (στρογγυλεμένες άκρες, που χωράει στην κασετίνα)"
+        "μικρό ψαλίδι χειροτεχνίας"
       ]
     },
     {
@@ -136,7 +136,7 @@ const checklistData = {
       items: [
         "8 τετράδια DIN-A4, γραμμογράφηση αρ. 25 (ριγέ, φαρδύ περιθώριο)",
         "3 τετράδια DIN-A4, γραμμογράφηση αρ. 26 (καρό, φαρδύ περιθώριο)",
-        "ένα τετράδιο, γραμμογράφηση αρ. 20 (λευκό)",
+        "7 ντοσιέ με έλασμα (κόκκινο, μπλε, πράσινο, κίτρινο, γκρι, μαύρο, μοβ)",
         "ένα σημειωματάριο, DIN A5, καρό",
         "1 διαφανής φάκελος συλλογής DIN-A4 για ενημερώσεις γονέων",
         "Μπλοκ κολάζ DIN A 4, με καρό και ριγέ χαρτί"
@@ -157,7 +157,7 @@ const checklistData = {
     },
     {
       category: "Λοιπά",
-      items: ["ένα μπουκάλι νερού για επαναγέμιση"]
+      items: ["ένα επαναχρησιμοποιούμενο μπουκάλι νερού"]
     },
     {
       category: "Αθλητικά",
@@ -177,15 +177,15 @@ const checklistData = {
     {
       category: "المقلمة",
       items: [
-        "قلم حبر مدرسي، مع خراطيش احتياطية مناسبة",
+        "قلم حبر مدرسي أو ما شابه (ليس قلمًا جافًا)، مع خراطيش احتياطية مناسبة",
         "قلمان رصاص (درجة الصلابة: HB)",
         "أقلام تلوين (على الأقل 12 لونًا)",
         "ممحاة (أزرق/أحمر)",
         "مبراة",
-        "قلمان لتحديد النص، أصفر، وردي",
+        "قلمان لتحديد النص أصفر، وردي فاقع",
         "مثلث هندسي",
         "عصا غراء",
-        "مقص للأعمال اليدوية (برؤوس مستديرة، يناسب المقلمة)"
+        "مقص صغير للأعمال اليدوية"
       ]
     },
     {
@@ -193,7 +193,7 @@ const checklistData = {
       items: [
         "8 دفاتر DIN-A4، نوع التسطير رقم 25 (مسطر، هامش عريض)",
         "3 دفاتر DIN-A4، نوع التسطير رقم 26 (مربعات، هامش عريض)",
-        "دفتر واحد، نوع التسطير رقم 20 (غير مسطر)",
+        "7 ملفات سريعة (أحمر، أزرق، أخضر، أصفر، رمادي، أسود، بنفسجي)",
         "دفتر ملاحظات، DIN A5، مربعات",
         "حافظة شفافة واحدة DIN-A4 لمعلومات أولياء الأمور",
         "دفتر كولاج DIN A 4، مع ورق مربعات وورق مسطر"
@@ -214,7 +214,7 @@ const checklistData = {
     },
     {
       category: "أشياء أخرى",
-      items: ["زجاجة شرب قابلة لإعادة التعبئة"]
+      items: ["زجاجة شرب قابلة لإعادة الاستخدام"]
     },
     {
       category: "الرياضة",
@@ -234,15 +234,15 @@ const checklistData = {
     {
       category: "Pencil case",
       items: [
-        "One school fountain pen, including matching spare cartridges",
+        "One school fountain pen or similar (no ballpoint pen), including matching spare cartridges",
         "two pencils (hardness: HB)",
         "colored pencils (at least 12 colors)",
         "eraser (blue/red)",
         "sharpener",
-        "2 highlighters, yellow, pink",
+        "2 highlighters yellow, pink",
         "one set square",
         "one glue stick",
-        "craft scissors (rounded tips, fitting into the pencil case)"
+        "small craft scissors"
       ]
     },
     {
@@ -250,7 +250,7 @@ const checklistData = {
       items: [
         "8 exercise books DIN-A4, ruling No. 25 (lined, wide margin)",
         "3 exercise books DIN-A4, ruling No. 26 (squared, wide margin)",
-        "one exercise book, ruling No. 20 (unlined)",
+        "7 folders (red, blue, green, yellow, grey, black, violet)",
         "one notebook, DIN A5, squared",
         "1 transparent folder DIN-A4 for parent information",
         "Collage pad DIN A 4, with squared and lined paper"
@@ -271,7 +271,7 @@ const checklistData = {
     },
     {
       category: "Other",
-      items: ["one drinking bottle for refilling"]
+      items: ["one reusable drinking bottle"]
     },
     {
       category: "Sports",
@@ -291,15 +291,15 @@ const checklistData = {
     {
       category: "Astuccio",
       items: [
-        "Una penna stilografica scolastica, comprese cartucce di ricambio adatte",
+        "Una penna stilografica scolastica o simile (non una penna a sfera), comprese cartucce di ricambio adatte",
         "due matite (durezza: HB)",
         "matite colorate (almeno 12 colori)",
         "gomma (blu/rossa)",
         "temperamatite",
-        "2 evidenziatori, giallo, rosa",
+        "2 evidenziatori giallo, rosa acceso",
         "una squadretta geometrica",
         "una colla stick",
-        "forbici per lavori manuali (punte arrotondate, che entrino nell'astuccio)"
+        "piccole forbici per lavori manuali"
       ]
     },
     {
@@ -307,7 +307,7 @@ const checklistData = {
       items: [
         "8 quaderni DIN-A4, rigatura n. 25 (a righe, margine largo)",
         "3 quaderni DIN-A4, rigatura n. 26 (a quadretti, margine largo)",
-        "un quaderno, rigatura n. 20 (bianco/non rigato)",
+        "7 cartelline con fermaglio (rosso, blu, verde, giallo, grigio, nero, viola)",
         "un quaderno per appunti, DIN A5, a quadretti",
         "1 cartellina trasparente DIN-A4 per le informazioni ai genitori",
         "Blocco per collage DIN A 4, con carta a quadretti e a righe"
@@ -328,7 +328,7 @@ const checklistData = {
     },
     {
       category: "Altro",
-      items: ["una borraccia da riempire di nuovo"]
+      items: ["una borraccia riutilizzabile"]
     },
     {
       category: "Sport",
